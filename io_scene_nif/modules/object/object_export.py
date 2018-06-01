@@ -575,6 +575,10 @@ class MeshHelper:
         # TODO: needs refactoring - move material, texture, etc. to separate function
         for materialIndex, b_mat in enumerate(mesh_materials):
 
+            # If the material uses nodes it inherits another material
+            if b_mat.use_nodes and b_mat.active_node_material:
+                b_mat = b_mat.active_node_material
+            
             b_ambient_prop = False
             b_diffuse_prop = False
             b_spec_prop = False
