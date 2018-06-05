@@ -68,11 +68,8 @@ class Material(PropertyGroup):
             name='Emissive Preview', description='Allows a viewport preview of the emissive property', default=False)
 
         cls.emissive_color = FloatVectorProperty(
-            name='Emissive', subtype='COLOR', default=[0.0, 0.0, 0.0], min=0.0, max=1.0)
-
-        cls.emissive_alpha = FloatVectorProperty(
-            name='Alpha', subtype='COLOR', default=[0.0, 0.0, 0.0], min=0.0, max=1.0)
-
+                name='Emissive', subtype='COLOR', size=4, default=[0.0, 0.0, 0.0, 0.0], min=0.0, max=1.0)
+    
         cls.lightingeffect1 = FloatProperty(
             name='Lighting Effect 1',
             default=0.3

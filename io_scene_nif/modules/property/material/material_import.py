@@ -139,9 +139,9 @@ class Material():
             # Should we factor in blender bounds 0.0 - 2.0
             
             # Emissive
-            b_mat.niftools.emissive_color.r = n_mat_prop.emissive_color.r
-            b_mat.niftools.emissive_color.g = n_mat_prop.emissive_color.g
-            b_mat.niftools.emissive_color.b = n_mat_prop.emissive_color.b
+            b_mat.niftools.emissive_color[0] = n_mat_prop.emissive_color.r
+            b_mat.niftools.emissive_color[1] = n_mat_prop.emissive_color.g
+            b_mat.niftools.emissive_color[2] = n_mat_prop.emissive_color.b
             b_mat.emit = n_mat_prop.emit_multi
                 
             # gloss
@@ -179,9 +179,9 @@ class Material():
             
             
             # Emissive
-            b_mat.niftools.emissive_color.r = bsShaderProperty.emissive_color.r
-            b_mat.niftools.emissive_color.g = bsShaderProperty.emissive_color.g
-            b_mat.niftools.emissive_color.b = bsShaderProperty.emissive_color.b
+            b_mat.niftools.emissive_color[0] = bsShaderProperty.emissive_color.r
+            b_mat.niftools.emissive_color[1] = bsShaderProperty.emissive_color.g
+            b_mat.niftools.emissive_color[2] = bsShaderProperty.emissive_color.b
             b_mat.emit = bsShaderProperty.emissive_multiple
 
             # Alpha
@@ -208,12 +208,13 @@ class Material():
                 b_mat = self.set_alpha(b_mat, bsShaderProperty, n_alpha_prop)
             
             if bsEffectShaderProperty.emissive_color:
-                b_mat.niftools.emissive_color.r = bsEffectShaderProperty.emissive_color.r
-                b_mat.niftools.emissive_color.g = bsEffectShaderProperty.emissive_color.g
-                b_mat.niftools.emissive_color.b = bsEffectShaderProperty.emissive_color.b
-                b_mat.niftools.emissive_alpha = bsEffectShaderProperty.emissive_color.a
+                b_mat.niftools.emissive_color[0] = bsEffectShaderProperty.emissive_color.r
+                b_mat.niftools.emissive_color[1] = bsEffectShaderProperty.emissive_color.g
+                b_mat.niftools.emissive_color[2] = bsEffectShaderProperty.emissive_color.b
+                b_mat.niftools.emissive_color[3] = bsEffectShaderProperty.emissive_color.a
                 b_mat.emit = bsEffectShaderProperty.emissive_multiple
-            b_mat.niftools_alpha.textureflag = bsEffectShaderProperty.controller.flags
+            if bsEffectShaderProperty.controller:
+                b_mat.niftools_alpha.textureflag = bsEffectShaderProperty.controller.flags
                 
                 
         # check wireframe property

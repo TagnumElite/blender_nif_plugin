@@ -129,9 +129,9 @@ class TextureHelper:
             bsshader.lighting_effect_2 = b_mat.niftools.lightingeffect2
 
             # Emissive
-            bsshader.emissive_color.r = b_mat.niftools.emissive_color.r
-            bsshader.emissive_color.g = b_mat.niftools.emissive_color.g
-            bsshader.emissive_color.b = b_mat.niftools.emissive_color.b
+            bsshader.emissive_color.r = b_mat.niftools.emissive_color[0]
+            bsshader.emissive_color.g = b_mat.niftools.emissive_color[1]
+            bsshader.emissive_color.b = b_mat.niftools.emissive_color[2]
             bsshader.emissive_multiple = b_mat.emit
 
             # gloss
@@ -162,10 +162,10 @@ class TextureHelper:
             bsshader.texture_clamp_mode = 65283
 
             # Emissive
-            bsshader.emissive_color.r = b_mat.niftools.emissive_color.r
-            bsshader.emissive_color.g = b_mat.niftools.emissive_color.g
-            bsshader.emissive_color.b = b_mat.niftools.emissive_color.b
-            bsshader.emissive_color.a = b_mat.niftools.emissive_alpha
+            bsshader.emissive_color.r = b_mat.niftools.emissive_color[0]
+            bsshader.emissive_color.g = b_mat.niftools.emissive_color[1]
+            bsshader.emissive_color.b = b_mat.niftools.emissive_color[2]
+            bsshader.emissive_color.a = b_mat.niftools.emissive_color[3]
             bsshader.emissive_multiple = b_mat.emit
 
             # Shader Flags
@@ -197,8 +197,16 @@ class TextureHelper:
                 texset.textures[7] = self.texture_writer.export_texture_filename(self.gloss_mtex.texture)
 
         if b_obj.niftools_shader.bs_shadertype == 'BSEffectShaderProperty':
+<<<<<<< HEAD:io_scene_nif/modules/property/texture/texture_export.py
             bsshader.source_texture = self.texture_writer.export_texture_filename(self.base_mtex.texture)
             bsshader.greyscale_texture = self.texture_writer.export_texture_filename(self.glow_mtex.texture)
+=======
+            if self.basemtex:
+                bsshader.source_texture = self.texture_writer.export_texture_filename(self.basemtex.texture)
+            if self.glowmtex:
+                bsshader.greyscale_texture = self.texture_writer.export_texture_filename(self.glowmtex.texture)
+
+>>>>>>> Change Material Emissive to Vector4:io_scene_nif/texturesys/texture_export.py
 
         return bsshader
 
