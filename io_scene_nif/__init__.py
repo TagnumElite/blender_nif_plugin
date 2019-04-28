@@ -66,15 +66,16 @@ bl_info = {
     "name": "NetImmerse/Gamebryo nif format",
     "description": "Import and export files in the NetImmerse/Gamebryo nif format (.nif)",
     "author": "NifTools Team",
-    "blender": (2, 7, 7),
-    "version": (2, 6, 0),  # can't read from VERSION, blender wants it hardcoded
+    "version": (3, 0, 0),  # can't read from VERSION, blender wants it hardcoded
+    "blender": (2, 80, 7),
     "api": 39257,
     "location": "File > Import-Export",
-    "warning": "partially functional, port from 2.49 series still in progress",
+    "warning": "non functional, port to blender 2.8 still in progress",
     "wiki_url": "https://blender-nif-plugin.readthedocs.io/",
     "tracker_url": "https://github.com/niftools/blender_nif_plugin/issues",
     "support": "COMMUNITY",
-    "category": "Import-Export"}
+    "category": "Import-Export"
+}
 
 
 def _init_loggers():
@@ -103,12 +104,12 @@ def menu_func_import(self, context):
 def menu_func_export(self, context):
     self.layout.operator(operators.nif_export_op.NifExportOperator.bl_idname, text="NetImmerse/Gamebryo (.nif)")
 
-
 def register():
     _init_loggers()
     properties.register()
     ui.register()
-    bpy.utils.register_module(__name__)
+    operators.register()
+
     bpy.types.INFO_MT_file_import.append(menu_func_import)
     bpy.types.INFO_MT_file_export.append(menu_func_export)
 
@@ -117,7 +118,10 @@ def unregister():
     # no idea how to do this... oh well, let's not lose any sleep over it uninit_loggers()
     bpy.types.INFO_MT_file_import.remove(menu_func_import)
     bpy.types.INFO_MT_file_export.remove(menu_func_export)
-    bpy.utils.unregister_module(__name__)
+
+    properties.unregister()
+    ui.unregister()
+    operators.unregister()
 
 
 if __name__ == "__main__":

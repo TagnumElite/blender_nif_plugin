@@ -37,5 +37,19 @@
 #
 # ***** END LICENSE BLOCK *****
 
+import bpy
 from . import object, geometry, nif_import_op, nif_export_op, nif_common_op
 
+classes = (
+    object.BSXExtraDataAdd,
+    object.NiExtraDataRemove,
+    object.SampleExtraDataAdd,
+    object.UPBExtraDataAdd,
+    geometry.BsInvMarkerAdd,
+    geometry.BsInvMarkerRemove,
+    geometry.NfTlPartFlagRemove,
+    nif_import_op.NifImportOperator,
+    nif_export_op.NifExportOperator,
+)
+
+register, unregister = bpy.utils.register_classes_factory(classes)

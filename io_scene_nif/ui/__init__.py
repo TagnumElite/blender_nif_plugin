@@ -35,6 +35,22 @@
 #
 # ***** END LICENSE BLOCK *****
 
+import bpy
+from . import armature, collision, geometry, material, object, output, shader
 
-def register():
-    from . import armature, collision, geometry, material, object, shader, scene
+classes = (
+    armature.ArmaturePanel,
+    collision.CollisionBoundsPanel,
+    geometry.PartFlag,
+    material.NifMatColorPanel,
+    material.NifMatFlagPanel,
+    object.OBJECT_MT_ExtraDataType,
+    object.OBJECT_PT_ExtraData,
+    object.OBJECT_UL_ExtraData,
+    object.ObjectInvMarkerPanel,
+    object.ObjectPanel,
+    output.OutputPanel,
+    shader.ObjectShader,
+)
+
+register, unregister = bpy.utils.register_classes_factory(classes)

@@ -1,5 +1,3 @@
-""" Nif User Interface, custom properties store for constaints"""
-
 # ***** BEGIN LICENSE BLOCK *****
 #
 # Copyright © 2005-2015, NIF File Format Library and Tools contributors.
@@ -40,35 +38,82 @@
 import bpy
 from bpy.props import (
     PointerProperty,
-    FloatProperty,
+    IntProperty,
+    BoolProperty,
+    EnumProperty,
+    StringProperty,
 )
 from bpy.types import PropertyGroup
 
 
-class ConstraintProperty(PropertyGroup):
-    LHMaxFriction: FloatProperty(
-        name='LHMaxFriction',
-        description='Havok limited hinge max friction.',
+def update_version(self, context):
+    print("Test Update Version")
+
+
+def get_games(self, context):
+    print("Getting Games")
+    return (
+        ('SKYRIM', "Skyrim", "Skyrim game version"),
+        ('OBLIVION', "Oblivion", "Oblivion game version"),
     )
 
-    tau: FloatProperty(
-        name='tau',
-        description='Havok limited hinge max friction.',
+
+class Output(PropertyGroup):
+    manual: BoolProperty(
+        name="Manual",
+        description="Automatic version selection",
+        default=False,
+        update=update_version,
     )
 
-    damping: FloatProperty(
-        name='damping',
-        description='Havok limited hinge max friction.'
+    game: EnumProperty(
+        name="Game",
+        description="",
+        items=get_games,
+        update=update_version,
+    )
+
+    nif_version: IntProperty(
+        name="Nif Version",
+        description="Nif version",
+        default=0,
+    )
+
+    user_version: IntProperty(
+        name="User Version",
+        description="user version",
+        default=0,
+    )
+
+    user_version_2: IntProperty(
+        name="User Version 2",
+        description="second user version",
+        default=0,
+    )
+
+    author: StringProperty(
+        name="Author",
+        description="second user version",
+    )
+
+    export_script: StringProperty(
+        name="Export Script",
+        description="second user version",
+    )
+
+    process_script: StringProperty(
+        name="Process Script",
+        description="second user version",
     )
 
     @classmethod
     def register(cls):
-        bpy.types.Object.niftools_constraint = PointerProperty(
-            name='Niftools Constraint Property',
-            description='Additional constraint properties used by the Nif File Format',
+        bpy.types.Scene.niftools_output_props = PointerProperty(
+            name='Niftools Output Property',
+            description='Output properties used by the Nif File Format',
             type=cls
         )
 
     @classmethod
     def unregister(cls):
-        del bpy.types.Object.niftools_constraint
+        del bpy.types.Scene.niftools_output_props

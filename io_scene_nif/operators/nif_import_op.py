@@ -54,20 +54,20 @@ class NifImportOperator(bpy.types.Operator, ImportHelper, NifOperatorCommon):
     bl_label = "Import NIF"
 
     #: Number of nif units per blender unit.
-    scale_correction_import = bpy.props.FloatProperty(
+    scale_correction_import: bpy.props.FloatProperty(
         name="Scale Correction Import",
         description="Changes size of mesh to fit onto Blender's default grid.",
         default=1.0,
         min=0.01, max=100.0, precision=2)
 
     # Whether or not to import the header information into the scene
-    override_scene_info = bpy.props.BoolProperty(
+    override_scene_info: bpy.props.BoolProperty(
         name="Override Scene Information",
         description="This will overwrite any previously stored scene information with the Nif header info.",
         default=True)
 
     #: Keyframe file for animations.
-    keyframe_file = bpy.props.StringProperty(
+    keyframe_file: bpy.props.StringProperty(
         name="Keyframe File",
         description="Keyframe file for animations.",
         maxlen=1024,
@@ -75,7 +75,7 @@ class NifImportOperator(bpy.types.Operator, ImportHelper, NifOperatorCommon):
         subtype="FILE_PATH")
 
     #: FaceGen EGM file for morphs.
-    egm_file = bpy.props.StringProperty(
+    egm_file: bpy.props.StringProperty(
         name="FaceGen EGM File",
         description="FaceGen EGM file for morphs.",
         maxlen=1024,
@@ -83,13 +83,13 @@ class NifImportOperator(bpy.types.Operator, ImportHelper, NifOperatorCommon):
         subtype="FILE_PATH")
 
     #: Import animation.
-    animation = bpy.props.BoolProperty(
+    animation: bpy.props.BoolProperty(
         name="Animation",
         description="Import animation.",
         default=False)
 
     #: Merge skeleton roots.
-    merge_skeleton_roots = bpy.props.BoolProperty(
+    merge_skeleton_roots: bpy.props.BoolProperty(
         name="Merge Skeleton Roots",
         description="Merge skeleton roots.",
         default=False)
