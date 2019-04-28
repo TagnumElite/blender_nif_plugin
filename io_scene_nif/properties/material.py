@@ -97,17 +97,17 @@ class Material(PropertyGroup):
 class AlphaFlags(PropertyGroup):
     """Adds custom properties to material"""
 
-    alphaflag = IntProperty(
+    alphaflag: IntProperty(
         name='Alpha Flag',
         default=0
     )
 
-    textureflag = IntProperty(
+    textureflag: IntProperty(
         name='Texture Flag',
         default=0
     )
 
-    materialflag = IntProperty(
+    materialflag: IntProperty(
         name='Material Flag',
         default=0
     )

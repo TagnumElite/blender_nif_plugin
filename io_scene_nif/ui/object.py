@@ -91,7 +91,7 @@ class OBJECT_PT_ExtraData(Panel):
         
         #Add/Remove operators
         col = row.column(align=True)
-        col.menu("OBJECT_MT_ExtraDataType", icon='ZOOMIN', text="")
+        col.menu("OBJECT_MT_ExtraDataType", icon='ZOOM_IN', text="")
 
         if has_extra_data:
             col.operator("object.niftools_extradata_remove", icon='ZOOMOUT', text="")
@@ -139,9 +139,9 @@ class ObjectInvMarkerPanel(Panel):
                 
         row = layout.row()
         if not context.object.niftools_bs_invmarker:
-            row.operator("object.niftools_bs_invmarker_add", icon='ZOOMIN', text="")
+            row.operator("object.niftools_bs_invmarker_add", icon='ZOOM_IN', text="")
         if context.object.niftools_bs_invmarker:
-            row.operator("object.niftools_bs_invmarker_remove", icon='ZOOMOUT', text="")
+            row.operator("object.niftools_bs_invmarker_remove", icon='ZOOM_OUT', text="")
 
         col = row.column(align=True)
         for i, x in enumerate(nif_bsinv_props):

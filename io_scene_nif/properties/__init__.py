@@ -49,7 +49,6 @@ classes = (
     material.AlphaFlags,
     material.Material,
     object.BsInventoryMarker,
-    object.BSXFlags,
     object.ExtraData,
     object.ExtraDataStore,
     object.ObjectProperty,

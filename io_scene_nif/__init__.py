@@ -104,20 +104,22 @@ def menu_func_import(self, context):
 def menu_func_export(self, context):
     self.layout.operator(operators.nif_export_op.NifExportOperator.bl_idname, text="NetImmerse/Gamebryo (.nif)")
 
+
 def register():
     _init_loggers()
     properties.register()
     ui.register()
     operators.register()
 
-    bpy.types.INFO_MT_file_import.append(menu_func_import)
-    bpy.types.INFO_MT_file_export.append(menu_func_export)
+    bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
+    bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
 
 
 def unregister():
     # no idea how to do this... oh well, let's not lose any sleep over it uninit_loggers()
-    bpy.types.INFO_MT_file_import.remove(menu_func_import)
-    bpy.types.INFO_MT_file_export.remove(menu_func_export)
+    # _uninit_loggers()
+    bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
+    bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
 
     properties.unregister()
     ui.unregister()

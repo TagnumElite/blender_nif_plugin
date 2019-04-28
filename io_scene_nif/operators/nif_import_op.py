@@ -95,32 +95,32 @@ class NifImportOperator(bpy.types.Operator, ImportHelper, NifOperatorCommon):
         default=False)
 
     #: Send all geometries to their bind position.
-    send_geoms_to_bind_pos = bpy.props.BoolProperty(
+    send_geoms_to_bind_pos: bpy.props.BoolProperty(
         name="Send Geometries To Bind Position",
         description="Send all geometries to their bind position.",
         default=False)
 
     #: Send all detached geometries to the position of their parent node.
-    send_detached_geoms_to_node_pos = bpy.props.BoolProperty(
+    send_detached_geoms_to_node_pos: bpy.props.BoolProperty(
         name="Send Detached Geometries To Node Position",
         description=
         "Send all detached geometries to the position of their parent node.",
         default=False)
 
     #: Send all bones to their bind position.
-    send_bones_to_bind_position = bpy.props.BoolProperty(
+    send_bones_to_bind_position: bpy.props.BoolProperty(
         name="Send Bones To Bind Position",
         description="Send all bones to their bind position.",
         default=False)
 
     #: Apply skin deformation to all skinned geometries.
-    apply_skin_deformation =  bpy.props.BoolProperty(
+    apply_skin_deformation:  bpy.props.BoolProperty(
         name="Apply Skin Deformation",
         description="Apply skin deformation to all skinned geometries.",
         default=False)
 
     #: Re-align Tail bones on import
-    import_realign_bones = bpy.props.EnumProperty(
+    import_realign_bones: bpy.props.EnumProperty(
         items=(
             ("1", "Re-Align Tail Bone", "Re-Aligns bone tail on import."),
             ("2", "Re-Align Tail Bone + Roll", "Re-Align tail bone + roll"),
@@ -131,7 +131,7 @@ class NifImportOperator(bpy.types.Operator, ImportHelper, NifOperatorCommon):
 
 
     #: What should be imported.
-    skeleton = bpy.props.EnumProperty(
+    skeleton: bpy.props.EnumProperty(
         items=(
             ("EVERYTHING", "Everything",
              "Import everything."),
@@ -145,13 +145,13 @@ class NifImportOperator(bpy.types.Operator, ImportHelper, NifOperatorCommon):
         default="EVERYTHING")
 
     #: Import multi-material shapes as a single mesh.
-    combine_shapes = bpy.props.BoolProperty(
+    combine_shapes: bpy.props.BoolProperty(
         name="Combine Shapes",
         description="Import multi-material shapes as a single mesh.",
         default=False)
     
     #: Merge vertices that have identical location and normal values.
-    combine_vertices = bpy.props.BoolProperty(
+    combine_vertices: bpy.props.BoolProperty(
         name="Combine Vertices",
         description="Merge vertices that have identical location and normal values.",
         default=False)

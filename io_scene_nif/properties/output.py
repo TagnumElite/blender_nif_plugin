@@ -62,7 +62,7 @@ class Output(PropertyGroup):
     manual: BoolProperty(
         name="Manual",
         description="Automatic version selection",
-        default=False,
+        default=True,
         update=update_version,
     )
 
