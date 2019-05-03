@@ -49,6 +49,7 @@ from integration.geometry.trishape import n_gen_geometry
 from integration.property.material import b_gen_material
 from integration.property.material import n_gen_material
 
+
 class TestGlossProperty(SingleNif):
     """Export and import material meshes with gloss."""
 
@@ -57,9 +58,9 @@ class TestGlossProperty(SingleNif):
 
     def b_create_data(self):
         b_obj = b_gen_geometry.b_create_base_geometry(self.b_name)
-        b_mat = b_gen_material.b_create_material_block(b_obj)      
+        b_mat = b_gen_material.b_create_material_block(b_obj)
         b_gen_material.b_create_set_default_material_property(b_mat)
-        b_gen_material.b_create_gloss_property(b_mat) # set our gloss value
+        b_gen_material.b_create_gloss_property(b_mat)  # set our gloss value
 
     def b_check_data(self):
         b_obj = bpy.data.objects[self.b_name]
@@ -67,14 +68,13 @@ class TestGlossProperty(SingleNif):
         b_mat = b_gen_material.b_check_material_block(b_obj)
         b_gen_material.b_check_gloss_property(b_mat)
 
-
     def n_create_data(self):
         gen_data.n_create_header_oblivion(self.n_data)
         n_gen_geometry.n_create_blocks(self.n_data)
-        
+
         n_trishape = self.n_data.roots[0].children[0]
         n_gen_material.n_attach_material_prop(n_trishape)
-        
+
         n_gen_material.n_alter_glossiness(n_trishape.properties[0])
         return self.n_data
 
@@ -84,10 +84,8 @@ class TestGlossProperty(SingleNif):
 
         # check we have property and correct type
         nose.tools.assert_equal(n_nitrishape.num_properties, 1)
-        n_mat_prop = n_nitrishape.properties[0]        
+        n_mat_prop = n_nitrishape.properties[0]
         n_gen_material.n_check_material_block(n_mat_prop)
-        
+
         # check its values
         n_gen_material.n_check_material_gloss_property(n_mat_prop)
-
-    

@@ -41,4 +41,3 @@ import nose
 
 from pyffi.utils.withref import ref
 from pyffi.formats.nif import NifFormat
-

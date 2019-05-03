@@ -51,12 +51,13 @@ from integration.property.material import n_gen_material
 from integration.property.wireframe import b_gen_wire
 from integration.property.wireframe import n_gen_wire
 
+
 class TestWireframeProperty(SingleNif):
     """Test import/export of meshes with material based specular property."""
-    
+
     n_name = "property/wireframe/test_wire"
     b_name = "Cube"
-    
+
     def b_create_data(self):
         b_obj = b_gen_geometry.b_create_base_geometry(self.b_name)
         b_mat = b_gen_material.b_create_material_block(b_obj)
@@ -74,19 +75,16 @@ class TestWireframeProperty(SingleNif):
         n_gen_geometry.n_create_blocks(self.n_data)
         n_trishape = self.n_data.roots[0].children[0]
         n_gen_material.n_attach_material_prop(n_trishape)
-        n_gen_wire.n_attach_wire_prop(n_trishape) # add niwireframeprop
+        n_gen_wire.n_attach_wire_prop(n_trishape)  # add niwireframeprop
         return self.n_data
-    
+
     def n_check_data(self):
         n_nitrishape = self.n_data.roots[0].children[0]
         n_gen_geometry.n_check_trishape(n_nitrishape)
-        
+
         nose.tools.assert_equal(n_nitrishape.num_properties, 2)
-        n_mat_prop = n_nitrishape.properties[1]    
+        n_mat_prop = n_nitrishape.properties[1]
         n_gen_material.n_check_material_block(n_mat_prop)
-        
+
         n_wire_prop = n_nitrishape.properties[0]
         n_gen_wire.n_check_wire_property(n_wire_prop)
-
-
-

@@ -250,13 +250,7 @@ class Armature:
 			b_child_bone = self.import_bone(
 				niBone, b_armature, b_armatureData, niArmature)
 			b_child_bone.parent = b_bone
-<<<<<<< HEAD
-		
-=======
-			bpy.ops.object.mode_set(mode='OBJECT',toggle=False)
-			b_bone = b_armatureData.bones[bone_name]
 
->>>>>>> Add Settings that is global to install
 		return b_bone
 
 	def find_correction_matrix(self, niBlock, niArmature):

@@ -74,7 +74,7 @@ class AnimationHelper:
             # get the name
             nodename = controlledblock.get_node_name()
             # match from nif tree?
-            node = root.find(block_name = nodename)
+            node = root.find(block_name=nodename)
             if not node:
                 NifLog.info("Animation for {0} but no such node found in nif tree".format(nodename))
                 continue
@@ -85,7 +85,9 @@ class AnimationHelper:
                 continue
             controller = nif_utils.find_controller(node, getattr(NifFormat, controllertype))
             if not controller:
-                NifLog.info("No {1} Controller found in corresponding animation node {0}, creating one".format(controllertype, nodename))
+                NifLog.info(
+                    "No {1} Controller found in corresponding animation node {0}, creating one".format(controllertype,
+                                                                                                       nodename))
                 controller = getattr(NifFormat, controllertype)()
                 # TODO:set all the fields of this controller
                 node.add_controller(controller)
@@ -99,7 +101,7 @@ class AnimationHelper:
             # (i.e. length 1 keyframes are simply interpolators)
             if isinstance(controller.interpolator,
                           NifFormat.NiTransformInterpolator) \
-                and controller.interpolator.data is None:
+                    and controller.interpolator.data is None:
                 # create data block
                 kfi = controller.interpolator
                 kfi.data = NifFormat.NiTransformData()
@@ -143,7 +145,7 @@ class AnimationHelper:
         buffer, so that they can be re-exported. Since the text buffer is
         cleared on each import only the last import will be exported
         correctly."""
-        
+
         if isinstance(niBlock, NifFormat.NiControllerSequence):
             txk = niBlock.text_keys
         else:
@@ -160,8 +162,8 @@ class AnimationHelper:
             frame = 1
             for key in txk.text_keys:
                 newkey = str(key.value).replace('\r\n', '/').rstrip('/')
-                frame = 1 + int(key.time * self.fps + 0.5) # time 0.0 is frame 1
-                animtxt.write('%i/%s\n'%(frame, newkey))
+                frame = 1 + int(key.time * self.fps + 0.5)  # time 0.0 is frame 1
+                animtxt.write('%i/%s\n' % (frame, newkey))
 
             # set start and end frames
             bpy.context.scene.frame_start = 1
@@ -200,7 +202,7 @@ class AnimationHelper:
                           for time in key_times)
         # for test_fps in range(1,120): #disabled, used for testing
         for test_fps in [20, 25, 35]:
-            diff = sum(abs(int(time * test_fps + 0.5)-(time * test_fps))
+            diff = sum(abs(int(time * test_fps + 0.5) - (time * test_fps))
                        for time in key_times)
             if diff < lowest_diff:
                 lowest_diff = diff
@@ -243,7 +245,7 @@ class AnimationHelper:
 
         if kfc.interpolator:
             if isinstance(kfc.interpolator, NifFormat.NiBSplineInterpolator):
-                kfd = None # not supported yet so avoids fatal error - should be kfc.interpolator.spline_data when spline data is figured out.
+                kfd = None  # not supported yet so avoids fatal error - should be kfc.interpolator.spline_data when spline data is figured out.
             else:
                 kfd = kfc.interpolator.data
         else:
@@ -284,7 +286,7 @@ class AnimationHelper:
             zkeys = kfd.xyz_rotations[2].keys
             NifLog.debug('Rotation keys...(euler)')
             for (xkey, ykey, zkey) in zip(xkeys, ykeys, zkeys):
-                frame = 1+int(xkey.time * self.fps + 0.5) # time 0.0 is frame 1
+                frame = 1 + int(xkey.time * self.fps + 0.5)  # time 0.0 is frame 1
                 # XXX we assume xkey.time == ykey.time == zkey.time
                 bpy.context.scene.frame_set(frame)
                 # both in radians, no conversion needed
@@ -316,19 +318,19 @@ class AnimationHelper:
 class ObjectAnimation:
     def __init__(self, parent):
         self.nif_import = parent
-    
+
     def get_object_ipo(self, b_object):
         """Return existing object ipo data, or if none exists, create one
         and return that.
         """
         if not b_object.ipo:
             b_object.ipo = Blender.Ipo.New("Object", "Ipo")
-        return b_object.ipo    
-    
+        return b_object.ipo
+
     def import_object_vis_controller(self, b_object, n_node):
         """Import vis controller for blender object."""
         n_vis_ctrl = nif_utils.find_controller(n_node, NifFormat.NiVisController)
-        if not(n_vis_ctrl and n_vis_ctrl.data):
+        if not (n_vis_ctrl and n_vis_ctrl.data):
             return
         NifLog.info("Importing vis controller")
         b_channel = "Layer"
@@ -338,13 +340,13 @@ class ObjectAnimation:
         b_curve.extend = self.nif_import.get_extend_from_flags(n_vis_ctrl.flags)
         for n_key in n_vis_ctrl.data.keys:
             b_curve[1 + n_key.time * self.fps] = (
-                2 ** (n_key.value + max([1] + bpy.context.scene.getLayers()) - 1))
+                    2 ** (n_key.value + max([1] + bpy.context.scene.getLayers()) - 1))
 
 
 class MaterialAnimation:
     def __init__(self, parent):
         self.nif_import = parent
-    
+
     def import_material_controllers(self, b_material, n_geom):
         """Import material animation data for given geometry."""
         if not NifOp.props.animation:
@@ -367,15 +369,15 @@ class MaterialAnimation:
             n_geom=n_geom,
             n_target_color=NifFormat.TargetColor.TC_SPECULAR)
         self.import_material_uv_controller(b_material, n_geom)
-        
+
     def import_material_alpha_controller(self, b_material, n_geom):
         # find alpha controller
         n_matprop = nif_utils.find_property(n_geom, NifFormat.NiMaterialProperty)
         if not n_matprop:
             return
         n_alphactrl = nif_utils.find_controller(n_matprop,
-                                           NifFormat.NiAlphaController)
-        if not(n_alphactrl and n_alphactrl.data):
+                                                NifFormat.NiAlphaController)
+        if not (n_alphactrl and n_alphactrl.data):
             return
         NifLog.info("Importing alpha controller")
         b_channel = "Alpha"
@@ -388,7 +390,7 @@ class MaterialAnimation:
             b_curve[1 + n_key.time * self.fps] = n_key.value
 
     def import_material_color_controller(
-        self, b_material, b_channels, n_geom, n_target_color):
+            self, b_material, b_channels, n_geom, n_target_color):
         # find material color controller with matching target color
         n_matprop = nif_utils.find_property(n_geom, NifFormat.NiMaterialProperty)
         if not n_matprop:
@@ -400,7 +402,9 @@ class MaterialAnimation:
                     break
         else:
             return
-        NifLog.info("Importing material color controller for target color {0} into blender channels {0}".format(n_target_color, b_channels))
+        NifLog.info(
+            "Importing material color controller for target color {0} into blender channels {0}".format(n_target_color,
+                                                                                                        b_channels))
         # import data as curves
         b_ipo = self.get_material_ipo(b_material)
         for i, b_channel in enumerate(b_channels):
@@ -415,8 +419,8 @@ class MaterialAnimation:
         """Import UV controller data."""
         # search for the block
         n_ctrl = nif_utils.find_controller(n_geom,
-                                      NifFormat.NiUVController)
-        if not(n_ctrl and n_ctrl.data):
+                                           NifFormat.NiUVController)
+        if not (n_ctrl and n_ctrl.data):
             return
         NifLog.info("Importing UV controller")
         b_channels = ("OfsX", "OfsY", "SizeX", "SizeY")
@@ -434,7 +438,7 @@ class MaterialAnimation:
                         # offsets are negated
                         b_curve[1 + n_key.time * self.fps] = -n_key.value
                     else:
-                        b_curve[1 + n_key.time * self.fps] = n_key.value    
+                        b_curve[1 + n_key.time * self.fps] = n_key.value
 
     def get_material_ipo(self, b_material):
         """Return existing material ipo data, or if none exists, create one
@@ -517,7 +521,7 @@ class ArmatureAnimation:
             # note: the NiKeyframeController check also includes
             #       NiTransformController (see hierarchy!)
             kfc = nif_utils.find_controller(niBone,
-                                       NifFormat.NiKeyframeController)
+                                            NifFormat.NiKeyframeController)
             # old style: data directly on controller
             kfd = kfc.data if kfc else None
             # new style: data via interpolator
@@ -563,6 +567,7 @@ class ArmatureAnimation:
 
                         b_posebone.rotation_quaternion = rot
                         b_posebone.keyframe_insert(data_path="rotation_quaternion", frame=frame, group=bone_name)
+
                         # fill optimizer dictionary
                         if translations:
                             rot_keys_dict[frame] = mathutils.Quaternion(rot)
@@ -575,6 +580,7 @@ class ArmatureAnimation:
                         frame = 1 + int(time * self.nif_import.fps + 0.5)
                         trans = mathutils.Vector(*translation)
                         locVal = (1.0/niBone_bind_scale) * niBone_bind_rot_inv * (trans - niBone_bind_trans)# Tchannel = (Ttotal - Tbind) * inverse(Rbind) / Sbind
+
                         # the rotation matrix is needed at this frame (that's
                         # why the other keys are inserted first)
                         if rot_keys_dict:
@@ -618,6 +624,7 @@ class ArmatureAnimation:
                         loc = (extra_matrix_rot_inv * (1.0/extra_matrix_scale)) * (rot * size * extra_matrix_trans + locVal - extra_matrix_trans) # C' = X * C * inverse(X)
                         b_posebone.location = loc
                         b_posebone.keyframe_insert(data_path="location", frame=frame, group=bone_name)
+
 
                 # delete temporary dictionaries
                 if translations:
@@ -681,9 +688,9 @@ class ArmatureAnimation:
                             b_posebone.keyframe_insert(data_path="rotation_euler", frame=frame, group=bone_name)
                             # fill optimizer dictionary
                             if translations:
-                                rot_keys_dict[frame] = mathutils.Quaternion(rot) 
+                                rot_keys_dict[frame] = mathutils.Quaternion(rot)
 
-                # Quaternion Rotations
+                            # Quaternion Rotations
                 else:
                     # TODO:take rotation type into account for interpolation
                     if kfd.quaternion_keys:

@@ -41,22 +41,23 @@ import bpy
 import nose.tools
 
 from integration import SingleNif
-from integration.data import n_gen_header , b_gen_header
+from integration.data import n_gen_header, b_gen_header
 from integration.object import b_gen_object, n_gen_object
+
 
 class TestNiNode(SingleNif):
     """Test base geometry, single blender object."""
 
-    n_name = 'object/test_object' # (documented in base class)
+    n_name = 'object/test_object'  # (documented in base class)
     n_game = 'OBLIVION'
     b_name = 'NifObject'
 
     def b_create_header(self):
         b_gen_header.b_create_oblivion_info()
-    
+
     def b_create_data(self):
         b_gen_object.b_create_transformed_object(self.b_name)
-        
+
     def b_check_data(self):
         b_gen_header.b_check_oblivion_info()
         b_obj = bpy.data.objects[self.b_name]
@@ -73,4 +74,3 @@ class TestNiNode(SingleNif):
         n_ninode = self.n_data.roots[0].children[0]
         n_gen_object.n_check_ninode(n_ninode)
         n_gen_object.n_check_transform(n_ninode)
-

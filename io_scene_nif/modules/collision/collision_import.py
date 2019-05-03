@@ -103,8 +103,8 @@ class bhkshape_import():
             return self.import_bhk_shape(bhkshape.shape)
 
         elif isinstance(bhkshape, NifFormat.bhkListShape):
-            return reduce(operator.add, ( self.import_bhk_shape(subshape)
-                                          for subshape in bhkshape.sub_shapes ))
+            return reduce(operator.add, (self.import_bhk_shape(subshape)
+                                         for subshape in bhkshape.sub_shapes))
 
         NifLog.warn("Unsupported bhk shape {0}".format(bhkshape.__class__.__name__))
         return []
@@ -143,9 +143,9 @@ class bhkshape_import():
 
             # set translation
             transform.translation = mathutils.Vector(
-                    (bhkshape.translation.x * self.HAVOK_SCALE,
-                     bhkshape.translation.y * self.HAVOK_SCALE,
-                     bhkshape.translation.z * self.HAVOK_SCALE))
+                (bhkshape.translation.x * self.HAVOK_SCALE,
+                 bhkshape.translation.y * self.HAVOK_SCALE,
+                 bhkshape.translation.z * self.HAVOK_SCALE))
 
             # apply transform
             for b_col_obj in collision_objs:
@@ -157,47 +157,46 @@ class bhkshape_import():
             vlr.objects.active = b_col_obj
             bpy.ops.rigidbody.object_add(type='ACTIVE')
             b_col_obj.rigid_body.enabled = True
-            
+
             if bhkshape.mass > 0.0001:
                 # for physics emulation
                 # (mass 0 results in issues with simulation)
                 b_col_obj.rigid_body.mass = bhkshape.mass / len(collision_objs)
-
 
             b_col_obj.nifcollision.deactivator_type = NifFormat.DeactivatorType._enumkeys[bhkshape.deactivator_type]
             b_col_obj.nifcollision.solver_deactivation = NifFormat.SolverDeactivation._enumkeys[bhkshape.solver_deactivation]
             b_col_obj.nifcollision.oblivion_layer = NifFormat.OblivionLayer._enumkeys[bhkshape.layer]
             b_col_obj.nifcollision.quality_type = NifFormat.MotionQuality._enumkeys[bhkshape.quality_type]
             b_col_obj.nifcollision.motion_system = NifFormat.MotionSystem._enumkeys[bhkshape.motion_system]
-            
+
             b_col_obj.niftools.bsxflags = self.nif_import.bsxflags
             b_col_obj.niftools.objectflags = self.nif_import.objectflags
             b_col_obj.niftools.upb = self.nif_import.upbflags
-            
+
             b_col_obj.rigid_body.mass = bhkshape.mass / len(collision_objs)
-            
+
             b_col_obj.rigid_body.use_deactivation = True
             b_col_obj.rigid_body.friction = bhkshape.friction
             b_col_obj.rigid_body.restitution = bhkshape.restitution
-            #b_col_obj.rigid_body. = bhkshape.
+            # b_col_obj.rigid_body. = bhkshape.
             b_col_obj.rigid_body.linear_damping = bhkshape.linear_damping
             b_col_obj.rigid_body.angular_damping = bhkshape.angular_damping
             b_col_obj.rigid_body.deactivate_linear_velocity = mathutils.Vector([
-                                            bhkshape.linear_velocity.w,
-                                            bhkshape.linear_velocity.x, 
-                                            bhkshape.linear_velocity.y, 
-                                            bhkshape.linear_velocity.z]).magnitude
+                bhkshape.linear_velocity.w,
+                bhkshape.linear_velocity.x,
+                bhkshape.linear_velocity.y,
+                bhkshape.linear_velocity.z]).magnitude
             b_col_obj.rigid_body.deactivate_angular_velocity = mathutils.Vector([
-                                            bhkshape.angular_velocity.w,
-                                            bhkshape.angular_velocity.x, 
-                                            bhkshape.angular_velocity.y, 
-                                            bhkshape.angular_velocity.z]).magnitude
-            
+                bhkshape.angular_velocity.w,
+                bhkshape.angular_velocity.x,
+                bhkshape.angular_velocity.y,
+                bhkshape.angular_velocity.z]).magnitude
+
             b_col_obj.collision.permeability = bhkshape.penetration_depth
 
             b_col_obj.nifcollision.max_linear_velocity = bhkshape.max_linear_velocity
             b_col_obj.nifcollision.max_angular_velocity = bhkshape.max_angular_velocity
-                        
+
             b_col_obj.nifcollision.col_filter = bhkshape.col_filter
 
         # import constraints
@@ -226,11 +225,11 @@ class bhkshape_import():
             for y in [miny, maxy]:
                 for z in [minz, maxz]:
                     b_mesh.vertices.add(1)
-                    b_mesh.vertices[-1].co = (x,y,z)
-                    vert_list[vert_index] = [x,y,z]
+                    b_mesh.vertices[-1].co = (x, y, z)
+                    vert_list[vert_index] = [x, y, z]
                     vert_index += 1
 
-        poly_gens = [[0,1,3,2],[6,7,5,4],[0,2,6,4],[3,1,5,7],[4,0,1,5],[7,6,2,3]]
+        poly_gens = [[0, 1, 3, 2], [6, 7, 5, 4], [0, 2, 6, 4], [3, 1, 5, 7], [4, 0, 1, 5], [7, 6, 2, 3]]
         b_mesh = poly_gen.col_poly_gen(b_mesh, poly_gens)
 
         # link box to scene and set transform
@@ -246,19 +245,19 @@ class bhkshape_import():
         b_obj.game.collision_bounds_type = 'BOX'
         b_obj.game.radius = bhkshape.radius
         b_obj.nifcollision.havok_material = NifFormat.HavokMaterial._enumkeys[bhkshape.material]
-        
+
         # Recalculate mesh to render correctly
         b_mesh.validate()
         b_mesh.update()
         b_obj.select_set(True)
 
-        return [ b_obj ]
+        return [b_obj]
 
     def import_bhksphere_shape(self, bhkshape):
         """Import a BhkSphere block as a simple uv-sphere collision object"""
         # create sphere
         b_radius = bhkshape.radius * self.HAVOK_SCALE
-                
+
         minx = -b_radius
         maxx = +b_radius
         miny = -b_radius
@@ -274,11 +273,11 @@ class bhkshape_import():
             for y in [miny, maxy]:
                 for z in [minz, maxz]:
                     b_mesh.vertices.add(1)
-                    b_mesh.vertices[-1].co = (x,y,z)
-                    vert_list[vert_index] = [x,y,z]
+                    b_mesh.vertices[-1].co = (x, y, z)
+                    vert_list[vert_index] = [x, y, z]
                     vert_index += 1
 
-        poly_gens = [[0,1,3,2],[6,7,5,4],[0,2,6,4],[3,1,5,7],[4,0,1,5],[7,6,2,3]]
+        poly_gens = [[0, 1, 3, 2], [6, 7, 5, 4], [0, 2, 6, 4], [3, 1, 5, 7], [4, 0, 1, 5], [7, 6, 2, 3]]
         b_mesh = poly_gen.col_poly_gen(b_mesh, poly_gens)
 
         b_obj = bpy.data.objects.new('sphere', b_mesh)
@@ -300,7 +299,7 @@ class bhkshape_import():
         b_mesh.update()
         b_obj.select_set(True)
 
-        return [ b_obj ]
+        return [b_obj]
 
     def import_bhkcapsule_shape(self, bhkshape):
         """Import a BhkCapsule block as a simple cylinder collision object"""
@@ -309,8 +308,8 @@ class bhkshape_import():
         length = (bhkshape.first_point - bhkshape.second_point).norm()
         minx = miny = -b_radius * self.HAVOK_SCALE
         maxx = maxy = +b_radius * self.HAVOK_SCALE
-        minz = -(length + 2*b_radius) * (self.HAVOK_SCALE / 2)
-        maxz = +(length + 2*b_radius) * (self.HAVOK_SCALE / 2)
+        minz = -(length + 2 * b_radius) * (self.HAVOK_SCALE / 2)
+        maxz = +(length + 2 * b_radius) * (self.HAVOK_SCALE / 2)
 
         b_mesh = bpy.data.meshes.new('capsule')
         vert_list = {}
@@ -320,11 +319,11 @@ class bhkshape_import():
             for y in [miny, maxy]:
                 for z in [minz, maxz]:
                     b_mesh.vertices.add(1)
-                    b_mesh.vertices[-1].co = (x,y,z)
-                    vert_list[vert_index] = [x,y,z]
+                    b_mesh.vertices[-1].co = (x, y, z)
+                    vert_list[vert_index] = [x, y, z]
                     vert_index += 1
 
-        poly_gens = [[0,1,3,2],[6,7,5,4],[0,2,6,4],[3,1,5,7],[4,5,1,0],[7,6,2,3]]
+        poly_gens = [[0, 1, 3, 2], [6, 7, 5, 4], [0, 2, 6, 4], [3, 1, 5, 7], [4, 5, 1, 0], [7, 6, 2, 3]]
         b_mesh = poly_gen.col_poly_gen(b_mesh, poly_gens)
 
         # Recalculate mesh to render correctly
@@ -342,7 +341,7 @@ class bhkshape_import():
         b_obj.display_bounds_type = 'CAPSULE'
         b_obj.game.use_collision_bounds = True
         b_obj.game.collision_bounds_type = 'CAPSULE'
-        b_obj.game.radius = bhkshape.radius*self.HAVOK_SCALE
+        b_obj.game.radius = bhkshape.radius * self.HAVOK_SCALE
         b_obj.nifcollision.havok_material = NifFormat.HavokMaterial._enumkeys[bhkshape.material]
 
         # find transform
@@ -352,14 +351,14 @@ class bhkshape_import():
         else:
             NifLog.warn("BhkCapsuleShape with identical points: using arbitrary axis")
             normal = mathutils.Vector((0, 0, 1))
-            
+
         minindex = min((abs(x), i) for i, x in enumerate(normal))[1]
-        orthvec = mathutils.Vector([(1 if i == minindex else 0) for i in (0,1,2)])
-        
+        orthvec = mathutils.Vector([(1 if i == minindex else 0) for i in (0, 1, 2)])
+
         vec1 = mathutils.Vector.cross(normal, orthvec)
         vec1.normalize()
         vec2 = mathutils.Vector.cross(normal, vec1)
-        
+
         # the rotation matrix should be such that (0,0,1) maps to normal
         transform = mathutils.Matrix([vec1, vec2, normal]).transposed()
         transform.resize_4x4()
@@ -375,17 +374,17 @@ class bhkshape_import():
         b_obj.select_set(True)
 
         # return object
-        return [ b_obj ]
+        return [b_obj]
 
     def import_bhkconvex_vertices_shape(self, bhkshape):
         """Import a BhkConvexVertex block as a convex hull collision object"""
 
         # find vertices (and fix scale)
         n_vertices, n_triangles = qhull3d(
-                                  [ (self.HAVOK_SCALE * n_vert.x,
-                                     self.HAVOK_SCALE * n_vert.y,
-                                     self.HAVOK_SCALE * n_vert.z)
-                                     for n_vert in bhkshape.vertices ])
+            [(self.HAVOK_SCALE * n_vert.x,
+              self.HAVOK_SCALE * n_vert.y,
+              self.HAVOK_SCALE * n_vert.z)
+             for n_vert in bhkshape.vertices])
 
         # create convex mesh
         b_mesh = bpy.data.meshes.new('convexpoly')
@@ -419,7 +418,7 @@ class bhkshape_import():
         b_mesh.update()
         b_obj.select_set(True)
 
-        return [ b_obj ]
+        return [b_obj]
 
     def import_nitristrips(self, bhkshape):
         """Import a NiTriStrips block as a Triangle-Mesh collision object"""
@@ -430,7 +429,7 @@ class bhkshape_import():
             b_mesh.vertices.add(1)
             b_mesh.vertices[-1].co = (n_vert.x, n_vert.y, n_vert.z)
 
-        poly_gens = [[x,y,z,] for x,y,z in list(bhkshape.get_triangles())]
+        poly_gens = [[x, y, z, ] for x, y, z in list(bhkshape.get_triangles())]
         b_mesh = poly_gen.col_poly_gen(b_mesh, poly_gens)
 
         # link mesh to scene and set transform
@@ -453,7 +452,7 @@ class bhkshape_import():
         b_mesh.update()
         b_obj.select_set(True)
 
-        return [ b_obj ]
+        return [b_obj]
 
     def import_bhkpackednitristrips_shape(self, bhkshape):
         """Import a BhkPackedNiTriStrips block as a Triangle-Mesh collision object"""
@@ -479,29 +478,29 @@ class bhkshape_import():
 
             for hktriangle in bhkshape.data.triangles:
                 if ((vertex_offset <= hktriangle.triangle.v_1)
-                    and (hktriangle.triangle.v_1
-                         < vertex_offset + subshape.num_vertices)):
+                        and (hktriangle.triangle.v_1
+                             < vertex_offset + subshape.num_vertices)):
                     b_mesh.polygons.add(1)
                     b_mesh.polygons[-1].vertices = [
-                                             hktriangle.triangle.v_1 - vertex_offset,
-                                             hktriangle.triangle.v_2 - vertex_offset,
-                                             hktriangle.triangle.v_3 - vertex_offset]
+                        hktriangle.triangle.v_1 - vertex_offset,
+                        hktriangle.triangle.v_2 - vertex_offset,
+                        hktriangle.triangle.v_3 - vertex_offset]
                 else:
                     continue
                 # check face normal
                 align_plus = sum(abs(x)
-                                 for x in ( b_mesh.polygons[-1].normal[0] + hktriangle.normal.x,
-                                            b_mesh.polygons[-1].normal[1] + hktriangle.normal.y,
-                                            b_mesh.polygons[-1].normal[2] + hktriangle.normal.z ))
+                                 for x in (b_mesh.polygons[-1].normal[0] + hktriangle.normal.x,
+                                           b_mesh.polygons[-1].normal[1] + hktriangle.normal.y,
+                                           b_mesh.polygons[-1].normal[2] + hktriangle.normal.z))
                 align_minus = sum(abs(x)
-                                  for x in ( b_mesh.polygons[-1].normal[0] - hktriangle.normal.x,
-                                             b_mesh.polygons[-1].normal[1] - hktriangle.normal.y,
-                                             b_mesh.polygons[-1].normal[2] - hktriangle.normal.z ))
+                                  for x in (b_mesh.polygons[-1].normal[0] - hktriangle.normal.x,
+                                            b_mesh.polygons[-1].normal[1] - hktriangle.normal.y,
+                                            b_mesh.polygons[-1].normal[2] - hktriangle.normal.z))
                 # fix face orientation
                 if align_plus < align_minus:
-                    b_mesh.polygons[-1].vertices = ( b_mesh.polygons[-1].vertices[1],
-                                                  b_mesh.polygons[-1].vertices[0],
-                                                  b_mesh.polygons[-1].vertices[2] )
+                    b_mesh.polygons[-1].vertices = (b_mesh.polygons[-1].vertices[1],
+                                                    b_mesh.polygons[-1].vertices[0],
+                                                    b_mesh.polygons[-1].vertices[2])
 
             # link mesh to scene and set transform
             b_obj = bpy.data.objects.new('poly%i' % subshape_num, b_mesh)
@@ -512,10 +511,10 @@ class bhkshape_import():
             # set bounds type
             b_obj.display_type = 'WIRE'
             b_obj.display_bounds_type = 'BOX'
-            #b_obj.game.use_collision_bounds = True
-            #b_obj.game.collision_bounds_type = 'TRIANGLE_MESH'
+            # b_obj.game.use_collision_bounds = True
+            # b_obj.game.collision_bounds_type = 'TRIANGLE_MESH'
             # radius: quick estimate
-            #b_obj.game.radius = min(vert.co.length for vert in b_mesh.vertices)
+            # b_obj.game.radius = min(vert.co.length for vert in b_mesh.vertices)
             # set material
             b_obj.nifcollision.havok_material = NifFormat.HavokMaterial._enumkeys[subshape.material]
 
@@ -550,7 +549,7 @@ class bound_import():
             maxy = bbox.center.y + bbox.dimensions.y
             maxz = bbox.center.z + bbox.dimensions.z
             n_bbox_center = bbox.center.as_list()
-            
+
         elif isinstance(bbox, NifFormat.NiNode):
             if not bbox.has_bounding_box:
                 raise ValueError("Expected NiNode with bounding box.")
@@ -575,9 +574,9 @@ class bound_import():
             for y in [miny, maxy]:
                 for z in [minz, maxz]:
                     b_mesh.vertices.add(1)
-                    b_mesh.vertices[-1].co = (x,y,z)
+                    b_mesh.vertices[-1].co = (x, y, z)
 
-        poly_gens = [[0,1,3,2],[6,7,5,4],[0,2,6,4],[3,1,5,7],[4,5,1,0],[7,6,2,3]]
+        poly_gens = [[0, 1, 3, 2], [6, 7, 5, 4], [0, 2, 6, 4], [3, 1, 5, 7], [4, 5, 1, 0], [7, 6, 2, 3]]
         b_mesh = poly_gen.col_poly_gen(b_mesh, poly_gens)
 
         # link box to scene and set transform
@@ -608,22 +607,22 @@ class bound_import():
         b_obj.game.collision_bounds_type = 'BOX'
         # quick radius estimate
         b_obj.game.radius = max(maxx, maxy, maxz)
-        
+
         b_mesh = b_obj.data
         b_mesh.validate()
         b_mesh.update()
         b_obj.select_set(True)
-        
+
         return b_obj
 
 
 class poly_gen():
-    
+
     def __init__(self, parent):
         self.nif_import = parent
 
     def col_poly_gen(self, poly_gens):
-        f_map = [None]*len(poly_gens)
+        f_map = [None] * len(poly_gens)
         b_f_index = len(self.polygons)
         bf2_index = len(self.polygons)
         bl_index = len(self.loops)
@@ -634,8 +633,8 @@ class poly_gen():
             for lp_count in l_count:
                 llp_count_list.append(lp_count)
         self.loops.add(len(llp_count_list))
-        num_new_faces = 0 # counter for debugging
-        unique_faces = list() # to avoid duplicate polygons
+        num_new_faces = 0  # counter for debugging
+        unique_faces = list()  # to avoid duplicate polygons
         tri_point_list = list()
         for i, f in enumerate(poly_gens):
             # get face index
@@ -660,8 +659,5 @@ class poly_gen():
             while l < (len(poly_gens[(f_map[i] - bf2_index)])):
                 self.loops[(l + (bl_index))].vertex_index = lp_points[l]
                 l += 1
-            bl_index += (len(poly_gens[(f_map[i] - bf2_index)]))            
+            bl_index += (len(poly_gens[(f_map[i] - bf2_index)]))
         return self
-    
-    
-    

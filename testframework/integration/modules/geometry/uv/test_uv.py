@@ -51,17 +51,16 @@ from integration.geometry.uv import n_gen_uv
 from integration.property.material import b_gen_material
 from integration.property.material import n_gen_material
 
+
 class TestBaseUV(SingleNif):
-    
     b_name = 'Cube'
     n_name = "geometry/uvdata/test_uv"
-    
-    def b_create_data(self):        
+
+    def b_create_data(self):
         b_obj = b_gen_geometry.b_create_cube(self.b_name)
         b_gen_uv.b_uv_object()
         b_gen_geometry.b_transform_cube(b_obj)
-        
-    
+
     def b_check_data(self):
         pass
         '''

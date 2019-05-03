@@ -45,6 +45,7 @@ import nose
 from pyffi.utils.withref import ref
 from pyffi.formats.nif import NifFormat
 
+
 def n_create_blocks(n_data):
     n_ninode_1 = NifFormat.NiNode()
     n_ninode_2 = NifFormat.NiNode()
@@ -72,40 +73,41 @@ def n_create_blocks(n_data):
             n_matrix33.m_13 = -0.866025
             n_matrix33.m_23 = 0.25
             n_matrix33.m_33 = 0.433013
-            assert(n_matrix33.is_rotation()) # make sure in case we change values:
+            assert (n_matrix33.is_rotation())  # make sure in case we change values:
         n_ninode.scale = 0.75
     return n_data
+
 
 def n_check_ninode(n_ninode):
     nose.tools.assert_is_instance(n_ninode, NifFormat.NiNode)
 
-def n_check_transform(n_ninode):        
+
+def n_check_transform(n_ninode):
     n_check_translation(n_ninode)
     n_check_scale(n_ninode)
     n_check_rotation(n_ninode)
-    
+
+
 def n_check_translation(n_ninode):
     location = n_ninode.translation.as_tuple()
     print("Translation - {0}".format(location))
-    
-    nose.tools.assert_equal(location,(20.0, 20.0, 20.0)) # location
+
+    nose.tools.assert_equal(location, (20.0, 20.0, 20.0))  # location
+
 
 def n_check_scale(n_ninode):
     scale = n_ninode.scale
     print("Scale - {0}".format(scale))
-    
-    nose.tools.assert_equal(scale - 0.75 < NifFormat.EPSILON, True) # scale
 
-def n_check_rotation(n_ninode): 
+    nose.tools.assert_equal(scale - 0.75 < NifFormat.EPSILON, True)  # scale
+
+
+def n_check_rotation(n_ninode):
     n_rot_eul = mathutils.Matrix(n_ninode.rotation.as_tuple()).transposed().to_euler()
-    
+
     print("n_rot_eul - {0}".format(n_rot_eul))
     n_rot_axis = (degrees(n_rot_eul.x), degrees(n_rot_eul.y), degrees(n_rot_eul.z))
     print("n_rot_eul(x,y,z) - {0}".format(n_rot_axis))
-    nose.tools.assert_equal((n_rot_eul.x - radians(30.0)) < NifFormat.EPSILON, True) # x rotation
-    nose.tools.assert_equal((n_rot_eul.y - radians(60.0)) < NifFormat.EPSILON, True) # y rotation
-    nose.tools.assert_equal((n_rot_eul.z - radians(90.0)) < NifFormat.EPSILON, True) # z rotation
-    
-
-
-
+    nose.tools.assert_equal((n_rot_eul.x - radians(30.0)) < NifFormat.EPSILON, True)  # x rotation
+    nose.tools.assert_equal((n_rot_eul.y - radians(60.0)) < NifFormat.EPSILON, True)  # y rotation
+    nose.tools.assert_equal((n_rot_eul.z - radians(90.0)) < NifFormat.EPSILON, True)  # z rotation

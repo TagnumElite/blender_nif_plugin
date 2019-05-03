@@ -44,14 +44,14 @@ from pyffi.formats.nif import NifFormat
 
 
 class NiObject:
-    
+
     @staticmethod
     def import_bsbound_data(root_block):
         for n_extra in root_block.get_extra_datas():
             if isinstance(n_extra, NifFormat.BSBound):
                 self.boundhelper.import_bounding_box(n_extra)
-                    
-    @staticmethod    
+
+    @staticmethod
     def import_bsxflag_data(root_block):
         for n_extra in root_block.get_extra_datas():
             if isinstance(n_extra, NifFormat.BSXFlags):

@@ -24,7 +24,7 @@ class TestBBox(SingleNif):
         (-10, 10, -10),
         (10, 10, 10),
         (10, -10, 10),
-        }
+    }
 
     def b_create_data(self):
         # TODO
@@ -57,6 +57,7 @@ class TestBBox(SingleNif):
         nose.tools.assert_almost_equal(n_bbox.bounding_box.radius.x, 10, places=4)
         nose.tools.assert_almost_equal(n_bbox.bounding_box.radius.y, 10, places=4)
         nose.tools.assert_almost_equal(n_bbox.bounding_box.radius.z, 10, places=4)
+
 
 '''
 class TestBSBound(TestBaseGeometry):

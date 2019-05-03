@@ -1,6 +1,5 @@
 """ Nif Utilities, stores common code that is used across the code base"""
 
-
 # ***** BEGIN LICENSE BLOCK *****
 # 
 # Copyright © 2005-2015, NIF File Format Library and Tools contributors.
@@ -56,7 +55,7 @@ def import_matrix(niBlock, relative_to=None):
     # create a location matrix
     b_loc_vec = mathutils.Vector(n_loc_vec3.as_tuple())
     b_loc_vec = mathutils.Matrix.Translation(b_loc_vec)
-    
+
     # create a scale matrix
     b_scale_mat = mathutils.Matrix.Scale(n_scale, 4)
 
@@ -64,10 +63,10 @@ def import_matrix(niBlock, relative_to=None):
     n_rot_mat = mathutils.Matrix()
     n_rot_mat[0].xyz = n_rot_mat3.m_11, n_rot_mat3.m_21, n_rot_mat3.m_31
     n_rot_mat[1].xyz = n_rot_mat3.m_12, n_rot_mat3.m_22, n_rot_mat3.m_32
-    n_rot_mat[2].xyz = n_rot_mat3.m_13, n_rot_mat3.m_23, n_rot_mat3.m_33    
+    n_rot_mat[2].xyz = n_rot_mat3.m_13, n_rot_mat3.m_23, n_rot_mat3.m_33
     # b_rot_mat = n_rot_mat * b_scale_mat.transposed()
     b_rot_mat = n_rot_mat
-    
+
     b_import_matrix = b_loc_vec @ b_rot_mat @ b_scale_mat
     return b_import_matrix
 
@@ -79,7 +78,7 @@ def decompose_srt(matrix):
     # get matrix components
     trans_vec, rot_quat, scale_vec = matrix.decompose()
 
-    #obtain a combined scale and rotation matrix to test determinate
+    # obtain a combined scale and rotation matrix to test determinate
     rotmat = rot_quat.to_matrix()
     scalemat = mathutils.Matrix(   ((scale_vec[0], 0.0, 0.0),
                                     (0.0, scale_vec[1], 0.0),
@@ -119,7 +118,7 @@ def find_controller(niBlock, controller_type):
 
 def find_extra(niBlock, extratype):
     # TODO: 3.0 - Optimise
-    
+
     """Find extra data."""
     # pre-10.x.x.x system: extra data chain
     extra = niBlock.extra_data

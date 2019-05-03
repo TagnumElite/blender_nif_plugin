@@ -55,10 +55,11 @@ RAD_90 = radians(90.0)
 
 def b_create_transformed_object(b_name):
     """Create and return a single blender object."""
-    
+
     b_obj = b_create_empty_object(b_name)
     b_apply_transform_object(b_obj)
     return b_obj
+
 
 def b_create_empty_object(b_name):
     '''Creates empty object'''
@@ -69,41 +70,47 @@ def b_create_empty_object(b_name):
 
     return b_obj
 
+
 def b_apply_transform_object(b_obj):
     """ Applys, scaling, rotation, translation"""
-    
+
     b_obj.rotation_euler = b_rot_mat().to_euler()
     b_obj.location = b_translation_mat().to_translation()
     b_obj.scale = b_scale_mat().to_scale()
+
 
 def b_translation_mat():
     # translation
     return mathutils.Matrix.Translation((20, 20, 20))
 
+
 def b_scale_mat():
     # scale
     return mathutils.Matrix.Scale(0.75, 4)
 
+
 def b_rot_mat():
     """Return a non-trivial transform matrix."""
-    
-    b_rot_mat_x = mathutils.Matrix.Rotation(RAD_30, 4, 'X') 
+
+    b_rot_mat_x = mathutils.Matrix.Rotation(RAD_30, 4, 'X')
     b_rot_mat_y = mathutils.Matrix.Rotation(RAD_60, 4, 'Y')
-    b_rot_mat_z = mathutils.Matrix.Rotation(RAD_90, 4, 'Z')        
-    b_rot_mat = b_rot_mat_z * b_rot_mat_y * b_rot_mat_x 
+    b_rot_mat_z = mathutils.Matrix.Rotation(RAD_90, 4, 'Z')
+    b_rot_mat = b_rot_mat_z * b_rot_mat_y * b_rot_mat_x
     return b_rot_mat
+
 
 def b_check_transform(b_obj):
     b_check_matrix_local(b_obj)
     b_check_user_transforms(b_obj)
-    
+
+
 def b_check_user_transforms(b_obj):
     print("b_obj.location - {0}".format(b_obj.location))
     nose.tools.assert_equal(b_obj.location, b_translation_mat().to_translation())  # location
-    
+
     print("b_obj.scale {0}".format(b_obj.scale))
     nose.tools.assert_equal((b_obj.scale - b_scale_mat().to_scale()) < E_VEC, True)  # uniform scale
-    
+
     b_rot_eul = b_obj.rotation_euler
     print("b_rot_eul - {0}".format(b_rot_eul))
     b_rot_axis = (degrees(b_rot_eul.x), degrees(b_rot_eul.y), degrees(b_rot_eul.z))
@@ -111,17 +118,17 @@ def b_check_user_transforms(b_obj):
     nose.tools.assert_equal((b_rot_eul.x - RAD_30) < EPSILON, True)  # x rotation
     nose.tools.assert_equal((b_rot_eul.y - RAD_60) < EPSILON, True)  # y rotation
     nose.tools.assert_equal((b_rot_eul.z - RAD_90) < EPSILON, True)  # z rotation
-   
+
+
 def b_check_matrix_local(b_obj):
-    
-    b_loc_vec, b_rot_quat, b_scale_vec = b_obj.matrix_local.decompose()  # transforms   
-    
+    b_loc_vec, b_rot_quat, b_scale_vec = b_obj.matrix_local.decompose()  # transforms
+
     print("b_loc_vec - {0}".format(b_loc_vec))
     nose.tools.assert_equal(b_loc_vec, b_translation_mat().to_translation())  # location
-    
+
     print("b_scale_vec - {0}".format(b_scale_vec))
     nose.tools.assert_equal((b_scale_vec - b_scale_mat().to_scale()) < E_VEC, True)  # uniform scale
-    
+
     b_rot_eul = b_rot_quat.to_euler()
     print("b_rot_eul - {0}".format(b_rot_eul))
     b_rot_axis = (degrees(b_rot_eul.x), degrees(b_rot_eul.y), degrees(b_rot_eul.z))
@@ -129,5 +136,3 @@ def b_check_matrix_local(b_obj):
     nose.tools.assert_equal((b_rot_eul.x - RAD_30) < EPSILON, True)  # x rotation
     nose.tools.assert_equal((b_rot_eul.y - RAD_60) < EPSILON, True)  # y rotation
     nose.tools.assert_equal((b_rot_eul.z - RAD_90) < EPSILON, True)  # z rotation
-    
-

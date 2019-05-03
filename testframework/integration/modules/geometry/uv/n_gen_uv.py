@@ -45,6 +45,7 @@ import nose
 from pyffi.utils.withref import ref
 from pyffi.formats.nif import NifFormat
 
+
 def n_create_blocks(n_data):
     n_ninode_1 = NifFormat.NiNode()
     n_nitrishape_1 = NifFormat.NiTriShape()
@@ -62,7 +63,7 @@ def n_create_blocks(n_data):
         n_ninode.num_children = 1
         n_ninode.children.update_size()
         n_ninode.children[0] = n_nitrishape_1
-        
+
     with ref(n_nitrishape_1) as n_nitrishape:
         n_nitrishape.name = b'Cube'
         n_nitrishape.flags = 14
@@ -80,10 +81,10 @@ def n_create_blocks(n_data):
             n_matrix33.m_13 = 0.5
             n_matrix33.m_23 = 0.75
             n_matrix33.m_33 = 0.433012
-            assert(n_matrix33.is_rotation()) # make sure in case we change values:
+            assert (n_matrix33.is_rotation())  # make sure in case we change values:
         n_nitrishape.scale = 0.75
         n_nitrishape.data = n_nitrishapedata_1
-        
+
     with ref(n_nitrishapedata_1) as n_nitrishapedata:
         n_nitrishapedata.has_vertices = True
         n_nitrishapedata.num_vertices = 8
@@ -120,7 +121,7 @@ def n_create_blocks(n_data):
             n_vector3.x = 7.5
             n_vector3.y = -3.75
             n_vector3.z = 1.75
-            
+
         n_nitrishapedata.has_normals = True
         n_nitrishapedata.normals.update_size()
         with ref(n_nitrishapedata.normals[0]) as n_vector3:
@@ -155,14 +156,14 @@ def n_create_blocks(n_data):
             n_vector3.x = 0.669027
             n_vector3.y = -0.4991
             n_vector3.z = 0.550676
-            
+
         with ref(n_nitrishapedata.center) as n_vector3:
             n_vector3.x = 4.76837e-07
             n_vector3.y = 2.14577e-06
-        
+
         n_nitrishapedata.radius = 11.1692
         n_nitrishapedata.consistency_flags = NifFormat.ConsistencyType.CT_STATIC
-        
+
         n_nitrishapedata.num_triangles = 12
         n_nitrishapedata.num_triangle_points = 36
         n_nitrishapedata.has_triangles = True

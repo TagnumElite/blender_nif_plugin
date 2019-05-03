@@ -1,4 +1,4 @@
-'''Nif Operators, nif specific operators to update nif properties''' 
+'''Nif Operators, nif specific operators to update nif properties'''
 
 # ***** BEGIN LICENSE BLOCK *****
 # 

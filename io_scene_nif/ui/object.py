@@ -43,18 +43,18 @@ from bpy.types import Panel, UIList, Menu
 
 class ObjectPanel(Panel):
     bl_label = "Niftools Object Panel"
-    
+
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "object"
-    
+
     @classmethod
     def poll(cls, context):
         return True
 
     def draw(self, context):
         nif_obj_props = context.object.niftools
-        
+
         layout = self.layout
         row = layout.column()
         row.prop(nif_obj_props, "rootnode")
@@ -64,15 +64,15 @@ class ObjectPanel(Panel):
         row.prop(nif_obj_props, "consistency_flags")
         row.prop(nif_obj_props, "objectflags")
         row.prop(nif_obj_props, "longname")
-        
+
 
 class OBJECT_PT_ExtraData(Panel):
     bl_label = "Niftools Object Extra Data Panel"
-    
+
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "object"
-    
+
     @classmethod
     def poll(cls, context):
         return True
@@ -81,39 +81,40 @@ class OBJECT_PT_ExtraData(Panel):
         b_obj = context.object
         extra_data_store = b_obj.niftools.extra_data_store
         has_extra_data = len(extra_data_store.extra_data) > 0
-        
+
         layout = self.layout
 
         row = layout.row()
-        row.template_list("OBJECT_UL_ExtraData", "", extra_data_store, "extra_data", extra_data_store, "extra_data_index")
-        
-        #Add/Remove operators
+        row.template_list("OBJECT_UL_ExtraData", "", extra_data_store, "extra_data", extra_data_store,
+                          "extra_data_index")
+
+        # Add/Remove operators
         col = row.column(align=True)
         col.menu("OBJECT_MT_ExtraDataType", icon='ADD', text="")
 
         if has_extra_data:
             col.operator("object.niftools_extradata_remove", icon='REMOVE', text="")
-            
+
         if has_extra_data:
             row = layout.row()
             box = layout.box()
-            
+
             selected_extra_data = extra_data_store.extra_data[extra_data_store.extra_data_index]
             box.prop(selected_extra_data, "name")
-            box.prop(selected_extra_data, "data") 
+            box.prop(selected_extra_data, "data")
             box.prop(selected_extra_data, "sub_class")
 
 
 class OBJECT_MT_ExtraDataType(Menu):
     bl_label = "Extra Data Types"
-    
+
     def draw(self, context):
         layout = self.layout
         layout.operator("object.niftools_extradata_bsx_add")
         layout.operator("object.niftools_extradata_upb_add")
         layout.operator("object.niftools_extradata_sample_add")
         layout.operator("object.niftools_extradata_sample_add")
-        
+
 
 class OBJECT_UL_ExtraData(UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
@@ -127,15 +128,15 @@ class ObjectInvMarkerPanel(Panel):
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "object"
-    
+
     @classmethod
     def poll(cls, context):
         return True
 
-    def draw(self, context):       
+    def draw(self, context):
         layout = self.layout
         nif_bsinv_props = context.object.niftools_bs_invmarker
-                
+
         row = layout.row()
         if not context.object.niftools_bs_invmarker:
             row.operator("object.niftools_bs_invmarker_add", icon='ADD', text="")
@@ -144,8 +145,7 @@ class ObjectInvMarkerPanel(Panel):
 
         col = row.column(align=True)
         for i, x in enumerate(nif_bsinv_props):
-            col.prop(nif_bsinv_props[i], "bs_inv_x", index= i)
-            col.prop(nif_bsinv_props[i], "bs_inv_y", index= i)
-            col.prop(nif_bsinv_props[i], "bs_inv_z", index= i)
-            col.prop(nif_bsinv_props[i], "bs_inv_zoom", index= i)
-
+            col.prop(nif_bsinv_props[i], "bs_inv_x", index=i)
+            col.prop(nif_bsinv_props[i], "bs_inv_y", index=i)
+            col.prop(nif_bsinv_props[i], "bs_inv_z", index=i)
+            col.prop(nif_bsinv_props[i], "bs_inv_zoom", index=i)

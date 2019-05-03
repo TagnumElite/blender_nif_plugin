@@ -44,10 +44,10 @@ from io_scene_nif.utility.nif_global import NifOp
 
 
 class Material():
-    
+
     def __init__(self, parent):
         self.nif_export = parent
-        
+
     def export_material_property(self, name, flags, ambient, diffuse, specular, emissive, gloss, alpha, emitmulti):
         """Return existing material property with given settings, or create
         a new one if a material property with these settings is not found."""
@@ -66,7 +66,7 @@ class Material():
         if NifOp.props.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM'):
             for specialname in specialnames:
                 if (name.lower() == specialname.lower()
-                    or name.lower().startswith(specialname.lower() + ".")):
+                        or name.lower().startswith(specialname.lower() + ".")):
                     if name != specialname:
                         NifLog.warn("Renaming material '{0}' to '{1}'".format(name, specialname))
                     name = specialname
@@ -81,15 +81,15 @@ class Material():
         matprop.ambient_color.r = ambient.r
         matprop.ambient_color.g = ambient.g
         matprop.ambient_color.b = ambient.b
-        
+
         matprop.diffuse_color.r = diffuse.r
         matprop.diffuse_color.g = diffuse.g
         matprop.diffuse_color.b = diffuse.b
-        
+
         matprop.specular_color.r = specular.r
         matprop.specular_color.g = specular.g
         matprop.specular_color.b = specular.b
-        
+
         matprop.emissive_color.r = emissive.r
         matprop.emissive_color.g = emissive.g
         matprop.emissive_color.b = emissive.b
@@ -106,15 +106,16 @@ class Material():
 
             # when optimization is enabled, ignore material name
             if self.nif_export.EXPORT_OPTIMIZE_MATERIALS:
-                ignore_strings = not(block.name in specialnames)
+                ignore_strings = not (block.name in specialnames)
             else:
                 ignore_strings = False
 
             # check hash
             first_index = 1 if ignore_strings else 0
             if (block.get_hash()[first_index:] ==
-                matprop.get_hash()[first_index:]):
-                NifLog.warn("Merging materials '{0}' and '{1}' (they are identical in nif)".format(matprop.name, block.name))
+                    matprop.get_hash()[first_index:]):
+                NifLog.warn(
+                    "Merging materials '{0}' and '{1}' (they are identical in nif)".format(matprop.name, block.name))
                 return block
 
         # no material property with given settings found, so use and register

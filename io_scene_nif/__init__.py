@@ -43,7 +43,6 @@ import sys
 import bpy
 import bpy.props
 
-
 # Python dependencies are bundled inside the io_scene_nif/dependencies folder
 _dependencies_path = os.path.join(os.path.dirname(__file__), "dependencies")
 if _dependencies_path not in sys.path:
@@ -58,6 +57,7 @@ from io_scene_nif.utility.nif_logging import NifLog
 # noinspection PyBroadException
 try:
     from io_scene_nif.utility import nif_debug
+
     nif_debug.start_debug()
 except:
     print("Failed to load debug module")

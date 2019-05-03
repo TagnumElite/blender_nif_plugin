@@ -1,9 +1,8 @@
 from pyffi.utils.withref import ref
 from pyffi.formats.nif import NifFormat
 
+
 def n_add_vertex_colors(n_nitrishapedata):
-    
-           
     n_nitrishapedata.has_vertex_colors = True
     n_nitrishapedata.vertex_colors.update_size()
     with ref(n_nitrishapedata.vertex_colors[0]) as n_color4:

@@ -52,7 +52,7 @@ from integration.property.stencil import n_gen_stencil
 
 class TestStencilProperty(SingleNif):
     """Test import/export of meshes with material based alpha property."""
-    
+
     n_name = "property/stencil/test_stencil"
     b_name = "Cube"
 
@@ -71,14 +71,12 @@ class TestStencilProperty(SingleNif):
         n_trishape = self.n_data.roots[0].children[0]
         n_gen_stencil.n_create_stencil_prop(n_trishape)
         return self.n_data
-        
+
     def n_check_data(self):
         n_nitrishape = self.n_data.roots[0].children[0]
         n_gen_geometry.n_check_trishape(n_nitrishape)
-        
+
         nose.tools.assert_equal(n_nitrishape.num_properties, 1)
         n_stencil_prop = n_nitrishape.properties[0]
         n_gen_stencil.n_check_stencil_block(n_stencil_prop)
         n_gen_stencil.n_check_stencil_property(n_stencil_prop)
-    
-

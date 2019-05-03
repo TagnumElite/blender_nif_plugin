@@ -11,16 +11,16 @@ from integration.data import gen_data
 
 class TestNiNodeArmature(SingleNif):
     """Test NiNode base armature"""
-    
+
     n_name = 'armature/ninode/test_armature'
     b_name = 'Armature'
 
     def b_create_data(self):
         raise NotImplementedError
-        
+
     def b_check_data(self):
         raise NotImplementedError
-    
+
     def n_create_data(self):
         raise NotImplementedError
 

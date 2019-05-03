@@ -43,19 +43,20 @@ import bpy
 import mathutils
 from io_scene_nif.utility.nif_logging import NifLog
 
+
 class constraint_import():
 
     def __init__(self, parent):
         self.nif_import = parent
         self.HAVOK_SCALE = parent.HAVOK_SCALE
-        
+
     def import_bhk_constraints(self):
         for hkbody in self.nif_import.dict_havok_objects:
             self.import_constraint(hkbody)
-        
+
     def import_constraint(self, hkbody):
         """Imports a bone havok constraint as Blender object constraint."""
-        assert(isinstance(hkbody, NifFormat.bhkRigidBody))
+        assert (isinstance(hkbody, NifFormat.bhkRigidBody))
 
         # check for constraints
         if not hkbody.constraints:
@@ -193,10 +194,10 @@ class constraint_import():
                     hkdescriptor.twist_min_angle
                 b_constr.limit_angle_max_z = \
                     hkdescriptor.twist_max_angle
-                    
+
                 b_hkobj.niftools_constraint.LHMaxFriction = hkdescriptor.max_friction
-                    
-                
+
+
 
             elif isinstance(hkdescriptor, NifFormat.LimitedHingeDescriptor):
                 # for hinge, y is the vector on the plane of rotation defining
@@ -234,11 +235,11 @@ class constraint_import():
                 b_constr.limit_angle_max_x = hkdescriptor.max_angle
                 b_constr.limit_angle_min_x = hkdescriptor.min_angle
                 b_hkobj.niftools_constraint.LHMaxFriction = hkdescriptor.max_friction
-                
+
                 if hasattr(hkconstraint, "tau"):
                     b_hkobj.niftools_constraint.tau = hkconstraint.tau
                     b_hkobj.niftools_constraint.damping = hkconstraint.damping
-                
+
 
             elif isinstance(hkdescriptor, NifFormat.HingeDescriptor):
                 # for hinge, y is the vector on the plane of rotation defining
@@ -307,7 +308,7 @@ class constraint_import():
             # so multiply with the inverse of X
             for niBone in self.nif_import.dict_bones_extra_matrix:
                 if niBone.collision_object \
-                   and niBone.collision_object.body is hkbody:
+                        and niBone.collision_object.body is hkbody:
                     transform = mathutils.Matrix(
                         self.nif_import.dict_bones_extra_matrix[niBone])
                     transform.invert()
@@ -346,8 +347,8 @@ class constraint_import():
             b_constr.axis_y = constr_euler.y
             b_constr.axis_z = constr_euler.z
             # DEBUG
-            assert((axis_x - mathutils.Vector((1,0,0)) * constr_matrix).length < 0.0001)
-            assert((axis_z - mathutils.Vector((0,0,1)) * constr_matrix).length < 0.0001)
+            assert ((axis_x - mathutils.Vector((1, 0, 0)) * constr_matrix).length < 0.0001)
+            assert ((axis_z - mathutils.Vector((0, 0, 1)) * constr_matrix).length < 0.0001)
 
             # the generic rigid body type is very buggy... so for simulation
             # purposes let's transform it into ball and hinge
@@ -355,10 +356,9 @@ class constraint_import():
                 # cone_twist
                 b_constr.pivot_type = 'CONE_TWIST'
             elif isinstance(hkdescriptor, (NifFormat.LimitedHingeDescriptor,
-                                         NifFormat.HingeDescriptor)):
+                                           NifFormat.HingeDescriptor)):
                 # (limited) hinge
                 b_constr.pivot_type = 'HINGE'
             else:
                 raise ValueError("unknown descriptor %s"
                                  % hkdescriptor.__class__.__name__)
-

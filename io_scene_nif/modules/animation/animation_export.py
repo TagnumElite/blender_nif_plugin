@@ -53,7 +53,7 @@ class AnimationHelper:
         self.object_animation = ObjectAnimation(parent)
         self.material_animation = MaterialAnimation(parent)
         self.texture_animation = TextureAnimation(parent)
-    
+
     # Export the animation of blender Ipo as keyframe controller and
     # keyframe data. Extra quaternion is multiplied prior to keyframe
     # rotation, and dito for translation. These extra fields come in handy
@@ -97,29 +97,29 @@ class AnimationHelper:
     # inverse(RX) = rotation part of inverse(X)
     # 1 / SX = scale part of inverse(X)
     # so having inverse(X) around saves on calculations
-    
+
     def get_flags_from_extend(self, extend):
         if extend == bpy.types.IpoCurve.ExtendTypes.CONST:
-            return 4 # 0b100
+            return 4  # 0b100
         elif extend == bpy.types.IpoCurve.ExtendTypes.CYCLIC:
             return 0
 
         NifLog.warn("Unsupported extend type in blend, using clamped.")
         return 4
-    
-    def export_keyframes(self, ipo, space, parent_block, bind_matrix = None, extra_mat_inv = None):
+
+    def export_keyframes(self, ipo, space, parent_block, bind_matrix=None, extra_mat_inv=None):
         if NifOp.props.animation == 'GEOM_NIF' and self.nif_export.version < 0x0A020000:
             # keyframe controllers are not present in geometry only files
             # for more recent versions, the controller and interpolators are
             # present, only the data is not present (see further on)
             return
-    
+
         # only localspace keyframes need to be exported
-        assert(space == 'localspace')
-    
+        assert (space == 'localspace')
+
         # make sure the parent is of the right type
-        assert(isinstance(parent_block, NifFormat.NiNode))
-    
+        assert (isinstance(parent_block, NifFormat.NiNode))
+
         # add a keyframecontroller block, and refer to this block in the
         # parent's time controller
         if self.nif_export.version < 0x0A020000:
@@ -140,9 +140,9 @@ class AnimationHelper:
             kfi.rotation.z = quat.z
             kfi.rotation.w = quat.w
             kfi.scale = scale
-    
+
         parent_block.add_controller(kfc)
-    
+
         # determine cycle mode for this controller
         # this is stored in the blender ipo curves
         # while we're at it, we also determine the
@@ -170,29 +170,29 @@ class AnimationHelper:
             extend = bpy.IpoCurve.ExtendTypes.CYCLIC
             start_frame = bpy.context.scene.frame_start
             stop_frame = bpy.context.scene.frame_end
-    
+
         # fill in the non-trivial values
-        kfc.flags = 8 # active
+        kfc.flags = 8  # active
         kfc.flags |= self.get_flags_from_extend(extend)
         kfc.frequency = 1.0
         kfc.phase = 0.0
         kfc.start_time = (start_frame - 1) * bpy.context.scene.render.fps
         kfc.stop_time = (stop_frame - 1) * bpy.context.scene.render.fps
-    
+
         if NifOp.props.animation == 'GEOM_NIF':
             # keyframe data is not present in geometry files
             return
-    
+
         # -> get keyframe information
-    
+
         # some calculations
         if bind_matrix:
             bind_scale, bind_rot, bind_trans = nif_utils.decompose_srt(bind_matrix)
             bind_quat = bind_rot.toQuat()
         else:
             bind_scale = 1.0
-            bind_rot = mathutils.Matrix([[1,0,0],[0,1,0],[0,0,1]])
-            bind_quat = mathutils.Quaternion(1,0,0,0)
+            bind_rot = mathutils.Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+            bind_quat = mathutils.Quaternion(1, 0, 0, 0)
             bind_trans = mathutils.Vector()
         if extra_mat_inv:
             extra_scale_inv, extra_rot_inv, extra_trans_inv = \
@@ -200,10 +200,10 @@ class AnimationHelper:
             extra_quat_inv = extra_rot_inv.toQuat()
         else:
             extra_scale_inv = 1.0
-            extra_rot_inv = mathutils.Matrix([[1,0,0],[0,1,0],[0,0,1]])
-            extra_quat_inv = mathutils.Quaternion(1,0,0,0)
+            extra_rot_inv = mathutils.Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+            extra_quat_inv = mathutils.Quaternion(1, 0, 0, 0)
             extra_trans_inv = mathutils.Vector()
-    
+
         # sometimes we need to export an empty keyframe... this will take care of that
         if ipo == None:
             scale_curve = {}
@@ -216,14 +216,14 @@ class AnimationHelper:
             rot_curve = {}
             trans_curve = {}
             # the following code makes these assumptions
-            assert(Ipo.PO_SCALEX == Ipo.OB_SCALEX)
-            assert(Ipo.PO_LOCX == Ipo.OB_LOCX)
+            assert (Ipo.PO_SCALEX == Ipo.OB_SCALEX)
+            assert (Ipo.PO_LOCX == Ipo.OB_LOCX)
             # check validity of curves
             for curvecollection in (
-                (Ipo.PO_SCALEX, Ipo.PO_SCALEY, Ipo.PO_SCALEZ),
-                (Ipo.PO_LOCX, Ipo.PO_LOCY, Ipo.PO_LOCZ),
-                (Ipo.PO_QUATX, Ipo.PO_QUATY, Ipo.PO_QUATZ, Ipo.PO_QUATW),
-                (Ipo.OB_ROTX, Ipo.OB_ROTY, Ipo.OB_ROTZ)):
+                    (Ipo.PO_SCALEX, Ipo.PO_SCALEY, Ipo.PO_SCALEZ),
+                    (Ipo.PO_LOCX, Ipo.PO_LOCY, Ipo.PO_LOCZ),
+                    (Ipo.PO_QUATX, Ipo.PO_QUATY, Ipo.PO_QUATZ, Ipo.PO_QUATW),
+                    (Ipo.OB_ROTX, Ipo.OB_ROTY, Ipo.OB_ROTZ)):
                 # skip invalid curves
                 try:
                     ipo[curvecollection[0]]
@@ -232,7 +232,7 @@ class AnimationHelper:
                 # check that if any curve is defined in the collection
                 # then all curves are defined in the collection
                 if (any(ipo[curve] for curve in curvecollection)
-                    and not all(ipo[curve] for curve in curvecollection)):
+                        and not all(ipo[curve] for curve in curvecollection)):
                     keytype = {Ipo.PO_SCALEX: "SCALE",
                                Ipo.PO_LOCX: "LOC",
                                Ipo.PO_QUATX: "ROT",
@@ -274,7 +274,8 @@ class AnimationHelper:
                             rot_curve[frame] = rot_curve[frame].toQuat()
                             # beware, CrossQuats takes arguments in a counter-intuitive order:
                             # q1.to_matrix() * q2.to_matrix() == CrossQuats(q2, q1).to_matrix()
-                            rot_curve[frame] = mathutils.CrossQuats(mathutils.CrossQuats(bind_quat, rot_curve[frame]), extra_quat_inv) # inverse(RX) * RC' * RB'
+                            rot_curve[frame] = mathutils.CrossQuats(mathutils.CrossQuats(bind_quat, rot_curve[frame]),
+                                                                    extra_quat_inv)  # inverse(RX) * RC' * RB'
                     # pose rotation
                     elif curve in (Ipo.PO_QUATX, Ipo.PO_QUATY,
                                    Ipo.PO_QUATZ, Ipo.PO_QUATW):
@@ -285,7 +286,8 @@ class AnimationHelper:
                         rot_curve[frame].w = ipo[Ipo.PO_QUATW][frame]
                         # beware, CrossQuats takes arguments in a counter-intuitive order:
                         # q1.to_matrix() * q2.to_matrix() == CrossQuats(q2, q1).to_matrix()
-                        rot_curve[frame] = mathutils.CrossQuats(mathutils.CrossQuats(bind_quat, rot_curve[frame]), extra_quat_inv) # inverse(RX) * RC' * RB'
+                        rot_curve[frame] = mathutils.CrossQuats(mathutils.CrossQuats(bind_quat, rot_curve[frame]),
+                                                                extra_quat_inv)  # inverse(RX) * RC' * RB'
                     # PO_LOCX == OB_LOCX, so this does both pose and object
                     # location
                     elif curve in (Ipo.PO_LOCX, Ipo.PO_LOCY, Ipo.PO_LOCZ):
@@ -311,7 +313,7 @@ class AnimationHelper:
                             rot_c.w = ipo[Ipo.PO_QUATW][frame]
                             rot_c = rot_c.to_matrix()
                         else:
-                            rot_c = mathutils.Matrix([[1,0,0],[0,1,0],[0,0,1]])
+                            rot_c = mathutils.Matrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
                         # note, PO_SCALEX == OB_SCALEX, so this does both
                         if ipo[Ipo.PO_SCALEX]:
                             # support only uniform scaling... take the mean
@@ -323,11 +325,11 @@ class AnimationHelper:
                         trans_curve[frame] += \
                             extra_trans_inv * rot_c * bind_rot * \
                             scale_c * bind_scale
-    
+
         # -> now comes the real export
-    
+
         if (max(len(rot_curve), len(trans_curve), len(scale_curve)) <= 1
-            and self.nif_export.version >= 0x0A020000):
+                and self.nif_export.version >= 0x0A020000):
             # only add data if number of keys is > 1
             # (see importer comments with import_kf_root: a single frame
             # keyframe denotes an interpolator without further data)
@@ -350,7 +352,7 @@ class AnimationHelper:
             kfi.scale = 1.0
             # done!
             return
-    
+
         # add the keyframe data
         if self.nif_export.version < 0x0A020000:
             kfd = self.nif_export.objecthelper.create_block("NiKeyframeData", ipo)
@@ -359,16 +361,16 @@ class AnimationHelper:
             # number of frames is > 1, so add transform data
             kfd = self.nif_export.objecthelper.create_block("NiTransformData", ipo)
             kfi.data = kfd
-    
+
         frames = list(rot_curve.keys())
         frames.sort()
         # XXX blender weirdness... Euler() is a function!!
         if (frames
-            and isinstance(list(rot_curve.values())[0],
-                           mathutils.Euler().__class__)):
+                and isinstance(list(rot_curve.values())[0],
+                               mathutils.Euler().__class__)):
             # eulers
             kfd.rotation_type = NifFormat.KeyType.XYZ_ROTATION_KEY
-            kfd.num_rotation_keys = 1 # *NOT* len(frames) this crashes the engine!
+            kfd.num_rotation_keys = 1  # *NOT* len(frames) this crashes the engine!
             kfd.xyz_rotations[0].num_keys = len(frames)
             kfd.xyz_rotations[1].num_keys = len(frames)
             kfd.xyz_rotations[2].num_keys = len(frames)
@@ -403,7 +405,7 @@ class AnimationHelper:
                 rot_frame.value.x = rot_curve[frame].x
                 rot_frame.value.y = rot_curve[frame].y
                 rot_frame.value.z = rot_curve[frame].z
-    
+
         frames = list(trans_curve.keys())
         frames.sort()
         kfd.translations.interpolation = NifFormat.KeyType.LINEAR_KEY
@@ -415,7 +417,7 @@ class AnimationHelper:
             trans_frame.value.x = trans_curve[frame][0]
             trans_frame.value.y = trans_curve[frame][1]
             trans_frame.value.z = trans_curve[frame][2]
-    
+
         frames = list(scale_curve.keys())
         frames.sort()
         kfd.scales.interpolation = NifFormat.KeyType.LINEAR_KEY
@@ -460,11 +462,12 @@ class AnimationHelper:
                 raise nif_utils.NifError("Syntax error in Anim buffer ('%s')" % s)
             f = int(t[0])
             if ((f < bpy.context.scene.frame_start) or (f > bpy.context.scene.frame_end)):
-                NifLog.warn("Frame in animation buffer out of range ({0} not between [{1}, {2}])".format(str(f), str(bpy.context.scene.frame_start), str(bpy.context.scene.frame_end)))
+                NifLog.warn("Frame in animation buffer out of range ({0} not between [{1}, {2}])".format(str(f), str(
+                    bpy.context.scene.frame_start), str(bpy.context.scene.frame_end)))
             d = t[1].strip(' ')
             for i in range(2, len(t)):
                 d = d + '\r\n' + t[i].strip(' ')
-            #print 'frame %d'%f + ' -> \'%s\''%d # debug
+            # print 'frame %d'%f + ' -> \'%s\''%d # debug
             flist.append(f)
             dlist.append(d)
 
@@ -479,16 +482,16 @@ class AnimationHelper:
         textextra.num_text_keys = len(flist)
         textextra.text_keys.update_size()
         for i, key in enumerate(textextra.text_keys):
-            key.time = bpy.context.scene.render.fps * (flist[i]-1)
+            key.time = bpy.context.scene.render.fps * (flist[i] - 1)
             key.value = dlist[i]
 
         return textextra
-    
-    
+
+
 class TextureAnimation:
     def __init__(self, parent):
         self.nif_export = parent
-    
+
     def export_flip_controller(self, fliptxt, texture, target, target_tex):
         # TODO:port code to use native Blender texture flipping system
         #
@@ -508,26 +511,27 @@ class TextureAnimation:
         target.add_controller(flip)
 
         # fill in NiFlipController's values
-        flip.flags = 8 # active
+        flip.flags = 8  # active
         flip.frequency = 1.0
         flip.start_time = (bpy.context.scene.frame_start - 1) * bpy.context.scene.render.fps
-        flip.stop_time = (bpy.context.scene.frame_end - bpy.context.scene.frame_start ) * bpy.context.scene.render.fps
+        flip.stop_time = (bpy.context.scene.frame_end - bpy.context.scene.frame_start) * bpy.context.scene.render.fps
         flip.texture_slot = target_tex
         count = 0
         for t in tlist:
-            if len( t ) == 0: continue  # skip empty lines
+            if len(t) == 0: continue  # skip empty lines
             # create a NiSourceTexture for each flip
             tex = self.nif_export.texturehelper.texture_writer.export_source_texture(texture, t)
             flip.num_sources += 1
             flip.sources.update_size()
-            flip.sources[flip.num_sources-1] = tex
+            flip.sources[flip.num_sources - 1] = tex
             count += 1
         if count < 2:
             raise nif_utils.NifError(
                 "Error in Texture Flip buffer '%s':"
                 " must define at least two textures"
-                %fliptxt.name)
+                % fliptxt.name)
         flip.delta = (flip.stop_time - flip.start_time) / count
+
 
 class MaterialAnimation:
     def __init__(self, parent):
@@ -574,7 +578,7 @@ class MaterialAnimation:
         if not b_curve:
             return
         n_floatdata = self.nif_export.objecthelper.create_block("NiFloatData", b_curve)
-        n_times = [] # track all times (used later in start time and end time)
+        n_times = []  # track all times (used later in start time and end time)
         n_floatdata.data.num_keys = len(b_curve.bezierPoints)
         n_floatdata.data.interpolation = self.get_n_curve_from_b_curve(
             b_curve.interpolation)
@@ -593,7 +597,7 @@ class MaterialAnimation:
             n_alphactrl = self.nif_export.objecthelper.create_block("NiAlphaController", b_ipo)
             n_alphaipol = self.nif_export.objecthelper.create_block("NiFloatInterpolator", b_ipo)
             n_alphactrl.interpolator = n_alphaipol
-            n_alphactrl.flags = 8 # active
+            n_alphactrl.flags = 8  # active
             n_alphactrl.flags |= self.get_flags_from_extend(b_curve.extend)
             n_alphactrl.frequency = 1.0
             n_alphactrl.start_time = min(n_times)
@@ -602,7 +606,7 @@ class MaterialAnimation:
             n_alphaipol.data = n_floatdata
             # attach block to geometry
             n_matprop = nif_utils.find_property(n_geom,
-                                           NifFormat.NiMaterialProperty)
+                                                NifFormat.NiMaterialProperty)
             if not n_matprop:
                 raise ValueError(
                     "bug!! must add material property"
@@ -610,7 +614,7 @@ class MaterialAnimation:
             n_matprop.add_controller(n_alphactrl)
 
     def export_material_color_controller(
-        self, b_material, b_channels, n_geom, n_target_color):
+            self, b_material, b_channels, n_geom, n_target_color):
         """Export the material color controller data."""
         b_ipo = b_material.animation_data
         if not b_ipo:
@@ -647,7 +651,7 @@ class MaterialAnimation:
             n_matcolor_ipol = self.nif_export.objecthelper.create_block(
                 "NiPoint3Interpolator", b_ipo)
             n_matcolor_ctrl.interpolator = n_matcolor_ipol
-            n_matcolor_ctrl.flags = 8 # active
+            n_matcolor_ctrl.flags = 8  # active
             n_matcolor_ctrl.flags |= self.get_flags_from_extend(b_curve.extend)
             n_matcolor_ctrl.set_target_color(n_target_color)
             n_matcolor_ctrl.frequency = 1.0
@@ -657,7 +661,7 @@ class MaterialAnimation:
             n_matcolor_ipol.data = n_posdata
             # attach block to geometry
             n_matprop = nif_utils.find_property(n_geom,
-                                           NifFormat.NiMaterialProperty)
+                                                NifFormat.NiMaterialProperty)
             if not n_matprop:
                 raise ValueError(
                     "bug!! must add material property"
@@ -672,7 +676,7 @@ class MaterialAnimation:
             return
         # get the uv curves and translate them into nif data
         n_uvdata = NifFormat.NiUVData()
-        n_times = [] # track all times (used later in start time and end time)
+        n_times = []  # track all times (used later in start time and end time)
         b_channels = (Blender.Ipo.MA_OFSX, Blender.Ipo.MA_OFSY,
                       Blender.Ipo.MA_SIZEX, Blender.Ipo.MA_SIZEY)
         for b_channel, n_uvgroup in zip(b_channels, n_uvdata.uv_groups):
@@ -700,7 +704,7 @@ class MaterialAnimation:
         # then add the controller so it is exported
         if n_times:
             n_uvctrl = NifFormat.NiUVController()
-            n_uvctrl.flags = 8 # active
+            n_uvctrl.flags = 8  # active
             n_uvctrl.flags |= self.get_flags_from_extend(b_curve_extend)
             n_uvctrl.frequency = 1.0
             n_uvctrl.start_time = min(n_times)
@@ -708,12 +712,12 @@ class MaterialAnimation:
             n_uvctrl.data = n_uvdata
             # attach block to geometry
             n_geom.add_controller(n_uvctrl)
-            
-            
+
+
 class ObjectAnimation:
     def __init__(self, parent):
         self.nif_export = parent
-    
+
     def export_object_vis_controller(self, b_obj, n_node):
         """Export the material alpha controller data."""
         b_ipo = b_obj.ipo
@@ -726,7 +730,7 @@ class ObjectAnimation:
         # NiVisData = old style, NiBoolData = new style
         n_vis_data = self.nif_export.objecthelper.create_block("NiVisData", b_curve)
         n_bool_data = self.nif_export.objecthelper.create_block("NiBoolData", b_curve)
-        n_times = [] # track all times (used later in start time and end time)
+        n_times = []  # track all times (used later in start time and end time)
         # we just leave interpolation at constant
         n_bool_data.data.interpolation = NifFormat.KeyType.CONST_KEY
         #n_bool_data.data.interpolation = self.get_n_curve_from_b_curve(
@@ -737,10 +741,10 @@ class ObjectAnimation:
         n_bool_data.data.keys.update_size()
         visible_layer = 2 ** (min(bpy.context.scene.getLayers()) - 1)
         for b_point, n_vis_key, n_bool_key in zip(
-            b_curve.bezierPoints, n_vis_data.keys, n_bool_data.data.keys):
+                b_curve.bezierPoints, n_vis_data.keys, n_bool_data.data.keys):
             # add each point of the curve
             b_time, b_value = b_point.pt
-            n_vis_key.arg = n_bool_data.data.interpolation # n_vis_data has no interpolation stored
+            n_vis_key.arg = n_bool_data.data.interpolation  # n_vis_data has no interpolation stored
             n_vis_key.time = (b_time - 1) * bpy.context.scene.render.fps
             n_vis_key.value = 1 if (int(b_value + 0.01) & visible_layer) else 0
             n_bool_key.arg = n_bool_data.data.interpolation
@@ -754,7 +758,7 @@ class ObjectAnimation:
             n_vis_ctrl = self.nif_export.objecthelper.create_block("NiVisController", b_ipo)
             n_vis_ipol = self.nif_export.objecthelper.create_block("NiBoolInterpolator", b_ipo)
             n_vis_ctrl.interpolator = n_vis_ipol
-            n_vis_ctrl.flags = 8 # active
+            n_vis_ctrl.flags = 8  # active
             n_vis_ctrl.flags |= self.get_flags_from_extend(b_curve.extend)
             n_vis_ctrl.frequency = 1.0
             n_vis_ctrl.start_time = min(n_times)

@@ -40,14 +40,15 @@
 import bpy
 
 from integration import SingleNif
-from integration.data import gen_data 
+from integration.data import gen_data
 from integration.geometry.vertex import b_gen_vertex
 from integration.geometry.vertex import n_gen_vertex
+
 
 class TestVertex(SingleNif):
     """Test base geometry, single blender object."""
 
-    n_name = 'geometry/vertex/test_vertex' # (documented in base class)
+    n_name = 'geometry/vertex/test_vertex'  # (documented in base class)
     b_name = 'Cube'
 
     def b_create_header(self):
@@ -56,10 +57,10 @@ class TestVertex(SingleNif):
     def b_create_data(self):
         # (documented in base class)
         b_obj = b_gen_vertex.b_create_cube(self.b_name)
-        
+
         # transform it into something less trivial
         b_gen_vertex.b_transform_cube(b_obj)
-    
+
     def b_check_data(self):
         b_obj = bpy.data.objects[self.b_name]
         b_gen_vertex.b_check_geom_obj(b_obj)
@@ -74,4 +75,3 @@ class TestVertex(SingleNif):
     def n_check_data(self):
         n_trishape = self.n_data.roots[0].children[0]
         n_gen_vertex.n_check_trishape(n_trishape)
-

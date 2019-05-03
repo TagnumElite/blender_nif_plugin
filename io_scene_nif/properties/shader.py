@@ -298,7 +298,6 @@ class ShaderProps(PropertyGroup):
         name='Projected UV'
     )
 
-
     slsf_1_multiple_textures: BoolProperty(
         name='Multiple Textures'
     )

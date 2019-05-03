@@ -4,8 +4,6 @@ import bpy
 import io_scene_nif.nif_import
 import io_scene_nif.nif_export
 
-
-
 import os
 import os.path
 
@@ -18,30 +16,30 @@ def clear_bpy_data():
     def clear_bpy_prop_collection(collection):
         for elem in collection[:]:
             collection.remove(elem)
-    
+
     def clear_users(collection):
         for elem in collection[:]:
             collection[elem.name].user_clear()
             collection.remove(collection[elem.name])
-    
+
     # unlink objects
     for b_obj in bpy.data.objects[:]:
         bpy.context.scene.objects.unlink(b_obj)
-    
+
     # remove all data
     for collection in (
-        "actions", "objects", "meshes", "armatures", "lamps", "lattices",
-        "particles", "metaballs", "shape_keys", "texts", "curves",
-        "cameras", "grease_pencil", "groups", "libraries",
-        "node_groups",
-        "materials",
-        ):
+            "actions", "objects", "meshes", "armatures", "lamps", "lattices",
+            "particles", "metaballs", "shape_keys", "texts", "curves",
+            "cameras", "grease_pencil", "groups", "libraries",
+            "node_groups",
+            "materials",
+    ):
         clear_bpy_prop_collection(getattr(bpy.data, collection))
-    
+
     # need to remove any users first    
     for collection in (
-        "brushes", "textures", "images",
-        ):
+            "brushes", "textures", "images",
+    ):
         clear_users(getattr(bpy.data, collection))
 
 
@@ -58,7 +56,7 @@ def teardown():
 
 class Base:
     """Base class for all tests."""
-    
+
     def b_clear(self):
         """Clear all objects from scene."""
         # ensure in object mode
@@ -125,7 +123,7 @@ class SingleNif(Base):
 
     n_data = None
     """Store the nif as it generate, built in blocks. Useful to see generated nif in-memory"""
-    
+
     EPSILON = 0.005
     """A small value used when comparing floats."""
 
@@ -161,20 +159,20 @@ class SingleNif(Base):
     """The name of the blend file after import of *n_filepath_2*
     (set automatically from :attr:`SingleNif.n_name`).
     """
-    
+
     # Debug Settings
     gen_blender_scene = True
-    
+
     def __init__(self):
         """Initialize the test."""
         Base.__init__(self)
-        
+
         self.n_data = NifFormat.Data()
-        
+
         root = "integration/gen/"
         nif_path = root + "nif/" + self.n_name
         blend_path = root + "autoblend/" + self.n_name
-        
+
         self.n_filepath_0 = nif_path + "_py_code.nif"
         self.n_filepath_1 = nif_path + "_export_py_code.nif"
         self.n_filepath_2 = nif_path + "_export_user_ver.nif"
@@ -192,7 +190,7 @@ class SingleNif(Base):
 
     def _b_clear_check(self, b_obj_names):
         """Check that *b_obj_names* are really cleared from the scene."""
-        if(len(b_obj_names) != 0):
+        if (len(b_obj_names) != 0):
             try:
                 for name in b_obj_names:
                     bpy.data.objects[name]
@@ -214,8 +212,8 @@ class SingleNif(Base):
         return b_obj_names
 
     def b_save(self, b_filepath):
-            """Save current scene to blend file."""
-            bpy.ops.wm.save_mainfile(filepath=b_filepath)
+        """Save current scene to blend file."""
+        bpy.ops.wm.save_mainfile(filepath=b_filepath)
 
     def b_create_header(self):
         """Select game version to export as"""
@@ -252,7 +250,7 @@ class SingleNif(Base):
         with open(n_filepath, "rb") as stream:
             n_data.read(stream)
         return n_data
-    
+
     def n_write(self, n_data, n_filepath):
         """Write a nif file from data."""
         with open(n_filepath, "wb") as stream:
@@ -263,7 +261,7 @@ class SingleNif(Base):
         bpy.ops.import_scene.nif(
             filepath=n_filepath,
             log_level='DEBUG',
-            )
+        )
 
     def n_export(self, n_filepath):
         """Export selected blender object to nif file."""
@@ -273,28 +271,28 @@ class SingleNif(Base):
                                  game=self.n_game,
                                  )
 
-    def test_export_user(self):       
+    def test_export_user(self):
         """User : Export user generated file"""
-        
+
         # create scene
         self.b_create_header()
         self.b_create_data()
-        if(self.gen_blender_scene):
+        if (self.gen_blender_scene):
             self.b_save(self.b_filepath_1)
         self.b_check_data()
-        
+
         # export and check data
         self.n_export(self.n_filepath_2)
         self.n_check(self.n_filepath_2)
-    
-    def test_import_user(self):     
+
+    def test_import_user(self):
         """User : Import user generated file"""
         # import and check data
         self.n_import(self.n_filepath_2)
-        if(self.gen_blender_scene):
+        if (self.gen_blender_scene):
             self.b_save(self.b_filepath_2)
         self.b_check_data()
-         
+
     def test_pycode_nif_fullflow(self):
         """PyCode : Import/Export python generated file"""
         # create initial nif file and check data
@@ -302,18 +300,18 @@ class SingleNif(Base):
         self.n_create_data()
         self.n_write(self.n_data, self.n_filepath_0)
         self.n_check(self.n_filepath_0)
-           
+
         # clear scene
         self.b_clear()
-          
+
         # import nif and check data
         self.n_import(self.n_filepath_0)
         if self.gen_blender_scene:
             self.b_save(self.b_filepath_0)
         self.b_check_data()
-        
+
         self._b_select_all()
-        
+
         # export and check data
         self.n_export(self.n_filepath_1)
         self.n_check(self.n_filepath_1)

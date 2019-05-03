@@ -8,6 +8,7 @@ def n_create_data():
     n_create_blocks(n_data)
     return n_data
 
+
 def n_create_blocks(n_data):
     n_ninode_1 = NifFormat.NiNode()
     n_ninode_2 = NifFormat.NiNode()

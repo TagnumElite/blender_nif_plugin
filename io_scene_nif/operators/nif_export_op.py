@@ -67,10 +67,11 @@ class NifExportOperator(bpy.types.Operator, ExportHelper, NifOperatorCommon):
     animation: bpy.props.EnumProperty(
         items=[
             ('ALL_NIF', "All (nif)", "Geometry and animation to a single nif."),
-            ('ALL_NIF_XNIF_XKF', "All (nif, xnif, xkf)", "Geometry and animation to a nif, xnif, and xkf (for Morrowind)."),
+            ('ALL_NIF_XNIF_XKF', "All (nif, xnif, xkf)",
+             "Geometry and animation to a nif, xnif, and xkf (for Morrowind)."),
             ('GEOM_NIF', "Geometry only (nif)", "Only geometry to a single nif."),
             ('ANIM_KF', "Animation only (kf)", "Only animation to a single kf."),
-            ],
+        ],
         name="Process",
         description="Selects which parts of the blender file to export.",
         default='ALL_NIF')
@@ -130,7 +131,7 @@ class NifExportOperator(bpy.types.Operator, ExportHelper, NifOperatorCommon):
         name="Max Vertex Bones",
         description="Maximum number of bones per vertex in skin partitions.",
         default=4, min=1,
-        )
+    )
 
     #: Pad and sort bones.
     force_dds: bpy.props.BoolProperty(
@@ -145,4 +146,3 @@ class NifExportOperator(bpy.types.Operator, ExportHelper, NifOperatorCommon):
         method.
         """
         return nif_export.NifExport(self, context).execute()
-    

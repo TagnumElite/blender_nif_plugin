@@ -50,13 +50,11 @@ class ArmaturePanel(Panel):
     @classmethod
     def poll(cls, context):
         return True
-        
 
     def draw(self, context):
         nif_bone_props = context.bone.niftools_bone
-        
+
         layout = self.layout
         row = layout.column()
-        
+
         row.prop(nif_bone_props, "boneflags")
-    

@@ -97,7 +97,8 @@ class TextureHelper:
 
         if b_obj.niftools_shader.bs_shadertype == 'BSLightingShaderProperty':
             bsshader = NifFormat.BSLightingShaderProperty()
-            b_s_type = NifFormat.BSLightingShaderPropertyShaderType._enumkeys.index(b_obj.niftools_shader.bslsp_shaderobjtype)
+            b_s_type = NifFormat.BSLightingShaderPropertyShaderType._enumkeys.index(
+                b_obj.niftools_shader.bslsp_shaderobjtype)
             bsshader.shader_type = NifFormat.BSLightingShaderPropertyShaderType._enumvalues[b_s_type]
 
             # UV Offset
@@ -239,7 +240,8 @@ class TextureHelper:
                 pass
             else:
                 # texture slot 0 = base
-                self.animationhelper.texture_animation.export_flip_controller(fliptxt, self.base_mtex.texture, texprop, 0)
+                self.animationhelper.texture_animation.export_flip_controller(fliptxt, self.base_mtex.texture, texprop,
+                                                                              0)
 
         if self.glow_mtex:
             texprop.has_glow_texture = True
@@ -263,7 +265,8 @@ class TextureHelper:
         if self.normal_mtex:
             shadertexdesc = texprop.shader_textures[1]
             shadertexdesc.is_used = True
-            shadertexdesc.texture_data.source = self.texture_writer.export_source_texture(texture=self.normal_mtex.texture)
+            shadertexdesc.texture_data.source = self.texture_writer.export_source_texture(
+                texture=self.normal_mtex.texture)
 
         if self.gloss_mtex:
             if NifOp.props.game not in self.USED_EXTRA_SHADER_TEXTURES:
@@ -274,7 +277,8 @@ class TextureHelper:
             else:
                 shadertexdesc = texprop.shader_textures[2]
                 shadertexdesc.is_used = True
-                shadertexdesc.texture_data.source = self.texture_writer.export_source_texture(texture=self.gloss_mtex.texture)
+                shadertexdesc.texture_data.source = self.texture_writer.export_source_texture(
+                    texture=self.gloss_mtex.texture)
 
         if self.dark_mtex:
             texprop.has_dark_texture = True
@@ -296,7 +300,8 @@ class TextureHelper:
             else:
                 shadertexdesc = texprop.shader_textures[3]
                 shadertexdesc.is_used = True
-                shadertexdesc.texture_data.source = self.texture_writer.export_source_texture(texture=self.ref_mtex.texture)
+                shadertexdesc.texture_data.source = self.texture_writer.export_source_texture(
+                    texture=self.ref_mtex.texture)
 
     def export_texture_shader_effect(self, texprop):
         # export extra shader textures
@@ -314,11 +319,13 @@ class TextureHelper:
             # some texture slots required by the engine
             shadertexdesc_envmap = texprop.shader_textures[0]
             shadertexdesc_envmap.is_used = True
-            shadertexdesc_envmap.texture_data.source = self.texture_writer.export_source_texture(filename="RRT_Engine_Env_map.dds")
+            shadertexdesc_envmap.texture_data.source = self.texture_writer.export_source_texture(
+                filename="RRT_Engine_Env_map.dds")
 
             shadertexdesc_cubelightmap = texprop.shader_textures[4]
             shadertexdesc_cubelightmap.is_used = True
-            shadertexdesc_cubelightmap.texture_data.source = self.texture_writer.export_source_texture(filename="RRT_Cube_Light_map_128.dds")
+            shadertexdesc_cubelightmap.texture_data.source = self.texture_writer.export_source_texture(
+                filename="RRT_Cube_Light_map_128.dds")
 
         elif NifOp.props.game == 'CIVILIZATION_IV':
             # some textures end up in the shader texture list
@@ -415,11 +422,15 @@ class TextureHelper:
             if b_mat_texslot.texture_coords == 'REFLECTION':
                 if not b_mat_texslot.use_map_color_diffuse:
                     # it should map to colour
-                    raise nif_utils.NifError("Non-COL-mapped reflection texture in mesh '%s', material '%s', these cannot be exported to NIF.\n"
-                                             "Either delete all non-COL-mapped reflection textures, or in the Shading Panel, under Material Buttons, set texture 'Map To' to 'COL'." % (b_obj.name, b_mat.name))
+                    raise nif_utils.NifError(
+                        "Non-COL-mapped reflection texture in mesh '%s', material '%s', these cannot be exported to NIF.\n"
+                        "Either delete all non-COL-mapped reflection textures, or in the Shading Panel, under Material Buttons, set texture 'Map To' to 'COL'." % (
+                        b_obj.name, b_mat.name))
                 if b_mat_texslot.blend_type != 'ADD':
                     # it should have "ADD" blending mode
-                    NifLog.warn("Reflection texture should have blending mode 'Add' on texture in mesh '{0}', material '{1}').".format(b_obj.name, b_mat.name))
+                    NifLog.warn(
+                        "Reflection texture should have blending mode 'Add' on texture in mesh '{0}', material '{1}').".format(
+                            b_obj.name, b_mat.name))
                 # an envmap image should have an empty... don't care
                 self.ref_mtex = b_mat_texslot
 
@@ -435,7 +446,8 @@ class TextureHelper:
                     # multi-check
                     if self.glow_mtex:
                         raise nif_utils.NifError("Multiple emissive textures in mesh '%s', material '%s'.\n"
-                                                 " Make sure there is only one texture set as Influence > emit" % (b_obj.name, b_mat.name))
+                                                 " Make sure there is only one texture set as Influence > emit" % (
+                                                 b_obj.name, b_mat.name))
 
                     # check if alpha channel is enabled for this texture
                     if b_mat_texslot.use_map_alpha:
@@ -448,7 +460,8 @@ class TextureHelper:
                     # multi-check
                     if self.gloss_mtex:
                         raise nif_utils.NifError("Multiple specular gloss textures in mesh '%s', material '%s'.\n"
-                                                 "Make sure there is only one texture set as Influence > specular" % (b_obj.name, b_mat.name))
+                                                 "Make sure there is only one texture set as Influence > specular" % (
+                                                 b_obj.name, b_mat.name))
 
                     # check if alpha channel is enabled for this texture
                     if b_mat_texslot.use_map_alpha:
@@ -463,7 +476,8 @@ class TextureHelper:
                     # multi-check
                     if self.bump_mtex:
                         raise nif_utils.NifError("Multiple bump/normal texture in mesh '%s', material '%s'.\n"
-                                                 "Make sure there is only one texture set as Influence > normal" % (b_obj.name, b_mat.name))
+                                                 "Make sure there is only one texture set as Influence > normal" % (
+                                                 b_obj.name, b_mat.name))
 
                     # check if alpha channel is enabled for this texture
                     if b_mat_texslot.use_map_alpha:
@@ -476,7 +490,8 @@ class TextureHelper:
                     # multi-check
                     if self.normal_mtex:
                         raise nif_utils.NifError("Multiple bump/normal textures in mesh '%s', material '%s'."
-                                                 " Make sure there is only one texture set as Influence > normal" % (b_obj.name, b_mat.name))
+                                                 " Make sure there is only one texture set as Influence > normal" % (
+                                                 b_obj.name, b_mat.name))
                     # check if alpha channel is enabled for this texture
                     if b_mat_texslot.use_map_alpha:
                         mesh_hasalpha = True
@@ -487,7 +502,8 @@ class TextureHelper:
 
                     if self.dark_mtex:
                         raise nif_utils.NifError("Multiple Darken textures in mesh '%s', material '%s'."
-                                                 " Make sure there is only one texture with Influence > Blend Type > Dark" % (b_obj.name, b_mat.name))
+                                                 " Make sure there is only one texture with Influence > Blend Type > Dark" % (
+                                                 b_obj.name, b_mat.name))
 
                     # check if alpha channel is enabled for this texture
                     if b_mat_texslot.use_map_alpha:
@@ -499,7 +515,8 @@ class TextureHelper:
                 elif b_mat_texslot.use_map_color_diffuse:
                     if self.base_mtex:
                         raise nif_utils.NifError("Multiple Diffuse textures in mesh '%s', material '%s'.\n"
-                                                 "Make sure there is only one texture with Influence > Diffuse > color" % (b_obj.name, b_mat.name))
+                                                 "Make sure there is only one texture with Influence > Diffuse > color" % (
+                                                 b_obj.name, b_mat.name))
 
                     self.base_mtex = b_mat_texslot
 
@@ -539,8 +556,9 @@ class TextureHelper:
                 # detail
                 elif b_mat_texslot.use_map_color_diffuse:
                     if self.detail_mtex:
-                        raise nif_utils.NifError("Multiple detail textures in mesh '%s', material '%s'.\n" 
-                                                 " Make sure there is only one texture with Influence Diffuse > color" % (b_obj.name, b_mat.name))
+                        raise nif_utils.NifError("Multiple detail textures in mesh '%s', material '%s'.\n"
+                                                 " Make sure there is only one texture with Influence Diffuse > color" % (
+                                                 b_obj.name, b_mat.name))
                     # extra diffuse consider as detail texture
 
                     # check if alpha channel is enabled for this texture
@@ -553,7 +571,8 @@ class TextureHelper:
                     # multi-check
                     if self.glow_mtex:
                         raise nif_utils.NifError("Multiple reflection textures in mesh '%s', material '%s'.\n"
-                                                 "Make sure there is only one texture set as Influence > Mirror/Ray Mirror" % (b_obj.name, b_mat.name))
+                                                 "Make sure there is only one texture set as Influence > Mirror/Ray Mirror" % (
+                                                 b_obj.name, b_mat.name))
                     # got the reflection map
                     # check if alpha channel is enabled for this texture
                     if b_mat_texslot.use_map_alpha:
@@ -565,9 +584,10 @@ class TextureHelper:
                     raise nif_utils.NifError("Do not know how to export texture '%s', in mesh '%s', material '%s'.\n"
                                              "Either delete it, or if this texture is to be your base texture.\n"
                                              "Go to the Shading Panel Material Buttons, and set texture 'Map To' to 'COL'."
-                        % (b_mat_texslot.texture.name, b_obj.name, b_mat.name))
+                                             % (b_mat_texslot.texture.name, b_obj.name, b_mat.name))
 
             # nif only support UV-mapped textures
             else:
                 NifLog.warn("Non-UV texture in mesh '{0}', material '{1}'.\nEither delete all non-UV textures or "
-                            "create a UV map for every texture associated with selected object and run the script again.".format(b_obj.name, b_mat.name))
+                            "create a UV map for every texture associated with selected object and run the script again.".format(
+                    b_obj.name, b_mat.name))

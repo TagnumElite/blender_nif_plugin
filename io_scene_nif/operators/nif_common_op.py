@@ -66,7 +66,7 @@ class NifOperatorCommon:
              "Only show errors."),
             ("CRITICAL", "Critical",
              "Only show extremely critical errors."),
-            ),
+        ),
         name="Log Level",
         description="Level of verbosity on the console.",
         default="WARNING")
@@ -87,5 +87,3 @@ class NifOperatorCommon:
         default=0.0005,
         min=0.0, max=1.0, precision=5,
         options={'HIDDEN'})
-
-

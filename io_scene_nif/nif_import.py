@@ -42,7 +42,7 @@ from io_scene_nif.utility import nif_utils
 from io_scene_nif.utility.nif_logging import NifLog
 from io_scene_nif.io.nif import NifFile
 from io_scene_nif.io.kf import KFFile
-from io_scene_nif.io.egm import EGMFile 
+from io_scene_nif.io.egm import EGMFile
 
 from io_scene_nif.modules.animation.animation_import import AnimationHelper
 from io_scene_nif.modules.armature.armature_import import Armature
@@ -63,7 +63,6 @@ from pyffi.formats.nif import NifFormat
 
 
 class NifImport(NifCommon):
-
     # degrees to radians conversion constant
     D2R = 3.14159265358979 / 180.0
     IMPORT_EXTRANODES = True
@@ -71,7 +70,7 @@ class NifImport(NifCommon):
 
     def __init__(self, operator, context):
         NifCommon.__init__(self, operator)
-        
+
         self.root_ninode = 'NiNode'
 
         # Helper systems
@@ -87,7 +86,7 @@ class NifImport(NifCommon):
         self.materialhelper = Material(parent=self)
         self.materialhelper.set_texture_helper(self.texturehelper)
         self.objecthelper = NiObject()
-             
+
     def execute(self):
         """Main import function."""
 
@@ -109,12 +108,11 @@ class NifImport(NifCommon):
             # to armature' mode
             if NifOp.props.skeleton == "GEOMETRY_ONLY":
                 if (len(self.selected_objects) != 1
-                    or self.selected_objects[0].type != 'ARMATURE'):
+                        or self.selected_objects[0].type != 'ARMATURE'):
                     raise nif_utils.NifError(
                         "You must select exactly one armature in"
                         " 'Import Geometry Only + Parent To Selected Armature'"
                         " mode.")
-
 
             self.data = NifFile.load_nif(NifOp.props.filepath)
             if NifOp.props.override_scene_info:
@@ -152,7 +150,7 @@ class NifImport(NifCommon):
             if NifOp.props.send_bones_to_bind_position:
                 pyffi.spells.nif.fix.SpellSendBonesToBindPosition(data=self.data).recurse()
             if NifOp.props.apply_skin_deformation:
-                
+
                 # TODO Create function & move to object/mesh class
                 for n_geom in self.data.get_global_iterator():
                     if not isinstance(n_geom, NifFormat.NiGeometry):
@@ -178,7 +176,7 @@ class NifImport(NifCommon):
                 # and remove geometry from better bodies on skeleton import
                 for b in (b for b in block.tree()
                           if isinstance(b, NifFormat.NiGeometry)
-                          and b.is_skin()):
+                             and b.is_skin()):
                     # check if root belongs to the children list of the
                     # skeleton root (can only happen for better bodies meshes)
                     if root in [c for c in b.skin_instance.skeleton_root.children]:
@@ -210,9 +208,6 @@ class NifImport(NifCommon):
             bpy.context.scene.update()
 
         return {'FINISHED'}
-     
-    
-    
 
     def import_root(self, root_block):
         """Main import function."""
@@ -234,10 +229,10 @@ class NifImport(NifCommon):
         self.bsxflags = self.objecthelper.import_bsxflag_data(root_block)
         self.upbflags = self.objecthelper.import_upbflag_data(root_block)
         self.objectflags = root_block.flags
-        
+
         if isinstance(root_block, NifFormat.BSFadeNode):
             self.root_ninode = 'BSFadeNode'
-            
+
         # mark armature nodes and bones
         self.armaturehelper.mark_armatures_bones(root_block)
 
@@ -298,8 +293,6 @@ class NifImport(NifCommon):
                     b_obj.niftools_bs_invmarker[0].bs_inv_z = n_extra_list.rotation_z
                     b_obj.niftools_bs_invmarker[0].bs_inv_zoom = n_extra_list.zoom
 
-
-
         if self.root_ninode:
             b_obj.niftools.rootnode = self.root_ninode
         # store bone matrix offsets for re-export
@@ -309,8 +302,7 @@ class NifImport(NifCommon):
         # store original names for re-export
         if self.dict_names:
             self.armaturehelper.store_names()
-        
-        
+
         # now all havok objects are imported, so we are
         # ready to import the havok constraints
         self.bhkhelper.get_havok_objects()
@@ -325,7 +317,8 @@ class NifImport(NifCommon):
                     for oldgroupname in b_child_obj.vertex_groups.items():
                         newgroupname = self.get_bone_name_for_blender(oldgroupname)
                         if oldgroupname != newgroupname:
-                            NifLog.info("{0} : renaming vertex group {1} to {2}".format(b_child_obj, oldgroupname, newgroupname))
+                            NifLog.info("{0} : renaming vertex group {1} to {2}".format(b_child_obj, oldgroupname,
+                                                                                        newgroupname))
                             b_child_obj.data.renameVertGroup(oldgroupname, newgroupname)
             # set parenting
             # b_obj.parent_set(self.selected_objects)
@@ -333,7 +326,6 @@ class NifImport(NifCommon):
             vlr = bpy.context.view_layer
             vlr.objects.active = b_obj
             vlr.update()
-
 
     def import_branch(self, niBlock, b_armature=None, n_armature=None):
         """Read the content of the current NIF tree branch to Blender
@@ -363,7 +355,7 @@ class NifImport(NifCommon):
             elif niBlock.bs_properties:
                 for b_prop in niBlock.bs_properties:
                     self.import_shader_types(b_obj, b_prop)
-                                
+
             if niBlock.data.consistency_flags in NifFormat.ConsistencyType._enumvalues:
                 cf_index = NifFormat.ConsistencyType._enumvalues.index(niBlock.data.consistency_flags)
                 b_obj.niftools.consistency_flags = NifFormat.ConsistencyType._enumkeys[cf_index]
@@ -396,7 +388,9 @@ class NifImport(NifCommon):
                     n_armature = niBlock
                     NifLog.info("Merging nif tree '{0}' with armature '{1}'".format(niBlock.name, b_obj.name))
                     if niBlock.name != b_obj.name:
-                        NifLog.warn("Using Nif block '{0}' as armature '{1}' but names do not match".format(niBlock.name, b_obj.name))
+                        NifLog.warn(
+                            "Using Nif block '{0}' as armature '{1}' but names do not match".format(niBlock.name,
+                                                                                                    b_obj.name))
                 # armatures cannot group geometries into a single mesh
                 geom_group = []
             elif self.armaturehelper.is_bone(niBlock):
@@ -414,12 +408,12 @@ class NifImport(NifCommon):
                 if NifOp.props.animation:
                     for child in geom_group:
                         if nif_utils.find_controller(
-                            child, NifFormat.NiGeomMorpherController):
+                                child, NifFormat.NiGeomMorpherController):
                             geom_group.remove(child)
                 # import geometry/empty
                 if (not geom_group
-                    or not NifOp.props.combine_shapes
-                    or len(geom_group) > 16):
+                        or not NifOp.props.combine_shapes
+                        or len(geom_group) > 16):
                     # no grouping node, or too many materials to
                     # group the geometry into a single mesh
                     # so import it as an empty
@@ -433,7 +427,9 @@ class NifImport(NifCommon):
                     geom_group = []
                 else:
                     # node groups geometries, so import it as a mesh
-                    NifLog.info("Joining geometries {0} to single object '{1}'".format([child.name for child in geom_group], niBlock.name))
+                    NifLog.info(
+                        "Joining geometries {0} to single object '{1}'".format([child.name for child in geom_group],
+                                                                               niBlock.name))
                     b_obj = None
                     for child in geom_group:
                         self.active_obj_name = niBlock.name.decode()
@@ -447,14 +443,13 @@ class NifImport(NifCommon):
                         if child.bs_properties:
                             for b_prop in child.bs_properties:
                                 self.import_shader_types(b_obj, b_prop)
-                                
+
                         if child.data.consistency_flags in NifFormat.ConsistencyType._enumvalues:
                             cf_index = NifFormat.ConsistencyType._enumvalues.index(child.data.consistency_flags)
                             b_obj.niftools.consistency_flags = NifFormat.ConsistencyType._enumkeys[cf_index]
-  
-                    
+
                     b_obj.name = self.import_name(niBlock)
-                    
+
                     # skinning? add armature modifier
                     if any(child.skin_instance
                            for child in geom_group):
@@ -471,8 +466,6 @@ class NifImport(NifCommon):
                         b_mesh = b_obj.data
                         b_mesh.validate()
                         b_mesh.update()
-
-
 
             # find children that aren't part of the geometry group
             b_children_list = []
@@ -513,19 +506,19 @@ class NifImport(NifCommon):
                     b_child.parent = b_obj
 
             elif isinstance(b_obj, bpy.types.Bone):
-                
+
                 # TODO: MOVE TO ANIMATIONHELPER
-                
+
                 # bone parentship, is a bit more complicated
                 # go to rest position
-                
+
                 # b_armature.data.restPosition = True
                 bpy.context.view_layer.objects.active = b_armature
-                
+
                 # set up transforms
                 for n_child, b_child in object_children:
                     # save transform
-                    
+
                     # FIXME:
                     matrix = mathutils.Matrix(b_child.matrix_local)
                     # fix transform
@@ -561,11 +554,11 @@ class NifImport(NifCommon):
                     # the local Y axis)
                     matrix[1][3] -= b_obj.length
                     b_child.matrix_local = matrix
-                    
+
                     b_child.parent = b_armature
                     b_child.parent_type = 'BONE'
                     b_child.parent_bone = b_obj.name
-                
+
             else:
                 raise RuntimeError(
                     "Unexpected object type %s" % b_obj.__class__)
@@ -587,7 +580,9 @@ class NifImport(NifCommon):
                 constr = b_obj.constraints[-1]
                 constr.target = b_obj_camera
                 if constr.target == None:
-                    NifLog.warn("Constraint for billboard node on {0} added but target not set due to transform bug. Set target to Camera manually.".format(b_obj))
+                    NifLog.warn(
+                        "Constraint for billboard node on {0} added but target not set due to transform bug. Set target to Camera manually.".format(
+                            b_obj))
                 constr.track_axis = 'TRACK_Z'
                 constr.up_axis = 'UP_Y'
                 # yields transform bug!
@@ -612,16 +607,16 @@ class NifImport(NifCommon):
             # import extra node data, such as node type
             # (other types should be added here too)
             if (isinstance(niBlock, NifFormat.NiLODNode)
-                # XXX additional isinstance(b_obj, bpy.types.Object)
-                # XXX is a 'workaround' to the limitation that bones
-                # XXX cannot have properties in Blender 2.4x
-                # XXX (remove this check with Blender 2.5)
-                and isinstance(b_obj, bpy.types.Object)):
+                    # XXX additional isinstance(b_obj, bpy.types.Object)
+                    # XXX is a 'workaround' to the limitation that bones
+                    # XXX cannot have properties in Blender 2.4x
+                    # XXX (remove this check with Blender 2.5)
+                    and isinstance(b_obj, bpy.types.Object)):
                 b_obj.addProperty("Type", "NiLODNode", "STRING")
                 # import lod data
                 range_data = niBlock.lod_level_data
                 for lod_level, (n_child, b_child) in zip(
-                    range_data.lod_levels, b_children_list):
+                        range_data.lod_levels, b_children_list):
                     b_child.addProperty(
                         "Near Extent", lod_level.near_extent, "FLOAT")
                     b_child.addProperty(
@@ -630,7 +625,7 @@ class NifImport(NifCommon):
             return b_obj
         # all else is currently discarded
         return None
-    
+
     def import_shader_types(self, b_obj, b_prop):
         if isinstance(b_prop, NifFormat.BSShaderPPLightingProperty):
             b_obj.niftools_shader.bs_shadertype = 'BSShaderPPLightingProperty'
@@ -640,7 +635,7 @@ class NifImport(NifCommon):
                 sf_index = b_prop.shader_flags._names.index(b_flag_name)
                 if b_prop.shader_flags._items[sf_index]._value == 1:
                     b_obj.niftools_shader[b_flag_name] = True
-                
+
         if isinstance(b_prop, NifFormat.BSLightingShaderProperty):
             b_obj.niftools_shader.bs_shadertype = 'BSLightingShaderProperty'
             sf_type = NifFormat.BSLightingShaderPropertyShaderType._enumvalues.index(b_prop.skyrim_shader_type)
@@ -651,7 +646,7 @@ class NifImport(NifCommon):
             b_obj.niftools_shader.bs_shadertype = 'BSEffectShaderProperty'
             b_obj.niftools_shader.bslsp_shaderobjtype = 'Default'
             self.import_shader_flags(b_obj, b_prop)
-                    
+
     def import_shader_flags(self, b_obj, b_prop):
         for b_flag_name_1 in b_prop.shader_flags_1._names:
             sf_index = b_prop.shader_flags_1._names.index(b_flag_name_1)
@@ -661,7 +656,7 @@ class NifImport(NifCommon):
             sf_index = b_prop.shader_flags_2._names.index(b_flag_name_2)
             if b_prop.shader_flags_2._items[sf_index]._value == 1:
                 b_obj.niftools_shader[b_flag_name_2] = True
-        
+
     def import_name(self, niBlock, max_length=63):
         """Get unique name for an object, preserving existing names.
         The maximum name length defaults to 63, since this is the
@@ -674,7 +669,7 @@ class NifImport(NifCommon):
         """
         if niBlock is None:
             return None
-        
+
         if niBlock in self.dict_names:
             return self.dict_names[niBlock]
 
@@ -689,7 +684,7 @@ class NifImport(NifCommon):
                 niName = "RootCollisionNode"
             else:
                 niName = "noname"
-        
+
         for uniqueInt in range(-1, 1000):
             # limit name length
             if uniqueInt == -1:
@@ -705,8 +700,8 @@ class NifImport(NifCommon):
                 if niName not in self.dict_names:
                     break
             if (shortName not in bpy.data.objects
-                and shortName not in bpy.data.materials
-                and shortName not in bpy.data.meshes):
+                    and shortName not in bpy.data.materials
+                    and shortName not in bpy.data.meshes):
                 # shortName not in use anywhere
                 break
         else:
@@ -754,7 +749,7 @@ class NifImport(NifCommon):
             then applytransform must be C{True}.
         :type applytransform: C{bool}
         """
-        assert(isinstance(niBlock, NifFormat.NiTriBasedGeom))
+        assert (isinstance(niBlock, NifFormat.NiTriBasedGeom))
 
         NifLog.info("Importing mesh data for geometry {0}".format(niBlock.name))
 
@@ -833,35 +828,35 @@ class NifImport(NifCommon):
         # note that NIF files only support one material for each trishape
         # find material property
         n_mat_prop = nif_utils.find_property(
-                        niBlock, NifFormat.NiMaterialProperty)
+            niBlock, NifFormat.NiMaterialProperty)
         n_shader_prop = nif_utils.find_property(
-                        niBlock, NifFormat.BSLightingShaderProperty)
+            niBlock, NifFormat.BSLightingShaderProperty)
         n_effect_shader_prop = nif_utils.find_property(
-                        niBlock, NifFormat.BSEffectShaderProperty)
+            niBlock, NifFormat.BSEffectShaderProperty)
 
         if n_mat_prop or n_shader_prop or n_effect_shader_prop:
             # Texture
             n_texture_prop = None
             if n_uvco:
                 n_texture_prop = nif_utils.find_property(niBlock,
-                                                  NifFormat.NiTexturingProperty)
-                
+                                                         NifFormat.NiTexturingProperty)
+
             # extra datas (for sid meier's railroads) that have material info
             extra_datas = []
             for extra in niBlock.get_extra_datas():
                 if isinstance(extra, NifFormat.NiIntegerExtraData):
                     if extra.name in self.EXTRA_SHADER_TEXTURES:
                         # yes, it describes the shader slot number
-                        extra_datas.append(extra)    
-            
-            # bethesda shader
+                        extra_datas.append(extra)
+
+                        # bethesda shader
             bsShaderProperty = None
             bsShaderProperty = nif_utils.find_property(
                 niBlock, NifFormat.BSShaderPPLightingProperty)
             if bsShaderProperty is None:
                 bsShaderProperty = nif_utils.find_property(
-                niBlock, NifFormat.BSLightingShaderProperty)
-                
+                    niBlock, NifFormat.BSLightingShaderProperty)
+
             if bsShaderProperty:
                 for textureslot in bsShaderProperty.texture_set.textures:
                     if textureslot:
@@ -869,12 +864,11 @@ class NifImport(NifCommon):
                         break
                 else:
                     bsShaderProperty = self.bsShaderProperty1st
-                
+
             bsEffectShaderProperty = None
             bsEffectShaderProperty = nif_utils.find_property(
                 niBlock, NifFormat.BSEffectShaderProperty)
 
-            
             # texturing effect for environment map
             # in official files this is activated by a NiTextureEffect child
             # preceeding the niBlock
@@ -897,29 +891,28 @@ class NifImport(NifCommon):
                         if isinstance(effect, NifFormat.NiTextureEffect):
                             textureEffect = effect
                             break
-            
+
             # Alpha
             n_alpha_prop = nif_utils.find_property(niBlock,
-                                               NifFormat.NiAlphaProperty)
+                                                   NifFormat.NiAlphaProperty)
             self.ni_alpha_prop = n_alpha_prop
 
             # Specularity
             n_specular_prop = nif_utils.find_property(niBlock,
-                                              NifFormat.NiSpecularProperty)
+                                                      NifFormat.NiSpecularProperty)
 
             # Wireframe
             n_wire_prop = nif_utils.find_property(niBlock,
-                                              NifFormat.NiWireframeProperty)
-
+                                                  NifFormat.NiWireframeProperty)
 
             # create material and assign it to the mesh
             # XXX todo: delegate search for properties to import_material
             material = self.materialhelper.import_material(n_mat_prop, n_texture_prop,
-                                            n_alpha_prop, n_specular_prop,
-                                            textureEffect, n_wire_prop,
-                                            bsShaderProperty,
-                                            bsEffectShaderProperty,
-                                            extra_datas)
+                                                           n_alpha_prop, n_specular_prop,
+                                                           textureEffect, n_wire_prop,
+                                                           bsShaderProperty,
+                                                           bsEffectShaderProperty,
+                                                           extra_datas)
 
             # XXX todo: merge this call into import_material
             self.animationhelper.material_animation.import_material_controllers(material, niBlock)
@@ -1040,7 +1033,7 @@ class NifImport(NifCommon):
                 b_mesh.loops[(l + (bl_index))].vertex_index = lp_points[l]
                 l += 1
             bl_index += (len(poly_gens[(f_map[i] - bf2_index)]))
-            
+
         # at this point, deleted polygons (degenerate or duplicate)
         # satisfy f_map[i] = None
 
@@ -1054,18 +1047,17 @@ class NifImport(NifCommon):
             polysmooth.use_smooth = True if (n_norms or niBlock.skin_instance) else False
             polysmooth.material_index = materialIndex
         # vertex colors
-        
 
         if b_mesh.polygons and niData.vertex_colors:
             n_vcol_map = list()
             for n_vcol, n_vmap in zip(niData.vertex_colors, v_map):
                 n_vcol_map.append((n_vcol, n_vmap))
-            
+
             # create vertex_layers
             if not "VertexColor" in b_mesh.vertex_colors:
                 b_mesh.vertex_colors.new(name="VertexColor")  # color layer
                 b_mesh.vertex_colors.new(name="VertexAlpha")  # greyscale
-            
+
             # Mesh Vertex Color / Mesh Face
             for b_polygon_loop in b_mesh.loops:
                 b_loop_index = b_polygon_loop.index
@@ -1093,7 +1085,7 @@ class NifImport(NifCommon):
         # (some corner cases have only one vertex, and no polygons,
         # and b_mesh.faceUV = 1 on such mesh raises a runtime error)
         if b_mesh.polygons:
-           
+
             # b_mesh.faceUV = 1
             # b_mesh.vertexUV = 0
             for i in range(len(niData.uv_sets)):
@@ -1176,12 +1168,12 @@ class NifImport(NifCommon):
             bodypart_flag = []
             skinpart = niBlock.get_skin_partition()
             for bodypart, skinpartblock in zip(
-                skininst.partitions, skinpart.skin_partition_blocks):
+                    skininst.partitions, skinpart.skin_partition_blocks):
                 bodypart_wrap = NifFormat.BSDismemberBodyPartType()
                 bodypart_wrap.set_value(bodypart.body_part)
                 groupname = bodypart_wrap.get_detail_display()
                 # create vertex group if it did not exist yet
-                if not(groupname in b_obj.vertex_groups.items()):
+                if not (groupname in b_obj.vertex_groups.items()):
                     v_group = b_obj.vertex_groups.new(groupname)
                     skinpart_index = len(skinpart_list)
                     skinpart_list.append((skinpart_index, groupname))
@@ -1215,7 +1207,7 @@ class NifImport(NifCommon):
                     b_mesh.key.blocks[0].name = keyname
                     # get base vectors and import all morphs
                     baseverts = morphData.morphs[0].vectors
-                    b_ipo = Blender.Ipo.New('Key' , 'KeyIpo')
+                    b_ipo = Blender.Ipo.New('Key', 'KeyIpo')
                     b_mesh.key.ipo = b_ipo
                     for idxMorph in range(1, morphData.num_morphs):
                         # get name for key
@@ -1227,7 +1219,7 @@ class NifImport(NifCommon):
                         morphverts = morphData.morphs[idxMorph].vectors
                         # for each vertex calculate the key position from base
                         # pos + delta offset
-                        assert(len(baseverts) == len(morphverts) == len(v_map))
+                        assert (len(baseverts) == len(morphverts) == len(v_map))
                         for bv, mv, b_v_index in zip(baseverts, morphverts, v_map):
                             base = mathutils.Vector(bv.x, bv.y, bv.z)
                             delta = mathutils.Vector(mv.x, mv.y, mv.z)
@@ -1281,20 +1273,19 @@ class NifImport(NifCommon):
             sym_morphs = [list(morph.get_relative_vertices())
                           for morph in self.egmdata.sym_morphs]
             asym_morphs = [list(morph.get_relative_vertices())
-                          for morph in self.egmdata.asym_morphs]
+                           for morph in self.egmdata.asym_morphs]
 
             # insert base key at frame 1, using relative keys
             b_mesh.insertKey(1, 'relative')
 
             if self.IMPORT_EGMANIM:
                 # if morphs are animated: create key ipo for mesh
-                b_ipo = Blender.Ipo.New('Key' , 'KeyIpo')
+                b_ipo = Blender.Ipo.New('Key', 'KeyIpo')
                 b_mesh.key.ipo = b_ipo
-
 
             morphs = ([(morph, "EGM SYM %i" % i)
                        for i, morph in enumerate(sym_morphs)]
-                      + 
+                      +
                       [(morph, "EGM ASYM %i" % i)
                        for i, morph in enumerate(asym_morphs)])
 
@@ -1348,7 +1339,6 @@ class NifImport(NifCommon):
                 b_mesh.vertices[b_v_index].co[1] = base.y
                 b_mesh.vertices[b_v_index].co[2] = base.z
 
-
         # import priority if existing
         if niBlock.name in self.dict_bone_priorities:
             constr = b_obj.constraints.append(
@@ -1357,7 +1347,7 @@ class NifImport(NifCommon):
 
         # recalculate mesh to render correctly
         # implementation note: update() without validate() can cause crash
-        
+
         b_mesh.validate()
         b_mesh.update()
         b_obj.select_set(True)
@@ -1365,13 +1355,13 @@ class NifImport(NifCommon):
         vlr.objects.active = b_obj
 
         return b_obj
-    
+
     def set_parents(self, niBlock):
         """Set the parent block recursively through the tree, to allow
         crawling back as needed."""
         if isinstance(niBlock, NifFormat.NiNode):
             # list of non-null children
-            children = [ child for child in niBlock.children if child ]
+            children = [child for child in niBlock.children if child]
             for child in children:
                 child._parent = niBlock
                 self.set_parents(child)
@@ -1394,8 +1384,8 @@ class NifImport(NifCommon):
             return []
         # root collision node: join everything
         if isinstance(niBlock, NifFormat.RootCollisionNode):
-            return [ child for child in niBlock.children if
-                     isinstance(child, NifFormat.NiTriBasedGeom) ]
+            return [child for child in niBlock.children if
+                    isinstance(child, NifFormat.NiTriBasedGeom)]
         # check that node has name
         node_name = niBlock.name
         if not node_name:
@@ -1404,7 +1394,6 @@ class NifImport(NifCommon):
         if node_name[-9:].lower() == " nonaccum":
             node_name = node_name[:-9]
         # get all geometry children
-        return [ child for child in niBlock.children
-                 if (isinstance(child, NifFormat.NiTriBasedGeom)
-                     and child.name.find(node_name) != -1) ]
-
+        return [child for child in niBlock.children
+                if (isinstance(child, NifFormat.NiTriBasedGeom)
+                    and child.name.find(node_name) != -1)]

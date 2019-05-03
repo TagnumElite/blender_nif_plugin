@@ -1,8 +1,9 @@
 """Import and export collision data"""
 
+
 class TestBhkCollisionSphereShape(TestBaseGeometry, TestBhkCollision):
-    n_name = "collisions/base_bhkcollision_sphere" #name of nif
-    b_name = "Cube" #name of blender mesh object
+    n_name = "collisions/base_bhkcollision_sphere"  # name of nif
+    b_name = "Cube"  # name of blender mesh object
 
     def b_create_object(self):
         b_obj = TestBaseGeometry.b_create_object(self)
@@ -14,9 +15,10 @@ class TestBhkCollisionSphereShape(TestBaseGeometry, TestBhkCollision):
         b_coll.name = "CollisionSphere"
         b_coll = bpy.data.objects["CollisionSphere"]
 
+
 class TestBhkCollisionTriangleShape(TestBaseGeometry, TestBhkCollision):
-    n_name = "collisions/base_bhkcollision_triangle" #name of nif
-    b_name = "CubeObject" #name of blender mesh object
+    n_name = "collisions/base_bhkcollision_triangle"  # name of nif
+    b_name = "CubeObject"  # name of blender mesh object
 
     def b_create_object(self):
         b_obj = TestBaseGeometry.b_create_object(self, self.b_name)
@@ -32,14 +34,15 @@ class TestBhkCollisionTriangleShape(TestBaseGeometry, TestBhkCollision):
         if b_mesh.name == "poly0":
             nose.tools.assert_equal(len(b_mesh.vertices), 8)
 
+
 class TestBhkCapsuleObject(TestBaseGeometry, TestBhkCollision):
-    n_name = "collisions/base_bhkcollision_capsule" #name of nif
-    b_name = "Cube" #name of blender mesh object
+    n_name = "collisions/base_bhkcollision_capsule"  # name of nif
+    b_name = "Cube"  # name of blender mesh object
 
     def b_create_object(self):
         b_obj = TestBaseGeometry.b_create_object(self, self.b_name)
 
-        bpy.ops.mesh.primitive_cylinder_add(vertices=8,radius=1.2,depth=2)
+        bpy.ops.mesh.primitive_cylinder_add(vertices=8, radius=1.2, depth=2)
 
         b_coll = bpy.context.active_object
         b_coll.data.show_double_sided = False
