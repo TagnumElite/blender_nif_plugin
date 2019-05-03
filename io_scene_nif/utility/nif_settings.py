@@ -55,8 +55,14 @@ logging_level_enum = (
 )
 
 
+def get_settings(addon='io_scene_nif'):
+    """Get AddonPreference"""
+    from bpy import context
+    return context.preferences.addons[addon].preferences
+
+
 class NifSettings(AddonPreferences):
-    bl_idname = __package__
+    bl_idname = 'io_scene_nif'
 
     default_filepath: StringProperty(
         name="Default File Path",
@@ -82,7 +88,7 @@ class NifSettings(AddonPreferences):
 
     default_author: StringProperty(
         name="Default Author",
-        description="Default Author for projects",
+        description="Default Author for projects, currently not in use.",
     )
 
     boolean: BoolProperty(

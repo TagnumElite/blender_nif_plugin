@@ -38,7 +38,7 @@
 # ***** END LICENSE BLOCK *****
 
 import logging
-from .nif_settings import NifSettings
+from .nif_settings import get_settings
 
 
 class _MockOperator:
@@ -56,11 +56,20 @@ class NifLog:
     @classmethod
     def register(cls, operator=None):
         """Register this after the NifAddonPrefs"""
+        settings = get_settings()
         NifLog.op = operator
         NifLog.niftools_logger = logging.getLogger("niftools")
-        NifLog.niftools_logger.setLevel(getattr(logging, str(NifSettings.niftools_logging_level), logging.WARNING))
+        try:
+            NifLog.niftools_logger.setLevel(getattr(logging, settings.niftools_logging_level))
+        except AttributeError:
+            NifLog.niftools_logger.setLevel(logging.WARNING)
+            print("Failed to fetch Niftools Logging Level")
         NifLog.pyffi_logger = logging.getLogger("pyffi")
-        NifLog.pyffi_logger.setLevel(getattr(logging, str(NifSettings.pyffi_logging_level), logging.WARNING))
+        try:
+            NifLog.pyffi_logger.setLevel(getattr(logging, settings.pyffi_logging_level))
+        except AttributeError:
+            NifLog.pyffi_logger.setLevel(logging.WARNING)
+            print("Failed to fetch PyFFI Logging Level")
         NifLog.log_handler = logging.StreamHandler()
         NifLog.log_handler.setLevel(logging.DEBUG)
         NifLog.log_formatter = logging.Formatter("%(name)s:%(levelname)s:%(message)s")
