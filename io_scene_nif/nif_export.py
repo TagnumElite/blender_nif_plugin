@@ -267,7 +267,7 @@ class NifExport(NifCommon):
                     # write the animation group text buffer
                     animtxt = bpy.data.texts.new("Anim")
                     animtxt.write("%i/Idle: Start/Idle: Loop Start\n%i/Idle: Loop Stop/Idle: Stop" % (
-                    bpy.context.scene.frame_start, bpy.context.scene.frame_end))
+                        bpy.context.scene.frame_start, bpy.context.scene.frame_end))
 
             # animations without keyframe animations crash the TESCS
             # if we are in that situation, add a trivial keyframe animation
@@ -302,7 +302,7 @@ class NifExport(NifCommon):
             # oblivion skeleton export: check that all bones have a
             # transform controller and transform interpolator
             if NifOp.props.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM') and filebase.lower() in (
-            'skeleton', 'skeletonbeast'):
+                    'skeleton', 'skeletonbeast'):
                 # here comes everything that is Oblivion skeleton export specific
                 NifLog.info("Adding controllers and interpolators for skeleton")
                 for block in list(self.dict_blocks.keys()):
@@ -654,7 +654,7 @@ class NifExport(NifCommon):
                             ctrl.target = None
                 # oblivion
                 elif NifOp.props.game in (
-                'OBLIVION', 'FALLOUT_3', 'CIVILIZATION_IV', 'ZOO_TYCOON_2', 'FREEDOM_FORCE_VS_THE_3RD_REICH'):
+                        'OBLIVION', 'FALLOUT_3', 'CIVILIZATION_IV', 'ZOO_TYCOON_2', 'FREEDOM_FORCE_VS_THE_3RD_REICH'):
                     # create kf root header
                     kf_root = self.objecthelper.create_block("NiControllerSequence")
                     if self.EXPORT_ANIMSEQUENCENAME:
@@ -668,7 +668,7 @@ class NifExport(NifCommon):
                     kf_root.frequency = 1.0
                     kf_root.start_time = (bpy.context.scene.frame_start - 1) * bpy.context.scene.render.fps
                     kf_root.stop_time = (
-                                                    bpy.context.scene.frame_end - bpy.context.scene.frame_start) * bpy.context.scene.render.fps
+                                                bpy.context.scene.frame_end - bpy.context.scene.frame_start) * bpy.context.scene.render.fps
                     # quick hack to set correct target name
                     if not self.EXPORT_ANIMTARGETNAME:
                         if "Bip01" in [node.name for node in node_kfctrls.iterkeys()]:

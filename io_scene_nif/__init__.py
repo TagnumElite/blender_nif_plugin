@@ -42,6 +42,7 @@ import sys
 
 import bpy
 import bpy.props
+from bpy.types import AddonPreferences
 
 # Python dependencies are bundled inside the io_scene_nif/dependencies folder
 _dependencies_path = os.path.join(os.path.dirname(__file__), "dependencies")
@@ -51,7 +52,6 @@ if _dependencies_path not in sys.path:
 del _dependencies_path
 
 from io_scene_nif import properties, operators, ui
-from io_scene_nif.utility.nif_settings import NifSettings
 from io_scene_nif.utility.nif_logging import NifLog
 
 # noinspection PyBroadException
@@ -61,6 +61,18 @@ try:
     nif_debug.start_debug()
 except:
     print("Failed to load debug module")
+
+use_icons = False
+try:
+    # noinspection PyUnresolvedReferences
+    import bpy.utils.previews
+
+    use_icons = True
+except ImportError:
+    pass
+
+global custom_icons
+custom_icons = None
 
 # Blender addon info.
 bl_info = {
@@ -78,17 +90,79 @@ bl_info = {
     "category": "Import-Export"
 }
 
+logging_level_enum = (
+    ("NOTSET", "Not Set", "Not Set", "CHECKBOX_DEHLT", 0),
+    ("DEBUG", "Debug", "Not Set", "QUESTION", 10),
+    ("INFO", "Info", "Not Set", "HELP", 20),
+    ("WARNING", "Warning", "Not Set", "", 30),
+    ("ERROR", "Error", "Not Set", "ERROR", 40),
+    ("CRITICAL", "Critical", "Not Set", "CANCEL", 50),
+)
+
+
+class NifSettings(AddonPreferences):
+    bl_idname = __package__
+
+    default_filepath: bpy.props.StringProperty(
+        name="Default File Path",
+        description="Default output file path",
+        subtype='DIR_PATH',
+    )
+
+    pyffi_logging_level: bpy.props.EnumProperty(
+        name="PyFFI Logging Level",
+        description="",
+        # update=update_pyffi_logger,
+        items=logging_level_enum,
+        default="WARNING",
+    )
+
+    niftools_logging_level: bpy.props.EnumProperty(
+        name="NifTools Logging Level",
+        description="",
+        # update=update_pyffi_logger,
+        items=logging_level_enum,
+        default="WARNING",
+    )
+
+    default_author: bpy.props.StringProperty(
+        name="Default Author",
+        description="Default Author for projects, currently not in use.",
+    )
+
+    boolean: bpy.props.BoolProperty(
+        name="Example Boolean",
+        default=False,
+    )
+
+    def draw(self, context):
+        layout = self.layout
+        layout.label(text="This is a preferences view for our add-on")
+        layout.prop(self, "default_filepath", icon="FILE_SCRIPT")
+        layout.prop(self, "pyffi_logging_level")
+        layout.prop(self, "niftools_logging_level")
+        layout.prop(self, "default_author", icon="USER")
+
 
 # noinspection PyUnusedLocal
 def menu_func_import(self, context):
-    self.layout.operator(operators.nif_import_op.NifImportOperator.bl_idname, text="NetImmerse/Gamebryo (.nif)")
+    if not custom_icons or 'niftools_logo' not in custom_icons:
+        self.layout.operator(operators.nif_import_op.NifImportOperator.bl_idname, text="NetImmerse/Gamebryo (.nif)")
+    else:
+        self.layout.operator(operators.nif_import_op.NifImportOperator.bl_idname, text="NetImmerse/Gamebryo (.nif)",
+                             icon_value=custom_icons['niftools_logo'].icon_id)
 
 
 # noinspection PyUnusedLocal
 def menu_func_export(self, context):
-    self.layout.operator(operators.nif_export_op.NifExportOperator.bl_idname, text="NetImmerse/Gamebryo (.nif)")
+    if not custom_icons or 'niftools_logo' not in custom_icons:
+        self.layout.operator(operators.nif_export_op.NifExportOperator.bl_idname, text="NetImmerse/Gamebryo (.nif)")
+    else:
+        self.layout.operator(operators.nif_export_op.NifExportOperator.bl_idname, text="NetImmerse/Gamebryo (.nif)",
+                             icon_value=custom_icons['niftools_logo'].icon_id)
 
 
+# noinspection PyBroadException
 def register():
     bpy.utils.register_class(NifSettings)
     NifLog.register()
@@ -96,11 +170,28 @@ def register():
     ui.register()
     operators.register()
 
+    try:
+        script_path = bpy.path.abspath(os.path.dirname(__file__))
+        icons_dir = os.path.join(script_path, 'icons')
+        custom_icons = bpy.utils.previews.new()
+    except Exception:
+        NifLog.error("Failed to load custom icons.")
+        custom_icons = None
+
+    if use_icons:
+        logo_path = os.path.join(icons_dir, "niftools-logo.png")
+        if os.path.isfile(logo_path):
+            custom_icons.load('niftools_logo', logo_path, 'IMAGE')
+
     bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
     bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
 
 
 def unregister():
+    # remove icons
+    if use_icons and custom_icons != "":
+        bpy.utils.previews.remove(custom_icons)
+
     bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
 

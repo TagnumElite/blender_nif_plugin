@@ -38,7 +38,7 @@
 # ***** END LICENSE BLOCK *****
 
 import logging
-from .nif_settings import get_settings
+from . import get_settings
 
 
 class _MockOperator:

@@ -46,6 +46,7 @@ import operator
 from pyffi.formats.nif import NifFormat
 from pyffi.utils.quickhull import qhull3d
 from io_scene_nif.modules.object.object_import import NiObject
+from io_scene_nif.utility import matmul
 from io_scene_nif.utility.nif_logging import NifLog
 from io_scene_nif.utility.nif_global import NifOp
 
@@ -122,7 +123,7 @@ class bhkshape_import():
 
         # apply transform
         for b_col_obj in collision_objs:
-            b_col_obj.matrix_local = b_col_obj.matrix_local @ transform
+            b_col_obj.matrix_local = matmul(b_col_obj.matrix_local, transform)
             # b_col_obj.nifcollision.havok_material = NifFormat.HavokMaterial._enumkeys[bhkshape.material]
             # and return a list of transformed collision shapes
         return collision_objs
@@ -149,7 +150,7 @@ class bhkshape_import():
 
             # apply transform
             for b_col_obj in collision_objs:
-                b_col_obj.matrix_local = b_col_obj.matrix_local @ transform
+                b_col_obj.matrix_local = matmul(b_col_obj.matrix_local, transform)
 
         # set physics flags and mass
         for b_col_obj in collision_objs:
@@ -164,7 +165,8 @@ class bhkshape_import():
                 b_col_obj.rigid_body.mass = bhkshape.mass / len(collision_objs)
 
             b_col_obj.nifcollision.deactivator_type = NifFormat.DeactivatorType._enumkeys[bhkshape.deactivator_type]
-            b_col_obj.nifcollision.solver_deactivation = NifFormat.SolverDeactivation._enumkeys[bhkshape.solver_deactivation]
+            b_col_obj.nifcollision.solver_deactivation = NifFormat.SolverDeactivation._enumkeys[
+                bhkshape.solver_deactivation]
             b_col_obj.nifcollision.oblivion_layer = NifFormat.OblivionLayer._enumkeys[bhkshape.layer]
             b_col_obj.nifcollision.quality_type = NifFormat.MotionQuality._enumkeys[bhkshape.quality_type]
             b_col_obj.nifcollision.motion_system = NifFormat.MotionSystem._enumkeys[bhkshape.motion_system]

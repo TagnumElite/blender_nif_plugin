@@ -733,7 +733,7 @@ class ObjectAnimation:
         n_times = []  # track all times (used later in start time and end time)
         # we just leave interpolation at constant
         n_bool_data.data.interpolation = NifFormat.KeyType.CONST_KEY
-        #n_bool_data.data.interpolation = self.get_n_curve_from_b_curve(
+        # n_bool_data.data.interpolation = self.get_n_curve_from_b_curve(
         #    b_curve.interpolation)
         n_vis_data.num_keys = len(b_curve.bezierPoints)
         n_bool_data.data.num_keys = len(b_curve.bezierPoints)
