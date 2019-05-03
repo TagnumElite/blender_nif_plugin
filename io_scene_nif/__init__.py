@@ -71,8 +71,8 @@ try:
 except ImportError:
     pass
 
-global custom_icons
-custom_icons = None
+global preview_collections
+preview_collections = {}
 
 # Blender addon info.
 bl_info = {
@@ -146,20 +146,22 @@ class NifSettings(AddonPreferences):
 
 # noinspection PyUnusedLocal
 def menu_func_import(self, context):
-    if not custom_icons or 'niftools_logo' not in custom_icons:
+    pmain = preview_collections["main"]
+    if not pmain or 'niftools_logo' not in pmain:
         self.layout.operator(operators.nif_import_op.NifImportOperator.bl_idname, text="NetImmerse/Gamebryo (.nif)")
     else:
         self.layout.operator(operators.nif_import_op.NifImportOperator.bl_idname, text="NetImmerse/Gamebryo (.nif)",
-                             icon_value=custom_icons['niftools_logo'].icon_id)
+                             icon_value=pmain['niftools_logo'].icon_id)
 
 
 # noinspection PyUnusedLocal
 def menu_func_export(self, context):
-    if not custom_icons or 'niftools_logo' not in custom_icons:
+    pmain = preview_collections["main"]
+    if not pmain or 'niftools_logo' not in pmain:
         self.layout.operator(operators.nif_export_op.NifExportOperator.bl_idname, text="NetImmerse/Gamebryo (.nif)")
     else:
         self.layout.operator(operators.nif_export_op.NifExportOperator.bl_idname, text="NetImmerse/Gamebryo (.nif)",
-                             icon_value=custom_icons['niftools_logo'].icon_id)
+                             icon_value=pmain['niftools_logo'].icon_id)
 
 
 # noinspection PyBroadException
@@ -171,14 +173,16 @@ def register():
     operators.register()
 
     try:
-        script_path = bpy.path.abspath(os.path.dirname(__file__))
-        icons_dir = os.path.join(script_path, 'icons')
         custom_icons = bpy.utils.previews.new()
-    except Exception:
-        NifLog.error("Failed to load custom icons.")
-        custom_icons = None
+        preview_collections["main"] = custom_icons
+    except Exception as e:
+        print("Failed to load custom icons.")
+        print(e)
+        preview_collections["main"] = ""
 
     if use_icons:
+        script_path = bpy.path.abspath(os.path.dirname(__file__))
+        icons_dir = os.path.join(script_path, 'icons')
         logo_path = os.path.join(icons_dir, "niftools-logo.png")
         if os.path.isfile(logo_path):
             custom_icons.load('niftools_logo', logo_path, 'IMAGE')
@@ -189,8 +193,10 @@ def register():
 
 def unregister():
     # remove icons
-    if use_icons and custom_icons != "":
-        bpy.utils.previews.remove(custom_icons)
+    if use_icons and preview_collections["main"] != "":
+        for pcoll in preview_collections.values():
+            bpy.utils.previews.remove(pcoll)
+        preview_collections.clear()
 
     bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
