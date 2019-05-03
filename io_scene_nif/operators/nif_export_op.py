@@ -47,13 +47,6 @@ from io_scene_nif import nif_export
 from .nif_common_op import NifOperatorCommon
 
 
-def _game_to_enum(game):
-    symbols = ":,'\" +-*!?;./="
-    table = str.maketrans(symbols, "_" * len(symbols))
-    enum = game.upper().translate(table).replace("__", "_")
-    return enum
-
-
 class NifExportOperator(bpy.types.Operator, ExportHelper, NifOperatorCommon):
     """Operator for saving a nif file."""
 
@@ -69,19 +62,6 @@ class NifExportOperator(bpy.types.Operator, ExportHelper, NifOperatorCommon):
         description="Changes size of mesh from Blender default to nif default.",
         default=1.0,
         min=0.01, max=100.0, precision=2)
-
-    #: For which game to export.
-    game: bpy.props.EnumProperty(
-        items=[
-            (_game_to_enum(game), game, "Export for " + game)
-            # implementation note: reversed makes it show alphabetically
-            # (at least with the current blender)
-            for game in reversed(sorted(
-                [x for x in NifFormat.games.keys() if x != '?']))
-            ],
-        name="Game",
-        description="For which game to export.",
-        default='OBLIVION')
 
     #: How to export animation.
     animation: bpy.props.EnumProperty(
@@ -157,12 +137,6 @@ class NifExportOperator(bpy.types.Operator, ExportHelper, NifOperatorCommon):
         name="Force DDS",
         description="Force texture .dds extension.",
         default=True)
-
-    #: Map game enum to nif version.
-    version = {
-        _game_to_enum(game): versions[-1]
-        for game, versions in NifFormat.games.items() if game != '?'
-        }
 
     def execute(self, context):
         """Execute the export operators: first constructs a

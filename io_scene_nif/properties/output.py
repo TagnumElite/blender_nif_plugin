@@ -39,71 +39,85 @@ import bpy
 from bpy.props import (
     PointerProperty,
     IntProperty,
-    BoolProperty,
     EnumProperty,
     StringProperty,
 )
 from bpy.types import PropertyGroup
+from pyffi.formats.nif import NifFormat
 
 
 def update_version(self, context):
     print("Test Update Version")
 
 
+def translate_name(name):
+    symbols = ":,'\" +-*!?;./="
+    table = str.maketrans(symbols, "_" * len(symbols))
+    t_name = name.upper().translate(table).replace("__", "_")
+    return t_name
+
+
 def get_games(self, context):
-    print("Getting Games")
-    return (
-        ('SKYRIM', "Skyrim", "Skyrim game version"),
-        ('OBLIVION', "Oblivion", "Oblivion game version"),
-    )
+    games = set()
+    for name in reversed(sorted(NifFormat.games.keys())):
+        if name == '?':
+            continue
+        games.add((translate_name(name), name, "Export for " + name))
+    return games
+
+
+version = {
+    translate_name(game): versions[-1] for game, versions in NifFormat.games.items() if game != '?'
+}
+
+
+def update_game(self, context):
+    sc = context.scene.niftools_output_props
+    sc.nif_version = version[sc.game]
 
 
 class Output(PropertyGroup):
-    manual: BoolProperty(
-        name="Manual",
-        description="Automatic version selection",
-        default=True,
-        update=update_version,
-    )
-
     game: EnumProperty(
         name="Game",
-        description="",
+        description="The game for export and version",
         items=get_games,
-        update=update_version,
+        update=update_game,
     )
 
     nif_version: IntProperty(
         name="Nif Version",
         description="Nif version",
         default=0,
+        update=update_version,
     )
 
     user_version: IntProperty(
         name="User Version",
         description="user version",
         default=0,
+        update=update_version,
     )
 
     user_version_2: IntProperty(
         name="User Version 2",
         description="second user version",
         default=0,
+        update=update_version,
     )
 
     author: StringProperty(
         name="Author",
-        description="second user version",
+        description="Author of the mesh",
     )
 
     export_script: StringProperty(
         name="Export Script",
-        description="second user version",
+        default="Blender Nif Plugin (Export)",
     )
 
     process_script: StringProperty(
         name="Process Script",
-        description="second user version",
+        default="PyFFI (Export)",
     )
 
     @classmethod

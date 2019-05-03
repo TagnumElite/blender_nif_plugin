@@ -44,6 +44,7 @@ from .nif_common_op import NifOperatorCommon
 
 from io_scene_nif import nif_import
 
+
 class NifImportOperator(bpy.types.Operator, ImportHelper, NifOperatorCommon):
     """Operator for loading a nif file."""
 
@@ -129,7 +130,6 @@ class NifImportOperator(bpy.types.Operator, ImportHelper, NifOperatorCommon):
         description="Re-align or Re-Align+Roll",
         default="1")
 
-
     #: What should be imported.
     skeleton: bpy.props.EnumProperty(
         items=(
@@ -155,7 +155,6 @@ class NifImportOperator(bpy.types.Operator, ImportHelper, NifOperatorCommon):
         name="Combine Vertices",
         description="Merge vertices that have identical location and normal values.",
         default=False)
-    
 
     def execute(self, context):
         """Execute the import operators: first constructs a
@@ -165,11 +164,11 @@ class NifImportOperator(bpy.types.Operator, ImportHelper, NifOperatorCommon):
         """
         
         # setup the viewport for preferred viewing settings
-        bpy.context.scene.game_settings.material_mode = 'GLSL'
+        # This Doesn't exist anymore, need to find the replacement
+        # bpy.context.scene.game_settings.material_mode = 'GLSL'
         for area in bpy.context.window.screen.areas:
-            if area.type =='VIEW_3D':
-                area.spaces[0].viewport_shade = 'MATERIAL'
-                area.spaces[0].show_backface_culling = True
+            if area.type == 'VIEW_3D':
+                area.spaces[0].shading.type = 'MATERIAL'
+                area.spaces[0].shading.show_backface_culling = True
         
         return nif_import.NifImport(self, context).execute()
-    

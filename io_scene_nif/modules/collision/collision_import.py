@@ -109,7 +109,6 @@ class bhkshape_import():
         NifLog.warn("Unsupported bhk shape {0}".format(bhkshape.__class__.__name__))
         return []
 
-
     def import_bhktransform(self, bhkshape):
         """Imports a BhkTransform block and applies the transform to the collision object"""
 
@@ -123,11 +122,10 @@ class bhkshape_import():
 
         # apply transform
         for b_col_obj in collision_objs:
-            b_col_obj.matrix_local = b_col_obj.matrix_local * transform
+            b_col_obj.matrix_local = b_col_obj.matrix_local @ transform
             # b_col_obj.nifcollision.havok_material = NifFormat.HavokMaterial._enumkeys[bhkshape.material]
             # and return a list of transformed collision shapes
         return collision_objs
-
 
     def import_bhkridgidbody(self, bhkshape):
         """Imports a BhkRigidBody block and applies the transform to the collision objects"""
@@ -151,12 +149,12 @@ class bhkshape_import():
 
             # apply transform
             for b_col_obj in collision_objs:
-                b_col_obj.matrix_local = b_col_obj.matrix_local * transform
+                b_col_obj.matrix_local = b_col_obj.matrix_local @ transform
 
         # set physics flags and mass
         for b_col_obj in collision_objs:
-            scn = bpy.context.scene
-            scn.objects.active = b_col_obj
+            vlr = bpy.context.view_layer
+            vlr.objects.active = b_col_obj
             bpy.ops.rigidbody.object_add(type='ACTIVE')
             b_col_obj.rigid_body.enabled = True
             
@@ -210,7 +208,6 @@ class bhkshape_import():
         # and return a list of transformed collision shapes
         return collision_objs
 
-
     def import_bhkbox_shape(self, bhkshape):
         """Import a BhkBox block as a simple Box collision object"""
         # create box
@@ -238,13 +235,13 @@ class bhkshape_import():
 
         # link box to scene and set transform
         b_obj = bpy.data.objects.new('box', b_mesh)
-        bpy.context.scene.objects.link(b_obj)
-        scn = bpy.context.scene
-        scn.objects.active = b_obj
+        bpy.context.scene.collection.objects.link(b_obj)
+        vlr = bpy.context.view_layer
+        vlr.objects.active = b_obj
 
         # set bounds type
-        b_obj.draw_type = 'WIRE'
-        b_obj.draw_bounds_type = 'BOX'
+        b_obj.display_type = 'WIRE'
+        b_obj.display_bounds_type = 'BOX'
         b_obj.game.use_collision_bounds = True
         b_obj.game.collision_bounds_type = 'BOX'
         b_obj.game.radius = bhkshape.radius
@@ -253,10 +250,9 @@ class bhkshape_import():
         # Recalculate mesh to render correctly
         b_mesh.validate()
         b_mesh.update()
-        b_obj.select = True
+        b_obj.select_set(True)
 
         return [ b_obj ]
-
 
     def import_bhksphere_shape(self, bhkshape):
         """Import a BhkSphere block as a simple uv-sphere collision object"""
@@ -286,13 +282,13 @@ class bhkshape_import():
         b_mesh = poly_gen.col_poly_gen(b_mesh, poly_gens)
 
         b_obj = bpy.data.objects.new('sphere', b_mesh)
-        bpy.context.scene.objects.link(b_obj)
-        scn = bpy.context.scene
-        scn.objects.active = b_obj
+        bpy.context.scene.collection.objects.link(b_obj)
+        vlr = bpy.context.view_layer
+        vlr.objects.active = b_obj
 
         # set bounds type
-        b_obj.draw_type = 'WIRE'
-        b_obj.draw_bounds_type = 'SPHERE'
+        b_obj.display_type = 'WIRE'
+        b_obj.display_bounds_type = 'SPHERE'
         b_obj.game.use_collision_bounds = True
         b_obj.game.collision_bounds_type = 'SPHERE'
         b_obj.game.radius = bhkshape.radius
@@ -302,10 +298,9 @@ class bhkshape_import():
         b_mesh = b_obj.data
         b_mesh.validate()
         b_mesh.update()
-        b_obj.select = True
+        b_obj.select_set(True)
 
         return [ b_obj ]
-
 
     def import_bhkcapsule_shape(self, bhkshape):
         """Import a BhkCapsule block as a simple cylinder collision object"""
@@ -338,13 +333,13 @@ class bhkshape_import():
 
         # link box to scene and set transform
         b_obj = bpy.data.objects.new('Capsule', b_mesh)
-        bpy.context.scene.objects.link(b_obj)
-        scn = bpy.context.scene
-        scn.objects.active = b_obj
+        bpy.context.scene.collection.objects.link(b_obj)
+        vlr = bpy.context.view_layer
+        vlr.objects.active = b_obj
 
         # set bounds type
-        b_obj.draw_type = 'BOUNDS'
-        b_obj.draw_bounds_type = 'CAPSULE'
+        b_obj.display_type = 'BOUNDS'
+        b_obj.display_bounds_type = 'CAPSULE'
         b_obj.game.use_collision_bounds = True
         b_obj.game.collision_bounds_type = 'CAPSULE'
         b_obj.game.radius = bhkshape.radius*self.HAVOK_SCALE
@@ -377,11 +372,10 @@ class bhkshape_import():
         b_mesh = b_obj.data
         b_mesh.validate()
         b_mesh.update()
-        b_obj.select = True
+        b_obj.select_set(True)
 
         # return object
         return [ b_obj ]
-
 
     def import_bhkconvex_vertices_shape(self, bhkshape):
         """Import a BhkConvexVertex block as a convex hull collision object"""
@@ -405,13 +399,13 @@ class bhkshape_import():
 
         # link mesh to scene and set transform
         b_obj = bpy.data.objects.new('Convexpoly', b_mesh)
-        bpy.context.scene.objects.link(b_obj)
-        scn = bpy.context.scene
-        scn.objects.active = b_obj
+        bpy.context.scene.collection.objects.link(b_obj)
+        vlr = bpy.context.view_layer
+        vlr.objects.active = b_obj
 
         b_obj.show_wire = True
-        b_obj.draw_type = 'WIRE'
-        b_obj.draw_bounds_type = 'BOX'
+        b_obj.display_type = 'WIRE'
+        b_obj.display_bounds_type = 'BOX'
         b_obj.game.use_collision_bounds = True
         b_obj.game.collision_bounds_type = 'CONVEX_HULL'
 
@@ -423,10 +417,9 @@ class bhkshape_import():
         b_mesh = b_obj.data
         b_mesh.validate()
         b_mesh.update()
-        b_obj.select = True
+        b_obj.select_set(True)
 
         return [ b_obj ]
-
 
     def import_nitristrips(self, bhkshape):
         """Import a NiTriStrips block as a Triangle-Mesh collision object"""
@@ -442,12 +435,12 @@ class bhkshape_import():
 
         # link mesh to scene and set transform
         b_obj = bpy.data.objects.new('poly', b_mesh)
-        bpy.context.scene.objects.link(b_obj)
-        scn = bpy.context.scene
-        scn.objects.active = b_obj
+        bpy.context.scene.collection.objects.link(b_obj)
+        vlr = bpy.context.view_layer
+        vlr.objects.active = b_obj
         # set bounds type
-        b_obj.draw_type = 'WIRE'
-        b_obj.draw_bounds_type = 'BOX'
+        b_obj.display_type = 'WIRE'
+        b_obj.display_bounds_type = 'BOX'
         b_obj.game.use_collision_bounds = True
         b_obj.game.collision_bounds_type = 'TRIANGLE_MESH'
         # radius: quick estimate
@@ -458,7 +451,7 @@ class bhkshape_import():
         b_mesh = b_obj.data
         b_mesh.validate()
         b_mesh.update()
-        b_obj.select = True
+        b_obj.select_set(True)
 
         return [ b_obj ]
 
@@ -512,17 +505,17 @@ class bhkshape_import():
 
             # link mesh to scene and set transform
             b_obj = bpy.data.objects.new('poly%i' % subshape_num, b_mesh)
-            bpy.context.scene.objects.link(b_obj)
-            scn = bpy.context.scene
-            scn.objects.active = b_obj
+            bpy.context.scene.collection.objects.link(b_obj)
+            vlr = bpy.context.view_layer
+            vlr.objects.active = b_obj
 
             # set bounds type
-            b_obj.draw_type = 'WIRE'
-            b_obj.draw_bounds_type = 'BOX'
-            b_obj.game.use_collision_bounds = True
-            b_obj.game.collision_bounds_type = 'TRIANGLE_MESH'
+            b_obj.display_type = 'WIRE'
+            b_obj.display_bounds_type = 'BOX'
+            #b_obj.game.use_collision_bounds = True
+            #b_obj.game.collision_bounds_type = 'TRIANGLE_MESH'
             # radius: quick estimate
-            b_obj.game.radius = min(vert.co.length for vert in b_mesh.vertices)
+            #b_obj.game.radius = min(vert.co.length for vert in b_mesh.vertices)
             # set material
             b_obj.nifcollision.havok_material = NifFormat.HavokMaterial._enumkeys[subshape.material]
 
@@ -530,12 +523,13 @@ class bhkshape_import():
             b_mesh = b_obj.data
             b_mesh.validate()
             b_mesh.update()
-            b_obj.select = True
+            b_obj.select_set(True)
 
             vertex_offset += subshape.num_vertices
             hk_objects.append(b_obj)
 
         return hk_objects
+
 
 class bound_import():
     """Import a bound box shape"""
@@ -589,14 +583,14 @@ class bound_import():
         # link box to scene and set transform
         if isinstance(bbox, NifFormat.BSBound):
             b_obj = bpy.data.objects.new('BSBound', b_mesh)
-            bpy.context.scene.objects.link(b_obj)
-            scn = bpy.context.scene
-            scn.objects.active = b_obj
+            bpy.context.scene.collection.objects.link(b_obj)
+            vlr = bpy.context.view_layer
+            vlr.objects.active = b_obj
         else:
             b_obj = bpy.data.objects.new('Bounding Box', b_mesh)
-            bpy.context.scene.objects.link(b_obj)
-            scn = bpy.context.scene
-            scn.objects.active = b_obj
+            bpy.context.scene.collection.objects.link(b_obj)
+            vlr = bpy.context.view_layer
+            vlr.objects.active = b_obj
             # XXX this is set in the import_branch() method
             # ob.matrix_local = mathutils.Matrix(
             #    *bbox.bounding_box.rotation.as_list())
@@ -608,8 +602,8 @@ class bound_import():
 
         # set bounds type
         b_obj.show_bounds = True
-        b_obj.draw_type = 'BOUNDS'
-        b_obj.draw_bounds_type = 'BOX'
+        b_obj.display_type = 'BOUNDS'
+        b_obj.display_bounds_type = 'BOX'
         b_obj.game.use_collision_bounds = True
         b_obj.game.collision_bounds_type = 'BOX'
         # quick radius estimate
@@ -618,7 +612,7 @@ class bound_import():
         b_mesh = b_obj.data
         b_mesh.validate()
         b_mesh.update()
-        b_obj.select = True
+        b_obj.select_set(True)
         
         return b_obj
 

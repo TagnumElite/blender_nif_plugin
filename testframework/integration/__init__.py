@@ -11,6 +11,7 @@ import os.path
 
 from pyffi.formats.nif import NifFormat
 
+
 def clear_bpy_data():
     """Remove all objects from blender."""
 
@@ -43,14 +44,17 @@ def clear_bpy_data():
         ):
         clear_users(getattr(bpy.data, collection))
 
+
 def setup():
     """Enables the nif scripts addon, so all tests can use it."""
     bpy.ops.wm.addon_enable(module="io_scene_nif")
     clear_bpy_data()
 
+
 def teardown():
     """Disables the nif scripts addon."""
     bpy.ops.wm.addon_disable(module="io_scene_nif")
+
 
 class Base:
     """Base class for all tests."""
@@ -68,6 +72,7 @@ class Base:
         prepare for next test.
         """
         self.b_clear()
+
 
 class SingleNif(Base):
     """Base class for testing a feature concerning single nif files.
@@ -204,7 +209,7 @@ class SingleNif(Base):
         print("Objects in scene - {0}".format(len(bpy.data.objects)))
         for b_obj in bpy.data.objects:
             print("Scene Object - " + b_obj.name)
-            b_obj.select = True
+            b_obj.select_set(True)
             b_obj_names.append(b_obj.name)
         return b_obj_names
 
@@ -303,7 +308,7 @@ class SingleNif(Base):
           
         # import nif and check data
         self.n_import(self.n_filepath_0)
-        if(self.gen_blender_scene):
+        if self.gen_blender_scene:
             self.b_save(self.b_filepath_0)
         self.b_check_data()
         
@@ -312,4 +317,3 @@ class SingleNif(Base):
         # export and check data
         self.n_export(self.n_filepath_1)
         self.n_check(self.n_filepath_1)
-           

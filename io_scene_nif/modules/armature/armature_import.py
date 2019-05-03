@@ -1,4 +1,4 @@
-'''Script to import/export all the skeleton related objects.'''
+"""Script to import/export all the skeleton related objects."""
 
 # ***** BEGIN LICENSE BLOCK *****
 # 
@@ -8,19 +8,19 @@
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
 # are met:
+#
+#    * Redistributions of source code must retain the above copyright
+#      notice, this list of conditions and the following disclaimer.
 # 
-#	* Redistributions of source code must retain the above copyright
-#	  notice, this list of conditions and the following disclaimer.
+#    * Redistributions in binary form must reproduce the above
+#      copyright notice, this list of conditions and the following
+#      disclaimer in the documentation and/or other materials provided
+#      with the distribution.
 # 
-#	* Redistributions in binary form must reproduce the above
-#	  copyright notice, this list of conditions and the following
-#	  disclaimer in the documentation and/or other materials provided
-#	  with the distribution.
-# 
-#	* Neither the name of the NIF File Format Library and Tools
-#	  project nor the names of its contributors may be used to endorse
-#	  or promote products derived from this software without specific
-#	  prior written permission.
+#    * Neither the name of the NIF File Format Library and Tools
+#      project nor the names of its contributors may be used to endorse
+#      or promote products derived from this software without specific
+#      prior written permission.
 # 
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -49,8 +49,7 @@ from io_scene_nif.utility.nif_logging import NifLog
 from io_scene_nif.utility.nif_global import NifOp
 
 
-class Armature():
-	
+class Armature:
 	# correction matrices list, the order is +X, +Y, +Z, -X, -Y, -Z
 	BONE_CORRECTION_MATRICES = (
 		mathutils.Matrix([[ 0.0, -1.0, 0.0], [ 1.0, 0.0, 0.0], [ 0.0, 0.0, 1.0]]),
@@ -76,8 +75,8 @@ class Armature():
 		armature_name = self.nif_import.import_name(niArmature)
 
 		b_armatureData = bpy.data.armatures.new(armature_name)
-		#b_armatureData.use_vertex_groups = True
-		#b_armatureData.use_bone_envelopes = False
+		# b_armatureData.use_vertex_groups = True
+		# b_armatureData.use_bone_envelopes = False
 		b_armatureData.show_names = True
 		b_armatureData.show_axes = True
 		b_armatureData.draw_type = 'STICK'
@@ -85,11 +84,12 @@ class Armature():
 		b_armature.select = True
 		b_armature.show_x_ray = True
 		
-		#Link object to scene
-		scn = bpy.context.scene
-		scn.objects.link(b_armature)
-		scn.objects.active = b_armature
-		scn.update()
+		# Link object to scene
+		scl = bpy.context.scene.collection
+		scl.objects.link(b_armature)
+		vlr = bpy.context.view_layer
+		vlr.objects.active = b_armature
+		vlr.update()
 		
 		# make armature editable and create bones
 		bpy.ops.object.mode_set(mode='EDIT',toggle=False)
@@ -100,9 +100,9 @@ class Armature():
 				niBone, b_armature, b_armatureData, niArmature)
 			
 		bpy.ops.object.mode_set(mode='OBJECT',toggle=False)
-		scn = bpy.context.scene
-		scn.objects.active = b_armature
-		scn.update()
+		vlr = bpy.context.view_layer
+		vlr.objects.active = b_armature
+		vlr.update()
 
 		# The armature has been created in editmode,
 		# now we are ready to set the bone keyframes.
@@ -125,9 +125,9 @@ class Armature():
 		bpy.ops.object.mode_set(mode='EDIT',toggle=False)
 		bpy.ops.object.mode_set(mode='OBJECT',toggle=False)
 		
-		scn = bpy.context.scene
-		scn.objects.active = b_armature
-		scn.update()
+		vlr = bpy.context.view_later
+		vlr.objects.active = b_armature
+		vlr.update()
 		return b_armature  
 
 	def import_bone(self, niBlock, b_armature, b_armatureData, niArmature):
@@ -146,7 +146,7 @@ class Armature():
 						 if self.is_bone(child) ]
 		# create a new bone
 		b_bone = b_armatureData.edit_bones.new(bone_name)
-		#Sets active so edit bones are marked selected after import
+		# Sets active so edit bones are marked selected after import
 		b_armatureData.edit_bones.active = b_bone
 		# head: get position from niBlock
 		armature_space_matrix = nif_utils.import_matrix(niBlock,
@@ -250,9 +250,14 @@ class Armature():
 			b_child_bone = self.import_bone(
 				niBone, b_armature, b_armatureData, niArmature)
 			b_child_bone.parent = b_bone
+<<<<<<< HEAD
 		
-		return b_bone
+=======
+			bpy.ops.object.mode_set(mode='OBJECT',toggle=False)
+			b_bone = b_armatureData.bones[bone_name]
 
+>>>>>>> Add Settings that is global to install
+		return b_bone
 
 	def find_correction_matrix(self, niBlock, niArmature):
 		"""Returns the correction matrix for a bone."""
@@ -290,7 +295,6 @@ class Armature():
 				m_correction = self.BONE_CORRECTION_MATRICES[idx_correction]
 		return m_correction
 
-
 	def append_armature_modifier(self, b_obj, b_armature):
 		"""Append an armature modifier for the object."""
 		armature_name = b_armature.name
@@ -298,7 +302,6 @@ class Armature():
 		b_mod.object = b_armature
 		b_mod.use_bone_envelopes = False
 		b_mod.use_vertex_groups = True
-
 
 	def mark_armatures_bones(self, niBlock):
 		"""Mark armatures and bones by peeking into NiSkinInstance blocks."""
@@ -465,7 +468,6 @@ class Armature():
 			par = par._parent
 		return par
 
-
 	def get_blender_object(self, niBlock):
 		"""Retrieves the Blender object or Blender bone matching the block."""
 		if self.is_bone(niBlock):
@@ -482,7 +484,6 @@ class Armature():
 		else:
 			return bpy.types.Object(self.nif_import.dict_names[niBlock])
 
-	
 	def store_bones_extra_matrix(self):
 		"""Stores correction matrices in a text buffer so that the original
 		alignment can be re-exported. In order for this to work it is necessary
@@ -511,7 +512,6 @@ class Armature():
 			# write it to the text buffer
 			bonetxt.write('%s/%s\n' % (blender_bone_name, line[1:]))
 
-
 	def store_names(self):
 		"""Stores the original, long object names so that they can be
 		re-exported. In order for this to work it is necessary to mantain the
@@ -529,5 +529,3 @@ class Armature():
 			block_name = block.name.decode()
 			if block_name and shortname != block_name:
 				namestxt.write('%s;%s\n' % (shortname, block_name))
-				
-				

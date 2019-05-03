@@ -36,6 +36,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # ***** END LICENSE BLOCK *****
+
 import bpy
 import mathutils
 from pyffi.formats.nif import NifFormat
@@ -44,15 +45,14 @@ from io_scene_nif.utility import nif_utils
 from io_scene_nif.utility.nif_logging import NifLog
 from io_scene_nif.utility.nif_global import NifOp
 
-class AnimationHelper():
-    
+
+class AnimationHelper:
     def __init__(self, parent):
         self.nif_import = parent
         self.object_animation = ObjectAnimation(parent)
         self.material_animation = MaterialAnimation(parent)
         self.armature_animation = ArmatureAnimation(parent)
         self.FPS = 30
-    
 
     def import_kf_root(self, kf_root, root):
         """Merge kf into nif.
@@ -68,7 +68,6 @@ class AnimationHelper():
 
         # import text keys
         self.import_text_keys(kf_root)
-
 
         # go over all controlled blocks
         for controlledblock in kf_root.controlled_blocks:
@@ -135,11 +134,9 @@ class AnimationHelper():
             self.nif_import.dict_bone_priorities[nodename] = controlledblock.priority
 
         # DEBUG: save the file for manual inspection
-        #niffile = open("C:\\test.nif", "wb")
-        #NifFormat.write(niffile,
-        #                version = 0x14000005, user_version = 11, roots = [root])
-    
-    
+        # niffile = open("C:\\test.nif", "wb")
+        # NifFormat.write(niffile, version = 0x14000005, user_version = 11, roots = [root])
+
     # import animation groups
     def import_text_keys(self, niBlock):
         """Stores the text keys that define animation start and end in a text
@@ -237,7 +234,6 @@ class AnimationHelper():
         _ANIMATION_DATA.sort(lambda key1, key2: cmp(key1['frame'], key2['frame']))
         """
 
-        
     def set_animation(self, niBlock, b_obj):
         """Load basic animation info for this object."""
         kfc = nif_utils.find_controller(niBlock, NifFormat.NiKeyframeController)
@@ -317,8 +313,7 @@ class AnimationHelper():
         bpy.context.scene.frame_set(1)
 
 
-class ObjectAnimation():
-    
+class ObjectAnimation:
     def __init__(self, parent):
         self.nif_import = parent
     
@@ -345,8 +340,8 @@ class ObjectAnimation():
             b_curve[1 + n_key.time * self.fps] = (
                 2 ** (n_key.value + max([1] + bpy.context.scene.getLayers()) - 1))
 
-class MaterialAnimation():
-    
+
+class MaterialAnimation:
     def __init__(self, parent):
         self.nif_import = parent
     
@@ -440,7 +435,6 @@ class MaterialAnimation():
                         b_curve[1 + n_key.time * self.fps] = -n_key.value
                     else:
                         b_curve[1 + n_key.time * self.fps] = n_key.value    
-    
 
     def get_material_ipo(self, b_material):
         """Return existing material ipo data, or if none exists, create one
@@ -450,17 +444,16 @@ class MaterialAnimation():
             b_material.ipo = Blender.Ipo.New("Material", "MatIpo")
         return b_material.ipo
 
-class ArmatureAnimation():
-    
+
+class ArmatureAnimation:
     def __init__(self, parent):
         self.nif_import = parent
-        
-        
+
     def import_armature_animation(self, b_armature):
-        #current blender adds pose_bone keyframes to an fcurve in the armature's OBJECT
-        #data block, not the ARMATURE's data block. So, rna path (data_path) for fcurves
-        #will be  "pose.bones["bone name"].fcurvetype" with implicit "object." at front.
-        #Get object with bpy.data.objects[b_armature.name]
+        # current blender adds pose_bone keyframes to an fcurve in the armature's OBJECT
+        # data block, not the ARMATURE's data block. So, rna path (data_path) for fcurves
+        # will be  "pose.bones["bone name"].fcurvetype" with implicit "object." at front.
+        # Get object with bpy.data.objects[b_armature.name]
         # create an action
         b_armature_object = bpy.data.objects[b_armature.name]
         b_armature_object.animation_data_create()

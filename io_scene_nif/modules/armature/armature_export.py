@@ -44,13 +44,11 @@ from io_scene_nif.utility.nif_logging import NifLog
 
 from pyffi.formats.nif import NifFormat
 
-class Armature():
-    
 
+class Armature:
     def __init__(self, parent):
         self.nif_export = parent
-        
-        
+
     def rebuild_bones_extra_matrices(self):
         """Recover bone extra matrices."""
         
@@ -99,7 +97,6 @@ class Armature():
         """
         return self.nif_export.dict_bones_extra_matrix_inv[self.nif_export.get_bone_name_for_blender(bone_name)]
     
-    
     def export_bones(self, arm, parent_block):
         """Export the bones of an armature."""
         # the armature was already exported as a NiNode
@@ -137,7 +134,7 @@ class Armature():
             # add the node and the keyframe for this bone
             node.name = self.nif_export.objecthelper.get_full_name(bone.name)
             
-            if (bone.niftools_bone.boneflags != 0):
+            if bone.niftools_bone.boneflags != 0:
                 node.flags = bone.niftools_bone.boneflags
             else:
                 if NifOp.props.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM'):
@@ -202,8 +199,7 @@ class Armature():
             # if it is a root bone, link it to the armature
             if not bone.parent:
                 parent_block.add_child(bones_node[bone.name])
-                
-    
+
     def export_children(self, b_obj, parent_block):
         """Export all children of blender object b_obj as children of
         parent_block."""
@@ -211,7 +207,7 @@ class Armature():
         for b_obj_child in b_obj.children:
             # is it a regular node?
             if b_obj_child.type in ['MESH', 'EMPTY', 'ARMATURE']:
-                if (b_obj.type != 'ARMATURE'):
+                if b_obj.type != 'ARMATURE':
                     # not parented to an armature
                     self.nif_export.objecthelper.export_node(b_obj_child, 'localspace',
                                      parent_block, b_obj_child.name)
@@ -246,8 +242,7 @@ class Armature():
                                 break
                         else:
                             assert(False) # BUG!
-                            
-                            
+
     def get_bone_rest_matrix(self, bone, space, extra = True, tail = False):
         """Get bone matrix in rest position ("bind pose"). Space can be
         ARMATURESPACE or BONESPACE. This returns also a 4x4 matrix if space
@@ -263,7 +258,7 @@ class Armature():
                 correction_matrix.identity()
         else:
             correction_matrix.identity()
-        if (space == 'ARMATURESPACE'):
+        if space == 'ARMATURESPACE':
             matrix = mathutils.Matrix(bone.matrix_local)
             if tail:
                 tail_pos = bone.tail_local
@@ -271,7 +266,7 @@ class Armature():
                 matrix[1][3] = tail_pos[1]
                 matrix[2][3] = tail_pos[2]
             return correction_matrix * matrix
-        elif (space == 'BONESPACE'):
+        elif space == 'BONESPACE':
             if bone.parent:
                 # not sure why extra = True is required here
                 # but if extra = extra then transforms are messed up, so keep
@@ -287,6 +282,4 @@ class Armature():
                 return self.get_bone_rest_matrix(bone, 'ARMATURESPACE',
                                                  extra = extra, tail = tail)
         else:
-            assert(False) # bug!
-
-
+            assert False  # bug!

@@ -49,7 +49,7 @@ BETH_UV2_FO3 = 34
 
 
 def _set_version_info(nif_ver=0, user_ver=0, user_ver_2=0):
-    scene = bpy.context.scene.niftools_scene
+    scene = bpy.context.scene.niftools_output_props
     scene.nif_version = nif_ver
     scene.user_version = user_ver
     scene.user_version_2 = user_ver_2
@@ -68,7 +68,7 @@ def b_create_skyrim_info():
 
 
 def _b_check_version_info(nif_ver=0, user_ver=0, user_ver_2=0):
-    scene = bpy.context.scene.niftools_scene
+    scene = bpy.context.scene.niftools_output_props
     print("Expected - {0}, {1}, {2}".format(nif_ver, user_ver, user_ver_2))
     
     nv = scene.nif_version

@@ -46,8 +46,8 @@ from io_scene_nif.utility import nif_utils
 from io_scene_nif.utility.nif_logging import NifLog
 from io_scene_nif.utility.nif_global import NifOp
 
-class AnimationHelper():
-    
+
+class AnimationHelper:
     def __init__(self, parent):
         self.nif_export = parent
         self.object_animation = ObjectAnimation(parent)
@@ -108,8 +108,6 @@ class AnimationHelper():
         return 4
     
     def export_keyframes(self, ipo, space, parent_block, bind_matrix = None, extra_mat_inv = None):
-    
-    
         if NifOp.props.animation == 'GEOM_NIF' and self.nif_export.version < 0x0A020000:
             # keyframe controllers are not present in geometry only files
             # for more recent versions, the controller and interpolators are
@@ -207,7 +205,7 @@ class AnimationHelper():
             extra_trans_inv = mathutils.Vector()
     
         # sometimes we need to export an empty keyframe... this will take care of that
-        if (ipo == None):
+        if ipo == None:
             scale_curve = {}
             rot_curve = {}
             trans_curve = {}
@@ -427,7 +425,6 @@ class AnimationHelper():
             scale_frame = kfd.scales.keys[i]
             scale_frame.time = (frame - 1) * bpy.context.scene.render.fps
             scale_frame.value = scale_curve[frame]
-            
 
     def export_anim_groups(self, animtxt, block_parent):
         """Parse the animation groups buffer and write an extra string
@@ -488,13 +485,12 @@ class AnimationHelper():
         return textextra
     
     
-class TextureAnimation():
-    
+class TextureAnimation:
     def __init__(self, parent):
         self.nif_export = parent
     
     def export_flip_controller(self, fliptxt, texture, target, target_tex):
-        ## TODO:port code to use native Blender texture flipping system
+        # TODO:port code to use native Blender texture flipping system
         #
         # export a NiFlipController
         #
@@ -533,11 +529,9 @@ class TextureAnimation():
                 %fliptxt.name)
         flip.delta = (flip.stop_time - flip.start_time) / count
 
-class MaterialAnimation():
-    
+class MaterialAnimation:
     def __init__(self, parent):
         self.nif_export = parent
-    
 
     def export_material_controllers(self, b_material, n_geom):
         """Export material animation data for given geometry."""
@@ -570,8 +564,6 @@ class MaterialAnimation():
             n_target_color=NifFormat.TargetColor.TC_SPECULAR)
         self.export_material_uv_controller(b_material, n_geom)
 
-
-    
     def export_material_alpha_controller(self, b_material, n_geom):
         """Export the material alpha controller data."""
         b_ipo = b_material.animation_data
@@ -718,8 +710,7 @@ class MaterialAnimation():
             n_geom.add_controller(n_uvctrl)
             
             
-class ObjectAnimation():
-        
+class ObjectAnimation:
     def __init__(self, parent):
         self.nif_export = parent
     
@@ -772,7 +763,3 @@ class ObjectAnimation():
             n_vis_ipol.data = n_bool_data
             # attach block to node
             n_node.add_controller(n_vis_ctrl)
-
-
-
-

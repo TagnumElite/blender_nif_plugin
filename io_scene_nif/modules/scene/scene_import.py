@@ -41,7 +41,7 @@ import bpy
 
 
 def import_version_info(data):
-    scene = bpy.context.scene.niftools_scene
+    scene = bpy.context.scene.niftools_output_props
     scene.nif_version = data._version_value_._value
     scene.user_version = data._user_version_value_._value
     scene.user_version_2 = data._user_version_2_value_._value

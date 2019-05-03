@@ -37,12 +37,12 @@
 #
 # ***** END LICENSE BLOCK *****
 
-import logging
 import os
 import sys
 
 import bpy
 import bpy.props
+
 
 # Python dependencies are bundled inside the io_scene_nif/dependencies folder
 _dependencies_path = os.path.join(os.path.dirname(__file__), "dependencies")
@@ -51,10 +51,11 @@ if _dependencies_path not in sys.path:
     print(sys.path)
 del _dependencies_path
 
-import io_scene_nif
 from io_scene_nif import properties, operators, ui
+from io_scene_nif.utility.nif_settings import NifSettings
+from io_scene_nif.utility.nif_logging import NifLog
 
-
+# noinspection PyBroadException
 try:
     from io_scene_nif.utility import nif_debug
     nif_debug.start_debug()
@@ -78,26 +79,9 @@ bl_info = {
 }
 
 
-def _init_loggers():
-    """Set up loggers."""
-    niftools_logger = logging.getLogger("niftools")
-    niftools_logger.setLevel(logging.WARNING)
-    pyffi_logger = logging.getLogger("pyffi")
-    pyffi_logger.setLevel(logging.WARNING)
-    log_handler = logging.StreamHandler()
-    log_handler.setLevel(logging.DEBUG)
-    log_formatter = logging.Formatter("%(name)s:%(levelname)s:%(message)s")
-    log_handler.setFormatter(log_formatter)
-    niftools_logger.addHandler(log_handler)
-    pyffi_logger.addHandler(log_handler)
-
-
 # noinspection PyUnusedLocal
 def menu_func_import(self, context):
     self.layout.operator(operators.nif_import_op.NifImportOperator.bl_idname, text="NetImmerse/Gamebryo (.nif)")
-    # TODO: get default path from config registry
-    # default_path = bpy.data.filename.replace(".blend", ".nif")
-    # ).filepath = default_path
 
 
 # noinspection PyUnusedLocal
@@ -106,7 +90,8 @@ def menu_func_export(self, context):
 
 
 def register():
-    _init_loggers()
+    bpy.utils.register_class(NifSettings)
+    NifLog.register()
     properties.register()
     ui.register()
     operators.register()
@@ -116,14 +101,14 @@ def register():
 
 
 def unregister():
-    # no idea how to do this... oh well, let's not lose any sleep over it uninit_loggers()
-    # _uninit_loggers()
     bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
     bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
 
     properties.unregister()
     ui.unregister()
     operators.unregister()
+    bpy.utils.unregister_class(NifSettings)
+    NifLog.unregister()
 
 
 if __name__ == "__main__":

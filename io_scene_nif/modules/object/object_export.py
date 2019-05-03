@@ -167,8 +167,8 @@ class ObjectHelper:
         if node_name == 'RootCollisionNode':
             # -> root collision node (can be mesh or empty)
             # TODO: do we need to fix this stuff on export?
-            # b_obj.draw_bounds_type = 'POLYHEDERON'
-            # b_obj.draw_type = 'BOUNDS'
+            # b_obj.display_bounds_type = 'POLYHEDERON'
+            # b_obj.display_type = 'BOUNDS'
             # b_obj.show_wire = True
             self.nif_export.export_collision(b_obj, parent_block)
             return None  # done; stop here
@@ -705,7 +705,7 @@ class MeshHelper:
                         trishape.flags = 0x0016
                 else:
                     # morrowind
-                    if b_obj.draw_type != 'WIRE':  # not wire
+                    if b_obj.display_type != 'WIRE':  # not wire
                         trishape.flags = 0x0004  # use triangles as bounding box
                     else:
                         trishape.flags = 0x0005  # use triangles as bounding box + hide
@@ -1002,9 +1002,9 @@ class MeshHelper:
             if polygons_without_bodypart:
                 # select mesh object
                 for b_deselect_obj in bpy.context.scene.objects:
-                    b_deselect_obj.select = False
-                bpy.context.scene.objects.active = b_obj
-                b_obj.select = True
+                    b_deselect_obj.select_set(False)
+                bpy.context.view_layer.objects.active = b_obj
+                b_obj.select_set(True)
                 # select bad polygons
                 # switch to edit mode to select polygons
                 bpy.ops.object.mode_set(mode='EDIT', toggle=False)
@@ -1162,10 +1162,10 @@ class MeshHelper:
                         # lets be nice and display them for the user 
                         if len(unassigned_verts) > 0:
                             for b_scene_obj in bpy.context.scene.objects:
-                                b_scene_obj.select = False
+                                b_scene_obj.select_set(False)
 
                             b_obj = bpy.context.scene.objects.active
-                            b_obj.select = True
+                            b_obj.select_set(True)
 
                             # switch to edit mode and raise exception
                             bpy.ops.object.mode_set(mode='EDIT', toggle=False)

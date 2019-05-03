@@ -53,7 +53,7 @@ user_version_2 = {
 def get_version_info(properties):
 
     # set user version and user version 2 for export
-    b_scene = bpy.context.scene.niftools_scene
+    b_scene = bpy.context.scene.niftools_output_props
 
     if b_scene.user_version == 0:
         NIF_USER_VERSION = user_version.get(properties.game, 0)

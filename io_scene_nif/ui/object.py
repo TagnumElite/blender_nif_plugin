@@ -51,7 +51,6 @@ class ObjectPanel(Panel):
     @classmethod
     def poll(cls, context):
         return True
-        
 
     def draw(self, context):
         nif_obj_props = context.object.niftools
@@ -77,7 +76,6 @@ class OBJECT_PT_ExtraData(Panel):
     @classmethod
     def poll(cls, context):
         return True
-        
 
     def draw(self, context):
         b_obj = context.object
@@ -91,10 +89,10 @@ class OBJECT_PT_ExtraData(Panel):
         
         #Add/Remove operators
         col = row.column(align=True)
-        col.menu("OBJECT_MT_ExtraDataType", icon='ZOOM_IN', text="")
+        col.menu("OBJECT_MT_ExtraDataType", icon='ADD', text="")
 
         if has_extra_data:
-            col.operator("object.niftools_extradata_remove", icon='ZOOMOUT', text="")
+            col.operator("object.niftools_extradata_remove", icon='REMOVE', text="")
             
         if has_extra_data:
             row = layout.row()
@@ -104,7 +102,8 @@ class OBJECT_PT_ExtraData(Panel):
             box.prop(selected_extra_data, "name")
             box.prop(selected_extra_data, "data") 
             box.prop(selected_extra_data, "sub_class")
-            
+
+
 class OBJECT_MT_ExtraDataType(Menu):
     bl_label = "Extra Data Types"
     
@@ -122,6 +121,7 @@ class OBJECT_UL_ExtraData(UIList):
         split.label(str(item.name))
         split.prop(item, "data", text="", emboss=False, translate=False, icon='BORDER_RECT')
 
+
 class ObjectInvMarkerPanel(Panel):
     bl_label = "BS Inv Marker"
     bl_space_type = 'PROPERTIES'
@@ -131,7 +131,6 @@ class ObjectInvMarkerPanel(Panel):
     @classmethod
     def poll(cls, context):
         return True
-        
 
     def draw(self, context):       
         layout = self.layout
@@ -139,9 +138,9 @@ class ObjectInvMarkerPanel(Panel):
                 
         row = layout.row()
         if not context.object.niftools_bs_invmarker:
-            row.operator("object.niftools_bs_invmarker_add", icon='ZOOM_IN', text="")
+            row.operator("object.niftools_bs_invmarker_add", icon='ADD', text="")
         if context.object.niftools_bs_invmarker:
-            row.operator("object.niftools_bs_invmarker_remove", icon='ZOOM_OUT', text="")
+            row.operator("object.niftools_bs_invmarker_remove", icon='REMOVE', text="")
 
         col = row.column(align=True)
         for i, x in enumerate(nif_bsinv_props):

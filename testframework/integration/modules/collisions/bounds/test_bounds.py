@@ -36,8 +36,8 @@ class TestBBox(SingleNif):
         b_obj.name = self.b_name
         b_obj.show_bounds = True
         # the following are optional
-        b_obj.draw_bounds_type = 'BOX'
-        b_obj.draw_type = 'BOUNDS'
+        b_obj.display_bounds_type = 'BOX'
+        b_obj.display_type = 'BOUNDS'
         b_obj.data.show_double_sided = False
 
     def n_create_data(self):
@@ -67,8 +67,8 @@ class TestBSBound(TestBaseGeometry):
         b_obj = TestBaseGeometry.b_create_object(self)
         b_obj.name = self.b_name
 
-        b_obj.draw_bounds_type = 'BOX'
-        b_obj.draw_type = 'BOUNDS'
+        b_obj.display_bounds_type = 'BOX'
+        b_obj.display_type = 'BOUNDS'
 
         return b_obj
 

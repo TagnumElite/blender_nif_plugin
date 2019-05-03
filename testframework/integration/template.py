@@ -41,6 +41,7 @@ import bpy
 import nose.tools
 import test
 
+
 class TestFeature(SingleNif):
     """Test Feature"""
     

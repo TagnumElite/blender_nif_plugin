@@ -38,6 +38,7 @@
 # ***** END LICENSE BLOCK *****
 
 import logging
+from .nif_settings import NifSettings
 
 
 class _MockOperator:
@@ -46,10 +47,30 @@ class _MockOperator:
 
 
 class NifLog:
-    """A simple custom exception class for export errors. This module require initialisation of an operator reference to function."""  
+    """A simple custom exception class for export errors.
+    This module require initialisation of an operator reference to function."""
     
     # Injectable operator reference used to perform reporting, default to simple logging
     op = _MockOperator()
+
+    @classmethod
+    def register(cls, operator=None):
+        """Register this after the NifAddonPrefs"""
+        NifLog.op = operator
+        NifLog.niftools_logger = logging.getLogger("niftools")
+        NifLog.niftools_logger.setLevel(getattr(logging, str(NifSettings.niftools_logging_level), logging.WARNING))
+        NifLog.pyffi_logger = logging.getLogger("pyffi")
+        NifLog.pyffi_logger.setLevel(getattr(logging, str(NifSettings.pyffi_logging_level), logging.WARNING))
+        NifLog.log_handler = logging.StreamHandler()
+        NifLog.log_handler.setLevel(logging.DEBUG)
+        NifLog.log_formatter = logging.Formatter("%(name)s:%(levelname)s:%(message)s")
+        NifLog.log_handler.setFormatter(NifLog.log_formatter)
+        NifLog.niftools_logger.addHandler(NifLog.log_handler)
+        NifLog.pyffi_logger.addHandler(NifLog.log_handler)
+
+    @classmethod
+    def unregister(cls):
+        NifLog.op = _MockOperator()
 
     @staticmethod
     def debug(message):
@@ -81,10 +102,3 @@ class NifLog:
         """
         NifLog.op.report({'ERROR'}, message)
         return {'FINISHED'}
-    
-    @staticmethod
-    def init(operator):
-        NifLog.op = operator
-        log_level_num = getattr(logging, operator.properties.log_level)
-        logging.getLogger("niftools").setLevel(log_level_num)
-        logging.getLogger("pyffi").setLevel(log_level_num)

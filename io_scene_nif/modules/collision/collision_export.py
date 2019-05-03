@@ -68,7 +68,7 @@ class bhkshape_export():
         coll_ispacked = (b_obj.game.collision_bounds_type == 'TRIANGLE_MESH')
         
         # Set Havok Scale ratio
-        b_scene = bpy.context.scene.niftools_scene
+        b_scene = bpy.context.scene.niftools_output_props
         if b_scene.user_version == 12:
             if b_scene.user_version_2 == 83:
                 self.HAVOK_SCALE = self.nif_export.HAVOK_SCALE * 10

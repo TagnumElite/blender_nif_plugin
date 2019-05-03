@@ -330,9 +330,9 @@ class NifImport(NifCommon):
             # set parenting
             # b_obj.parent_set(self.selected_objects)
             bpy.ops.object.parent_set(type='OBJECT')
-            scn = bpy.context.scene
-            scn.objects.active = b_obj
-            scn.update()
+            vlr = bpy.context.view_layer
+            vlr.objects.active = b_obj
+            vlr.update()
 
 
     def import_branch(self, niBlock, b_armature=None, n_armature=None):
@@ -461,9 +461,9 @@ class NifImport(NifCommon):
                         self.armaturehelper.append_armature_modifier(b_obj, b_armature)
                     # settings for collision node
                     if isinstance(niBlock, NifFormat.RootCollisionNode):
-                        b_obj.draw_type = 'BOUNDS'
+                        b_obj.display_type = 'BOUNDS'
                         b_obj.show_wire = True
-                        b_obj.draw_bounds_type = 'BOX'
+                        b_obj.display_bounds_type = 'BOX'
                         b_obj.game.use_collision_bounds = True
                         b_obj.game.collision_bounds_type = 'TRIANGLE_MESH'
                         b_obj.niftools.objectflags = niBlock.flags
@@ -520,7 +520,7 @@ class NifImport(NifCommon):
                 # go to rest position
                 
                 # b_armature.data.restPosition = True
-                bpy.context.scene.objects.active = b_armature
+                bpy.context.view_layer.objects.active = b_armature
                 
                 # set up transforms
                 for n_child, b_child in object_children:
@@ -727,7 +727,7 @@ class NifImport(NifCommon):
         # TODO: - is longname needed??? Yes it is needed, it resets the original name on export
         b_empty.niftools.longname = niBlock.name.decode()
 
-        bpy.context.scene.objects.link(b_empty)
+        bpy.context.scene.collection.objects.link(b_empty)
         b_empty.niftools.bsxflags = self.bsxflags
         b_empty.niftools.objectflags = niBlock.flags
 
@@ -769,16 +769,16 @@ class NifImport(NifCommon):
             # create mesh object and link to data
             b_obj = bpy.data.objects.new(b_name, b_mesh)
             # link mesh object to the scene
-            bpy.context.scene.objects.link(b_obj)
+            bpy.context.scene.collection.objects.link(b_obj)
             # save original name as object property, for export
             if b_name != niBlock.name.decode():
                 b_obj.niftools.longname = niBlock.name.decode()
 
             # Mesh hidden flag
             if niBlock.flags & 1 == 1:
-                b_obj.draw_type = 'WIRE'  # hidden: wire
+                b_obj.display_type = 'WIRE'  # hidden: wire
             else:
-                b_obj.draw_type = 'TEXTURED'  # not hidden: shaded
+                b_obj.display_type = 'TEXTURED'  # not hidden: shaded
 
         # set transform matrix for the mesh
         if not applytransform:
@@ -934,7 +934,7 @@ class NifImport(NifCommon):
             # if mesh has one material with n_wire_prop, then make the mesh
             # wire in 3D view
             if n_wire_prop:
-                b_obj.draw_type = 'WIRE'
+                b_obj.display_type = 'WIRE'
             '''
         else:
             material = None
@@ -1360,9 +1360,9 @@ class NifImport(NifCommon):
         
         b_mesh.validate()
         b_mesh.update()
-        b_obj.select = True
-        scn = bpy.context.scene
-        scn.objects.active = b_obj
+        b_obj.select_set(True)
+        vlr = bpy.context.view_layer
+        vlr.objects.active = b_obj
 
         return b_obj
     

@@ -46,7 +46,7 @@ class OutputPanel(Panel):
 
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
-    bl_context = "scene"
+    bl_context = "output"
 
     @classmethod
     def poll(cls, context):
@@ -57,19 +57,16 @@ class OutputPanel(Panel):
         sc = context.scene.niftools_output_props
 
         row = layout.column()
-        row.prop(sc, 'manual')
+        row.prop(sc, 'game', icon="MESH_MONKEY")
+        row.prop(sc, 'nif_version')
+        row.prop(sc, 'user_version')
+        row.prop(sc, 'user_version_2')
 
-        if sc.manual == True:
-            row = layout.column()
-            row.prop(sc, 'nif_version')
-            row.prop(sc, 'user_version')
-            row.prop(sc, 'user_version_2')
-        else:
-            row = layout.column()
-            row.prop(sc, 'game')
+        layout.separator_spacer()
 
-        if sc.manual == True or True:
-            row = layout.column()
-            row.prop(sc, 'author')
-            row.prop(sc, 'process_script')
-            row.prop(sc, 'export_script')
+        spl = layout.split()
+        row = spl.column()
+        row.label(text="Export Info", text_ctxt="label_export_info", icon="TOOL_SETTINGS")
+        row.prop(sc, 'author')
+        row.prop(sc, 'process_script')
+        row.prop(sc, 'export_script')

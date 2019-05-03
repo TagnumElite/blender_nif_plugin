@@ -63,14 +63,12 @@ import bpy
 
 # main export class
 class NifExport(NifCommon):
-
     IDENTITY44 = NifFormat.Matrix44()
     IDENTITY44.set_identity()
     FLOAT_MIN = -3.4028234663852886e+38
     FLOAT_MAX = +3.4028234663852886e+38
     
     # TODO: - Expose via properties
-    
     EXPORT_OPTIMIZE_MATERIALS = True
     EXPORT_OB_COLLISION_DO_NOT_USE_BLENDER_PROPERTIES = False
     

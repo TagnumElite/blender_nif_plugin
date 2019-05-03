@@ -38,18 +38,18 @@
 # ***** END LICENSE BLOCK *****
 
 import bpy
-import re
 
 import pyffi
 from pyffi.formats.nif import NifFormat
 from io_scene_nif.utility.nif_logging import NifLog
 from io_scene_nif.utility.nif_global import NifOp
 
+
 class NifCommon:
     """Abstract base class for import and export. Contains utility functions
     that are commonly used in both import and export.
     """
-    
+
     # dictionary of bones that belong to a certain armature
     # maps NIF armature name to list of NIF bone name
     dict_armatures = {}
@@ -72,13 +72,13 @@ class NifCommon:
     # dictionary mapping bhkRigidBody objects to objects imported in Blender; 
     # we use this dictionary to set the physics constraints (ragdoll etc)
     dict_havok_objects = {}
-    
+
     # dictionary of names, to map NIF blocks to correct Blender names
     dict_names = {}
 
     # dictionary of bones, maps Blender name to NIF block
     dict_blocks = {}
-    
+
     # keeps track of names of exported blocks, to make sure they are unique
     dict_block_names = []
 
@@ -90,7 +90,7 @@ class NifCommon:
 
     # dictionary of materials, to reuse materials
     dict_materials = {}
-    
+
     # dictionary of texture files, to reuse textures
     dict_textures = {}
     dict_mesh_uvlayers = []
@@ -108,25 +108,25 @@ class NifCommon:
     """Names (ordered by default index) of shader texture slots for
     Sid Meier's Railroads and similar games.
     """
-    
+
     HAVOK_SCALE = 6.996
 
     def __init__(self, operator):
         """Common initialization functions for executing the import/export operators: """
-        
+
         NifOp.init(operator)
-        
+
         # print scripts info
         from . import bl_info
         niftools_ver = (".".join(str(i) for i in bl_info["version"]))
-        
-        NifLog.info("Executing - Niftools : Blender Nif Plugin v{0} (running on Blender {1}, PyFFI {2})".format(niftools_ver,
-                                                                                                bpy.app.version_string,
-                                                                                                pyffi.__version__))
+
+        NifLog.info(
+            "Executing - Niftools : Blender Nif Plugin v{0} (running on Blender {1}, PyFFI {2})".format(niftools_ver,
+                                                                                                        bpy.app.version_string,
+                                                                                                        pyffi.__version__))
 
         # find and store this list now of selected objects as creating new objects adds them to the selection list
         self.selected_objects = bpy.context.selected_objects[:]
-
 
     def get_bone_name_for_blender(self, name):
         """Convert a bone name to a name that can be used by Blender: turns
@@ -204,7 +204,6 @@ class NifCommon:
         elif n_ipol == 0:
             # guessing, not documented in nif.xml
             return bpy.types.Keyframe.interpolation.CONST
-        
         NifLog.warn("Unsupported interpolation mode ({0}) in nif, using quadratic/bezier.".format(n_ipol))
         return bpy.types.Keyframe.interpolation.BEZIER
 
@@ -215,7 +214,7 @@ class NifCommon:
             return NifFormat.KeyType.QUADRATIC_KEY
         elif b_ipol == bpy.types.Keyframe.interpolation.CONST:
             return NifFormat.KeyType.CONST_KEY
-        
+
         NifLog.warn("Unsupported interpolation mode ({0}) in blend, using quadratic/bezier.".format(b_ipol))
         return NifFormat.KeyType.QUADRATIC_KEY
 
@@ -226,6 +225,6 @@ class NifCommon:
             return NifFormat.ApplyMode.APPLY_HILIGHT2
         elif b_blend_type == "MIX":
             return NifFormat.ApplyMode.APPLY_MODULATE
-        
+
         NifLog.warn("Unsupported blend type ({0}) in material, using apply mode APPLY_MODULATE".format(b_blend_type))
         return NifFormat.ApplyMode.APPLY_MODULATE
