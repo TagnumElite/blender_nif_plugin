@@ -91,12 +91,12 @@ bl_info = {
 }
 
 logging_level_enum = (
-    ("NOTSET", "Not Set", "Not Set", "CHECKBOX_DEHLT", 0),
-    ("DEBUG", "Debug", "Not Set", "QUESTION", 10),
-    ("INFO", "Info", "Not Set", "HELP", 20),
-    ("WARNING", "Warning", "Not Set", "", 30),
-    ("ERROR", "Error", "Not Set", "ERROR", 40),
-    ("CRITICAL", "Critical", "Not Set", "CANCEL", 50),
+    ("NOTSET", "Not Set", "Log Everything", "CHECKBOX_DEHLT", 0),
+    ("DEBUG", "Debug", "Log debug, info, warnings and errors", "QUESTION", 10),
+    ("INFO", "Info", "Log info, warnings and errors", "HELP", 20),
+    ("WARNING", "Warning", "Log Warnings and errors", "", 30),
+    ("ERROR", "Error", "Log all errors", "ERROR", 40),
+    ("CRITICAL", "Critical", "Only log critical errors", "CANCEL", 50),
 )
 
 
@@ -174,11 +174,13 @@ def register():
 
     try:
         custom_icons = bpy.utils.previews.new()
+        material_icons = bpy.utils.previews.new()
         preview_collections["main"] = custom_icons
+        preview_collections["materials"] = material_icons
     except Exception as e:
-        print("Failed to load custom icons.")
-        print(e)
+        NifLog.warn("Failed to load custom icons.", e)
         preview_collections["main"] = ""
+        preview_collections["materials"] = ""
 
     if use_icons:
         script_path = bpy.path.abspath(os.path.dirname(__file__))

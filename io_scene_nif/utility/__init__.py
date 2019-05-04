@@ -57,7 +57,10 @@ def make_annotations(cls):
 
 
 def get_settings(addon='io_scene_nif'):
-    """Get AddonPreference"""
+    """Set preferences for addon. Assumes Blender 2.8
+
+    :param addon: Defaults to io_scene_nif
+    """
     return bpy.context.preferences.addons[addon].preferences
 
 
@@ -69,15 +72,15 @@ def set_active_object(context, obj):
         context.scene.objects.active = obj  # the 2.7 way
 
 
-def get_preferences(context=None):
+def get_preferences(context=None, addon="io_scene_nif"):
     """Multi version compatibility for getting preferences"""
     if not context:
         context = bpy.context
     prefs = None
     if hasattr(context, "user_preferences"):
-        prefs = context.user_preferences.addons.get(__package__, None)
+        prefs = context.user_preferences.addons.get(addon, None)
     elif hasattr(context, "preferences"):
-        prefs = context.preferences.addons.get(__package__, None)
+        prefs = context.preferences.addons.get(addon, None)
     if prefs:
         return prefs.preferences
     else:

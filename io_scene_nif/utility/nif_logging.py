@@ -41,9 +41,23 @@ import logging
 from . import get_settings
 
 
-class _MockOperator:
-    def report(self, level, message):
-        print(str(level) + ": " + message)
+class BaseOperator:
+    def report(self, level: str, message: str, *args, **kwargs):
+        raise NotImplementedError
+
+
+class _MockOperator(BaseOperator):
+    def report(self, level: str, message: str, *args, **kwargs):
+        print(f"[{level}]:", message)
+
+
+class LoggerOperator(BaseOperator):
+    def __init__(self, logger: logging.Logger):
+        self.logger = logger
+
+    def report(self, level: str, message: str, *args, **kwargs):
+        func = getattr(self.logger, level.lower(), self.logger.warning)
+        func(message, *args, **kwargs)
 
 
 class NifLog:
@@ -51,14 +65,14 @@ class NifLog:
     This module require initialisation of an operator reference to function."""
 
     # Injectable operator reference used to perform reporting, default to simple logging
-    op = _MockOperator()
+    op: BaseOperator = _MockOperator()
 
     @classmethod
-    def register(cls, operator=None):
+    def register(cls):
         """Register this after the NifAddonPrefs"""
         settings = get_settings()
-        NifLog.op = operator
         NifLog.niftools_logger = logging.getLogger("niftools")
+        NifLog.op = LoggerOperator(NifLog.niftools_logger)
         try:
             NifLog.niftools_logger.setLevel(getattr(logging, settings.niftools_logging_level))
         except AttributeError:
@@ -82,22 +96,22 @@ class NifLog:
         NifLog.op = _MockOperator()
 
     @staticmethod
-    def debug(message):
+    def debug(message, *args, **kwargs):
         """Report a debug message."""
-        NifLog.op.report({'DEBUG'}, message)
+        NifLog.op.report('DEBUG', message, *args, **kwargs)
 
     @staticmethod
-    def info(message):
+    def info(message, *args, **kwargs):
         """Report an informative message."""
-        NifLog.op.report({'INFO'}, message)
+        NifLog.op.report('INFO', message, *args, **kwargs)
 
     @staticmethod
-    def warn(message):
+    def warn(message, *args, **kwargs):
         """Report a warning message."""
-        NifLog.op.report({'WARNING'}, message)
+        NifLog.op.report('WARNING', message, *args, **kwargs)
 
     @staticmethod
-    def error(message):
+    def error(message, *args, **kwargs):
         """Report an error and return ``{'FINISHED'}``. To be called by
         the :meth:`execute` method, as::
 
@@ -109,5 +123,10 @@ class NifLog:
 
             The :ref:`error reporting <dev-design-error-reporting>` design.
         """
-        NifLog.op.report({'ERROR'}, message)
+        NifLog.op.report('ERROR', message, *args, **kwargs)
         return {'FINISHED'}
+
+    @staticmethod
+    def critical(message, *args, **kwargs):
+        """Report a warning message."""
+        NifLog.op.report('CRITICAL', message, *args, **kwargs)

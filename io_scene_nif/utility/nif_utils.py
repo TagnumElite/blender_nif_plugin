@@ -39,6 +39,7 @@
 
 import mathutils
 
+from io_scene_nif.utility import matmul
 from io_scene_nif.utility.nif_logging import NifLog
 
 
@@ -64,10 +65,10 @@ def import_matrix(niBlock, relative_to=None):
     n_rot_mat[0].xyz = n_rot_mat3.m_11, n_rot_mat3.m_21, n_rot_mat3.m_31
     n_rot_mat[1].xyz = n_rot_mat3.m_12, n_rot_mat3.m_22, n_rot_mat3.m_32
     n_rot_mat[2].xyz = n_rot_mat3.m_13, n_rot_mat3.m_23, n_rot_mat3.m_33
-    # b_rot_mat = n_rot_mat * b_scale_mat.transposed()
+    # b_rot_mat = matmul(n_rot_mat, b_scale_mat.transposed())
     b_rot_mat = n_rot_mat
 
-    b_import_matrix = b_loc_vec @ b_rot_mat @ b_scale_mat
+    b_import_matrix = matmul(matmul(b_loc_vec, b_rot_mat), b_scale_mat)
     return b_import_matrix
 
 
@@ -80,18 +81,20 @@ def decompose_srt(matrix):
 
     # obtain a combined scale and rotation matrix to test determinate
     rotmat = rot_quat.to_matrix()
-    scalemat = mathutils.Matrix(   ((scale_vec[0], 0.0, 0.0),
-                                    (0.0, scale_vec[1], 0.0),
-                                    (0.0, 0.0, scale_vec[2])) )
-    scale_rot = scalemat * rotmat
+    scalemat = mathutils.Matrix(((scale_vec[0], 0.0, 0.0),
+                                 (0.0, scale_vec[1], 0.0),
+                                 (0.0, 0.0, scale_vec[2])))
+    scale_rot = matmul(scalemat, rotmat)
 
     # and fix their sign
-    if (scale_rot.determinant() < 0): scale_vec.negate()
+    if scale_rot.determinant() < 0:
+        scale_vec.negate()
+
     # only uniform scaling
-    # allow rather large error to accomodate some nifs
-    if abs(scale_vec[0]-scale_vec[1]) + abs(scale_vec[1]-scale_vec[2]) > 0.02:
+    # allow rather large error to accommodate some nifs
+    if abs(scale_vec[0] - scale_vec[1]) + abs(scale_vec[1] - scale_vec[2]) > 0.02:
         NifLog.warn("Non-uniform scaling not supported." +
-            " Workaround: apply size and rotation (CTRL-A).")
+                    " Workaround: apply size and rotation (CTRL-A).")
     return [scale_vec[0], rotmat, trans_vec]
 
 
