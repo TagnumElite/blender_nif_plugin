@@ -139,6 +139,16 @@ class NifExportOperator(bpy.types.Operator, ExportHelper, NifOperatorCommon):
         description="Force texture .dds extension.",
         default=True)
 
+    optimize_materials: bpy.props.BoolProperty(
+        name="Optimize Materials",
+        default=True,
+    )
+
+    object_collision_ignore_blender: bpy.props.BoolProperty(
+        name="Objects Collision ignores blender properties.",
+        default=False,
+    )
+
     def execute(self, context):
         """Execute the export operators: first constructs a
         :class:`~io_scene_nif.nif_export.NifExport` instance and then

@@ -38,13 +38,12 @@
 # ***** END LICENSE BLOCK *****
 
 
-from io_scene_nif.utility.nif_logging import NifLog
 from pyffi.formats.nif import NifFormat
 from io_scene_nif.utility.nif_global import NifOp
+from io_scene_nif.utility.nif_logging import NifLog
 
 
-class Material():
-
+class Material:
     def __init__(self, parent):
         self.nif_export = parent
 
@@ -63,7 +62,7 @@ class Material():
 
         # hack to preserve EnvMap2, skinm, ... named blocks (even if they got
         # renamed to EnvMap2.xxx or skin.xxx on import)
-        if NifOp.props.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM'):
+        if NifOp.output.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM'):
             for specialname in specialnames:
                 if (name.lower() == specialname.lower()
                         or name.lower().startswith(specialname.lower() + ".")):
@@ -105,7 +104,7 @@ class Material():
                 continue
 
             # when optimization is enabled, ignore material name
-            if self.nif_export.EXPORT_OPTIMIZE_MATERIALS:
+            if NifOp.props.optimize_materials:
                 ignore_strings = not (block.name in specialnames)
             else:
                 ignore_strings = False

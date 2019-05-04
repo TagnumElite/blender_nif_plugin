@@ -47,8 +47,7 @@ from io_scene_nif.utility.nif_logging import NifLog
 from io_scene_nif.utility.nif_global import NifOp
 
 
-class TextureLoader():
-
+class TextureLoader:
     def __init__(self, parent):
         self.nif_import = parent
 

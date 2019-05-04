@@ -120,6 +120,8 @@ class Output(PropertyGroup):
         default="PyFFI (Export)",
     )
 
+    versions = version
+
     @classmethod
     def register(cls):
         bpy.types.Scene.niftools_output_props = PointerProperty(

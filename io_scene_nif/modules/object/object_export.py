@@ -256,13 +256,13 @@ class ObjectHelper:
             elif b_obj_type is 'ARMATURE' and b_obj.niftools.objectflags == 0 and b_obj.parent is None:
                 node.flags = b_obj.niftools.objectflags
             else:
-                if NifOp.props.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM'):
+                if NifOp.output.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM'):
                     node.flags = 0x000E
-                elif NifOp.props.game in ('SID_MEIER_S_RAILROADS', 'CIVILIZATION_IV'):
+                elif NifOp.output.game in ('SID_MEIER_S_RAILROADS', 'CIVILIZATION_IV'):
                     node.flags = 0x0010
-                elif NifOp.props.game is 'EMPIRE_EARTH_II':
+                elif NifOp.output.game is 'EMPIRE_EARTH_II':
                     node.flags = 0x0002
-                elif NifOp.props.game is 'DIVINITY_2':
+                elif NifOp.output.game is 'DIVINITY_2':
                     node.flags = 0x0310
                 else:
                     node.flags = 0x000C  # morrowind
@@ -606,7 +606,7 @@ class MeshHelper:
             mesh_hasnormals = False
             if b_mat is not None:
                 mesh_hasnormals = True  # for proper lighting
-                if (NifOp.props.game == 'SKYRIM') and (b_obj.niftools_shader.bslsp_shaderobjtype == 'Skin Tint'):
+                if (NifOp.output.game == 'SKYRIM') and (b_obj.niftools_shader.bslsp_shaderobjtype == 'Skin Tint'):
                     mesh_hasnormals = False  # for proper lighting
 
                 # ambient mat
@@ -691,14 +691,14 @@ class MeshHelper:
             if (b_obj.type == 'MESH') and (b_obj.niftools.objectflags != 0):
                 trishape.flags = b_obj.niftools.objectflags
             else:
-                if NifOp.props.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM'):
+                if NifOp.output.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM'):
                     trishape.flags = 0x000E
 
-                elif NifOp.props.game in ('SID_MEIER_S_RAILROADS', 'CIVILIZATION_IV'):
+                elif NifOp.output.game in ('SID_MEIER_S_RAILROADS', 'CIVILIZATION_IV'):
                     trishape.flags = 0x0010
-                elif NifOp.props.game in ('EMPIRE_EARTH_II',):
+                elif NifOp.output.game in ('EMPIRE_EARTH_II',):
                     trishape.flags = 0x0016
-                elif NifOp.props.game in ('DIVINITY_2',):
+                elif NifOp.output.game in ('DIVINITY_2',):
                     if trishape.name.lower[-3:] in ("med", "low"):
                         trishape.flags = 0x0014
                     else:
@@ -711,7 +711,7 @@ class MeshHelper:
                         trishape.flags = 0x0005  # use triangles as bounding box + hide
 
             # extra shader for Sid Meier's Railroads
-            if NifOp.props.game == 'SID_MEIER_S_RAILROADS':
+            if NifOp.output.game == 'SID_MEIER_S_RAILROADS':
                 trishape.has_shader = True
                 trishape.shader_name = "RRT_NormalMap_Spec_Env_CubeLight"
                 trishape.unknown_integer = -1  # default
@@ -719,13 +719,13 @@ class MeshHelper:
             self.nif_export.objecthelper.set_object_matrix(b_obj, space, trishape)
 
             # add textures
-            if NifOp.props.game == 'FALLOUT_3':
+            if NifOp.output.game == 'FALLOUT_3':
                 if b_mat:
                     bsshader = self.nif_export.texturehelper.export_bs_shader_property(b_obj, b_mat)
 
                     self.nif_export.objecthelper.register_block(bsshader)
                     trishape.add_property(bsshader)
-            elif NifOp.props.game == 'SKYRIM':
+            elif NifOp.output.game == 'SKYRIM':
                 if b_mat:
                     bsshader = self.nif_export.texturehelper.export_bs_shader_property(b_obj, b_mat)
 
@@ -763,7 +763,7 @@ class MeshHelper:
 
             # add texture effect block (must be added as preceeding child of the trishape)
             ref_mtex = self.nif_export.texturehelper.ref_mtex
-            if NifOp.props.game == 'MORROWIND' and ref_mtex:
+            if NifOp.output.game == 'MORROWIND' and ref_mtex:
                 # create a new parent block for this shape
                 extra_node = self.create_block("NiNode", ref_mtex)
                 parent_block.add_child(extra_node)
@@ -788,10 +788,10 @@ class MeshHelper:
                 if b_mat.niftools_alpha.alphaflag != 0:
                     alphaflags = b_mat.niftools_alpha.alphaflag
                     alphathreshold = b_mat.offset_z
-                elif NifOp.props.game == 'SID_MEIER_S_RAILROADS':
+                elif NifOp.output.game == 'SID_MEIER_S_RAILROADS':
                     alphaflags = 0x32ED
                     alphathreshold = 150
-                elif NifOp.props.game == 'EMPIRE_EARTH_II':
+                elif NifOp.output.game == 'EMPIRE_EARTH_II':
                     alphaflags = 0x00ED
                     alphathreshold = 0
                 else:
@@ -807,11 +807,11 @@ class MeshHelper:
                 # add NiStencilProperty
                 trishape.add_property(self.nif_export.propertyhelper.object_property.export_stencil_property())
 
-            if b_mat and not (NifOp.props.game == 'SKYRIM'):
+            if b_mat and not (NifOp.output.game == 'SKYRIM'):
                 # add NiTriShape's specular property
                 # but NOT for sid meier's railroads and other extra shader
                 # games (they use specularity even without this property)
-                if mesh_hasspec and (NifOp.props.game not in self.nif_export.texturehelper.USED_EXTRA_SHADER_TEXTURES):
+                if mesh_hasspec and (NifOp.output.game not in self.nif_export.texturehelper.USED_EXTRA_SHADER_TEXTURES):
                     # refer to the specular property in the trishape block
                     trishape.add_property(self.nif_export.propertyhelper.object_property.export_specular_property(flags=0x0001))
 
@@ -986,7 +986,7 @@ class MeshHelper:
                     trilist.append(f_indexed)
 
                     # add body part number
-                    if NifOp.props.game not in ('FALLOUT_3', 'SKYRIM') or not bodypartgroups:
+                    if NifOp.output.game not in ('FALLOUT_3', 'SKYRIM') or not bodypartgroups:
                         # TODO: or not self.EXPORT_FO3_BODYPARTS):
                         bodypartfacemap.append(0)
                     else:
@@ -1067,7 +1067,7 @@ class MeshHelper:
             if mesh_uv_layers:
                 tridata.num_uv_sets = len(mesh_uv_layers)
                 tridata.bs_num_uv_sets = len(mesh_uv_layers)
-                if NifOp.props.game == 'FALLOUT_3':
+                if NifOp.output.game == 'FALLOUT_3':
                     if len(mesh_uv_layers) > 1:
                         raise nif_utils.NifError("Fallout 3 does not support multiple UV layers")
                 tridata.has_uv = True
@@ -1089,8 +1089,9 @@ class MeshHelper:
             # textures are actually exported (civ4 seems to be consistent with
             # not using tangent space on non shadered nifs)
             if mesh_uv_layers and mesh_hasnormals:
-                if NifOp.props.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM') or (NifOp.props.game in self.nif_export.texturehelper.USED_EXTRA_SHADER_TEXTURES):
-                    trishape.update_tangent_space(as_extra=(NifOp.props.game == 'OBLIVION'))
+                if NifOp.output.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM') or (
+                        NifOp.output.game in self.nif_export.texturehelper.USED_EXTRA_SHADER_TEXTURES):
+                    trishape.update_tangent_space(as_extra=(NifOp.output.game == 'OBLIVION'))
 
             # now export the vertex weights, if there are any
             vertgroups = {vertex_group.name for vertex_group in b_obj.vertex_groups}
@@ -1107,7 +1108,7 @@ class MeshHelper:
                             boneinfluences.append(bone)
                     if boneinfluences:  # yes we have skinning!
                         # create new skinning instance block and link it
-                        if NifOp.props.game in ('FALLOUT_3', 'SKYRIM') and bodypartgroups:
+                        if NifOp.output.game in ('FALLOUT_3', 'SKYRIM') and bodypartgroups:
                             skininst = self.nif_export.objecthelper.create_block("BSDismemberSkinInstance", b_obj)
                         else:
                             skininst = self.nif_export.objecthelper.create_block("NiSkinInstance", b_obj)
@@ -1237,16 +1238,17 @@ class MeshHelper:
                                 padbones=NifOp.props.pad_bones,
                                 triangles=trilist,
                                 trianglepartmap=bodypartfacemap,
-                                maximize_bone_sharing=(NifOp.props.game in ('FALLOUT_3', 'SKYRIM')))
+                                maximize_bone_sharing=(NifOp.output.game in ('FALLOUT_3', 'SKYRIM')))
                             # warn on bad config settings
-                            if NifOp.props.game == 'OBLIVION':
+                            if NifOp.output.game == 'OBLIVION':
                                 if NifOp.props.pad_bones:
-                                    NifLog.warn("Using padbones on Oblivion export. Disable the pad bones option to get higher quality skin partitions.")
-                            if NifOp.props.game in ('OBLIVION', 'FALLOUT_3'):
+                                    NifLog.warn(
+                                        "Using padbones on Oblivion export. Disable the pad bones option to get higher quality skin partitions.")
+                            if NifOp.output.game in ('OBLIVION', 'FALLOUT_3'):
                                 if NifOp.props.max_bones_per_partition < 18:
                                     NifLog.warn("Using less than 18 bones per partition on Oblivion/Fallout 3 export."
                                                 "Set it to 18 to get higher quality skin partitions.")
-                            if NifOp.props.game in 'SKYRIM':
+                            if NifOp.output.game in 'SKYRIM':
                                 if NifOp.props.max_bones_per_partition < 24:
                                     NifLog.warn("Using less than 24 bones per partition on Skyrim export."
                                                 "Set it to 24 to get higher quality skin partitions.")

@@ -114,10 +114,10 @@ class TextureWriter():
         """
         if texture.type == 'ENVIRONMENT_MAP':
             # this works for morrowind only
-            if NifOp.props.game != 'MORROWIND':
+            if NifOp.output.game != 'MORROWIND':
                 raise nif_utils.NifError(
                     "cannot export environment maps for nif version '%s'"
-                    % NifOp.props.game)
+                    % NifOp.output.game)
             return "enviro 01.TGA"
 
         elif texture.type == 'IMAGE':
@@ -143,7 +143,7 @@ class TextureWriter():
                 filename = ddsfilename
 
             # sanitize file path
-            if not NifOp.props.game in ('MORROWIND', 'OBLIVION', 'FALLOUT_3', 'SKYRIM'):
+            if not NifOp.output.game in ('MORROWIND', 'OBLIVION', 'FALLOUT_3', 'SKYRIM'):
                 # strip texture file path
                 filename = os.path.basename(filename)
 

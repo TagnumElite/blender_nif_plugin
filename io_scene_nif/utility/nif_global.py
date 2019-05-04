@@ -37,7 +37,8 @@
 #
 # ***** END LICENSE BLOCK *****
 
-from io_scene_nif.utility.nif_logging import NifLog
+import bpy
+import io_scene_nif
 
 
 class NifOp:
@@ -48,12 +49,13 @@ class NifOp:
         pass
 
     op = None
-    props = None
+    props: io_scene_nif.operators.nif_export_op.NifExportOperator = None
+    output: io_scene_nif.properties.output.Output = None
 
     @staticmethod
-    def init(operator):
+    def init(operator, context=None):
         NifOp.op = operator
         NifOp.props = operator.properties
-
-        # init loggers logging level
-        NifLog.op = operator
+        if context is None:
+            context = bpy.context
+        NifOp.output = context.scene.niftools_output_props

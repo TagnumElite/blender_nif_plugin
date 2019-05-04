@@ -46,7 +46,7 @@ from io_scene_nif.modules.animation.animation_export import AnimationHelper
 from io_scene_nif.modules.collision.collision_export import bhkshape_export, bound_export
 from io_scene_nif.modules.armature.armature_export import Armature
 from io_scene_nif.modules.property.property_export import PropertyHelper
-from io_scene_nif.modules.constraint.constraint_export import constraint_export
+from io_scene_nif.modules.constraint.constraint_export import ConstraintExport
 from io_scene_nif.modules.property.texture.texture_export import TextureHelper
 from io_scene_nif.modules.object.object_export import ObjectHelper
 from io_scene_nif.modules.scene import scene_export
@@ -68,10 +68,6 @@ class NifExport(NifCommon):
     FLOAT_MIN = -3.4028234663852886e+38
     FLOAT_MAX = +3.4028234663852886e+38
 
-    # TODO: - Expose via properties
-    EXPORT_OPTIMIZE_MATERIALS = True
-    EXPORT_OB_COLLISION_DO_NOT_USE_BLENDER_PROPERTIES = False
-
     EXPORT_BHKLISTSHAPE = False
     EXPORT_OB_BSXFLAGS = 2
     EXPORT_OB_MASS = 10.0
@@ -86,7 +82,7 @@ class NifExport(NifCommon):
     EXPORT_OB_PRN = "NONE"  # Todo with location on character. For weapons, rings, helmets, Sheilds ect
 
     def __init__(self, operator, context):
-        NifCommon.__init__(self, operator)
+        NifCommon.__init__(self, operator, context)
 
         # Helper systems
         self.bhkshapehelper = bhkshape_export(parent=self)
@@ -94,7 +90,7 @@ class NifExport(NifCommon):
         self.armaturehelper = Armature(parent=self)
         self.animationhelper = AnimationHelper(parent=self)
         self.propertyhelper = PropertyHelper(parent=self)
-        self.constrainthelper = constraint_export(parent=self)
+        self.constrainthelper = ConstraintExport(parent=self)
         self.texturehelper = TextureHelper(parent=self)
         self.objecthelper = ObjectHelper(parent=self)
 
@@ -107,7 +103,7 @@ class NifExport(NifCommon):
 
         # TODO:
         '''
-        if NifOp.props.animation == 'ALL_NIF_XNIF_XKF' and NifOp.props.game == 'MORROWIND':
+        if NifOp.props.animation == 'ALL_NIF_XNIF_XKF' and NifOp.output.game == 'MORROWIND':
             # if exporting in nif+xnif+kf mode, then first export
             # the nif with geometry + animation, which is done by:
             NifOp.props.animation = 'ALL_NIF'
@@ -181,7 +177,7 @@ class NifExport(NifCommon):
             for root_object in exportable_objects:
                 while root_object.parent:
                     root_object = root_object.parent
-                if NifOp.props.game in ('CIVILIZATION_IV', 'OBLIVION', 'FALLOUT_3'):
+                if NifOp.output.game in ('CIVILIZATION_IV', 'OBLIVION', 'FALLOUT_3'):
                     if (root_object.type == 'ARMATURE') or (root_object.name.lower() == "bip01"):
                         root_name = 'Scene Root'
                 # TODO remove as already filtered
@@ -213,7 +209,7 @@ class NifExport(NifCommon):
 
             # find nif version to write
             # TODO Move fully to scene level
-            self.version = NifOp.op.version[NifOp.props.game]
+            self.version = NifOp.op.version[NifOp.output.game]
             self.user_version, self.user_version_2 = scene_export.get_version_info(NifOp.props)
 
             # create a nif object
@@ -226,7 +222,7 @@ class NifExport(NifCommon):
             # export objects
             NifLog.info("Exporting objects")
             for root_object in root_objects:
-                if NifOp.props.game in 'SKYRIM':
+                if NifOp.output.game in 'SKYRIM':
                     if root_object.niftools_bs_invmarker:
                         for extra_item in root_block.extra_data_list:
                             if isinstance(extra_item, NifFormat.BSInvMarker):
@@ -272,7 +268,7 @@ class NifExport(NifCommon):
             # animations without keyframe animations crash the TESCS
             # if we are in that situation, add a trivial keyframe animation
             NifLog.info("Checking controllers")
-            if animtxt and NifOp.props.game == 'MORROWIND':
+            if animtxt and NifOp.output.game == 'MORROWIND':
                 has_keyframecontrollers = False
                 for block in self.dict_blocks:
                     if isinstance(block, NifFormat.NiKeyframeController):
@@ -284,7 +280,7 @@ class NifExport(NifCommon):
                     # add a trivial keyframe controller on the scene root
                     self.animationhelper.export_keyframes(None, 'localspace', root_block)
 
-            if NifOp.props.bs_animation_node and NifOp.props.game == 'MORROWIND':
+            if NifOp.props.bs_animation_node and NifOp.output.game == 'MORROWIND':
                 for block in self.dict_blocks:
                     if isinstance(block, NifFormat.NiNode):
                         # if any of the shape children has a controller
@@ -301,7 +297,7 @@ class NifExport(NifCommon):
 
             # oblivion skeleton export: check that all bones have a
             # transform controller and transform interpolator
-            if NifOp.props.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM') and filebase.lower() in (
+            if NifOp.output.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM') and filebase.lower() in (
                     'skeleton', 'skeletonbeast'):
                 # here comes everything that is Oblivion skeleton export specific
                 NifLog.info("Adding controllers and interpolators for skeleton")
@@ -339,7 +335,7 @@ class NifExport(NifCommon):
                     anim_textextra = None
 
             # oblivion and Fallout 3 furniture markers
-            if NifOp.props.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM') and filebase[:15].lower() == 'furnituremarker':
+            if NifOp.output.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM') and filebase[:15].lower() == 'furnituremarker':
                 # exporting a furniture marker for Oblivion/FO3
                 try:
                     furniturenumber = int(filebase[15:])
@@ -370,7 +366,7 @@ class NifExport(NifCommon):
             # FIXME:
             NifLog.info("Checking collision")
             # activate oblivion/Fallout 3 collision and physics
-            if NifOp.props.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM'):
+            if NifOp.output.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM'):
                 hascollision = False
                 for b_obj in bpy.data.objects:
                     if b_obj.game.use_collision_bounds:
@@ -395,7 +391,7 @@ class NifExport(NifCommon):
                         root_block.add_extra_data(upb)
 
                 # update rigid body center of gravity and mass
-                if self.EXPORT_OB_COLLISION_DO_NOT_USE_BLENDER_PROPERTIES:
+                if NifOp.props.object_collision_ignore_blender:
                     # we are not using blender properties to set the mass
                     # so calculate mass automatically first calculate distribution of mass
                     total_mass = 0
@@ -455,7 +451,7 @@ class NifExport(NifCommon):
                     self.constrainthelper.export_constraints(b_obj, root_block)
 
             # export weapon location
-            if NifOp.props.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM'):
+            if NifOp.output.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM'):
                 if self.EXPORT_OB_PRN != "NONE":
                     # add string extra data
                     prn = self.objecthelper.create_block("NiStringExtraData")
@@ -470,10 +466,10 @@ class NifExport(NifCommon):
                     root_block.add_extra_data(prn)
 
             # add vertex color and zbuffer properties for civ4 and railroads
-            if NifOp.props.game in ('CIVILIZATION_IV', 'SID_MEIER_S_RAILROADS'):
+            if NifOp.output.game in ('CIVILIZATION_IV', 'SID_MEIER_S_RAILROADS'):
                 self.propertyhelper.object_property.export_vertex_color_property(root_block)
                 self.propertyhelper.object_property.export_z_buffer_property(root_block)
-            elif NifOp.props.game in ('EMPIRE_EARTH_II',):
+            elif NifOp.output.game in ('EMPIRE_EARTH_II',):
                 self.propertyhelper.object_property.export_vertex_color_property(root_block)
                 self.propertyhelper.object_property.export_z_buffer_property(root_block, flags=15, function=1)
 
@@ -516,7 +512,7 @@ class NifExport(NifCommon):
                     self.egm_data.apply_scale(NifOp.props.scale_correction_export)
 
             # generate mopps (must be done after applying scale!)
-            if NifOp.props.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM'):
+            if NifOp.output.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM'):
                 for block in self.dict_blocks:
                     if isinstance(block, NifFormat.bhkMoppBvTreeShape):
                         NifLog.info("Generating mopp...")
@@ -565,7 +561,7 @@ class NifExport(NifCommon):
                     self.root_ninode = 'NiNode'
 
             # making root block a fade node
-            if NifOp.props.game in ('FALLOUT_3', 'SKYRIM') and self.root_ninode == 'BSFadeNode':
+            if NifOp.output.game in ('FALLOUT_3', 'SKYRIM') and self.root_ninode == 'BSFadeNode':
                 NifLog.info("Making root block a BSFadeNode")
                 fade_root_block = NifFormat.BSFadeNode().deepcopy(root_block)
                 fade_root_block.replace_global_node(root_block, fade_root_block)
@@ -587,7 +583,7 @@ class NifExport(NifCommon):
             NifLog.info("Writing NIF version 0x%08X" % self.version)
 
             if export_animation != 'ANIM_KF':
-                if NifOp.props.game == 'EMPIRE_EARTH_II':
+                if NifOp.output.game == 'EMPIRE_EARTH_II':
                     ext = ".nifcache"
                 else:
                     ext = ".nif"
@@ -601,11 +597,11 @@ class NifExport(NifCommon):
                 data = NifFormat.Data(version=self.version, user_version=self.user_version,
                                       user_version_2=self.user_version_2)
                 data.roots = [root_block]
-                if NifOp.props.game == 'NEOSTEAM':
+                if NifOp.output.game == 'NEOSTEAM':
                     data.modification = "neosteam"
-                elif NifOp.props.game == 'ATLANTICA':
+                elif NifOp.output.game == 'ATLANTICA':
                     data.modification = "ndoors"
-                elif NifOp.props.game == 'HOWLING_SWORD':
+                elif NifOp.output.game == 'HOWLING_SWORD':
                     data.modification = "jmihs1"
                 with open(niffile, "wb") as stream:
                     data.write(stream)
@@ -624,7 +620,7 @@ class NifExport(NifCommon):
                     # get list of all controllers for this node
                     ctrls = node.get_controllers()
                     for ctrl in ctrls:
-                        if NifOp.props.game == 'MORROWIND':
+                        if NifOp.output.game == 'MORROWIND':
                             # morrowind: only keyframe controllers
                             if not isinstance(ctrl, NifFormat.NiKeyframeController):
                                 continue
@@ -632,7 +628,7 @@ class NifExport(NifCommon):
                             node_kfctrls[node] = []
                         node_kfctrls[node].append(ctrl)
                 # morrowind
-                if NifOp.props.game in ('MORROWIND', 'FREEDOM_FORCE'):
+                if NifOp.output.game in ('MORROWIND', 'FREEDOM_FORCE'):
                     # create kf root header
                     kf_root = self.objecthelper.create_block("NiSequenceStreamHelper")
                     kf_root.add_extra_data(anim_textextra)
@@ -653,7 +649,7 @@ class NifExport(NifCommon):
                             # wipe controller target
                             ctrl.target = None
                 # oblivion
-                elif NifOp.props.game in (
+                elif NifOp.output.game in (
                         'OBLIVION', 'FALLOUT_3', 'CIVILIZATION_IV', 'ZOO_TYCOON_2', 'FREEDOM_FORCE_VS_THE_3RD_REICH'):
                     # create kf root header
                     kf_root = self.objecthelper.create_block("NiControllerSequence")
@@ -728,7 +724,7 @@ class NifExport(NifCommon):
                 else:
                     raise nif_utils.NifError(
                         "Keyframe export for '%s' is not supported.\nOnly Morrowind, Oblivion, Fallout 3, Civilization IV,"
-                        " Zoo Tycoon 2, Freedom Force, and Freedom Force vs. the 3rd Reich keyframes are supported." % NifOp.props.game)
+                        " Zoo Tycoon 2, Freedom Force, and Freedom Force vs. the 3rd Reich keyframes are supported." % NifOp.output.game)
 
                 # write kf (and xnif if asked)
                 prefix = "" if (export_animation != 'ALL_NIF_XNIF_XKF') else "x"
@@ -740,7 +736,7 @@ class NifExport(NifCommon):
                 data = NifFormat.Data(version=self.version, user_version=self.user_version,
                                       user_version_2=self.user_version_2)
                 data.roots = [kf_root]
-                data.neosteam = (NifOp.props.game == 'NEOSTEAM')
+                data.neosteam = (NifOp.output.game == 'NEOSTEAM')
                 stream = open(kffile, "wb")
                 try:
                     data.write(stream)
@@ -781,7 +777,7 @@ class NifExport(NifCommon):
                 data = NifFormat.Data(version=self.version, user_version=self.user_version,
                                       user_version_2=self.user_version_2)
                 data.roots = [root_block]
-                data.neosteam = (NifOp.props.game == 'NEOSTEAM')
+                data.neosteam = (NifOp.output.game == 'NEOSTEAM')
                 stream = open(xniffile, "wb")
                 try:
                     data.write(stream)
@@ -811,7 +807,7 @@ class NifExport(NifCommon):
 
     def export_collision(self, b_obj, parent_block):
         """Main function for adding collision object b_obj to a node."""
-        if NifOp.props.game == 'MORROWIND':
+        if NifOp.output.game == 'MORROWIND':
             if b_obj.game.collision_bounds_type != 'TRIANGLE_MESH':
                 raise nif_utils.NifError("Morrowind only supports Triangle Mesh collisions.")
             node = self.objecthelper.create_block("RootCollisionNode", b_obj)
@@ -821,7 +817,7 @@ class NifExport(NifCommon):
             for child in b_obj.children:
                 self.objecthelper.export_node(child, 'localspace', node, None)
 
-        elif NifOp.props.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM'):
+        elif NifOp.output.game in ('OBLIVION', 'FALLOUT_3', 'SKYRIM'):
 
             nodes = [parent_block]
             nodes.extend([block for block in parent_block.children if block.name[:14] == 'collisiondummy'])

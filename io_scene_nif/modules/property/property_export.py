@@ -151,6 +151,6 @@ class ObjectProperty:
 
         # no stencil property found, so create new one
         stencil_prop = self.nif_export.objecthelper.create_block("NiStencilProperty")
-        if NifOp.props.game == 'FALLOUT_3':
+        if NifOp.output.game == 'FALLOUT_3':
             stencil_prop.flags = 19840
         return stencil_prop

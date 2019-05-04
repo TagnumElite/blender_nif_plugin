@@ -250,7 +250,7 @@ class TextureHelper:
                                                 b_mat_texslot=self.glow_mtex)
 
         if self.bump_mtex:
-            if NifOp.props.game not in self.USED_EXTRA_SHADER_TEXTURES:
+            if NifOp.output.game not in self.USED_EXTRA_SHADER_TEXTURES:
                 texprop.has_bump_map_texture = True
                 self.texture_writer.export_tex_desc(texdesc=texprop.bump_map_texture,
                                                     uvlayers=self.nif_export.dict_mesh_uvlayers,
@@ -269,7 +269,7 @@ class TextureHelper:
                 texture=self.normal_mtex.texture)
 
         if self.gloss_mtex:
-            if NifOp.props.game not in self.USED_EXTRA_SHADER_TEXTURES:
+            if NifOp.output.game not in self.USED_EXTRA_SHADER_TEXTURES:
                 texprop.has_gloss_texture = True
                 self.texture_writer.export_tex_desc(texdesc=texprop.gloss_texture,
                                                     uvlayers=self.nif_export.dict_mesh_uvlayers,
@@ -293,7 +293,7 @@ class TextureHelper:
                                                 b_mat_texslot=self.detail_mtex)
 
         if self.ref_mtex:
-            if NifOp.props.game not in self.USED_EXTRA_SHADER_TEXTURES:
+            if NifOp.output.game not in self.USED_EXTRA_SHADER_TEXTURES:
                 NifLog.warn("Cannot export reflection texture for this game.")
                 # texprop.hasRefTexture = True
                 # self.export_tex_desc(texdesc=texprop.refTexture, uvlayers=uvlayers, mtex=refmtex)
@@ -305,7 +305,7 @@ class TextureHelper:
 
     def export_texture_shader_effect(self, texprop):
         # export extra shader textures
-        if NifOp.props.game == 'SID_MEIER_S_RAILROADS':
+        if NifOp.output.game == 'SID_MEIER_S_RAILROADS':
             # sid meier's railroads:
             # some textures end up in the shader texture list
             # there are 5 slots available, so set them up
@@ -327,7 +327,7 @@ class TextureHelper:
             shadertexdesc_cubelightmap.texture_data.source = self.texture_writer.export_source_texture(
                 filename="RRT_Cube_Light_map_128.dds")
 
-        elif NifOp.props.game == 'CIVILIZATION_IV':
+        elif NifOp.output.game == 'CIVILIZATION_IV':
             # some textures end up in the shader texture list
             # there are 4 slots available, so set them up
             texprop.num_shader_textures = 4
@@ -351,7 +351,7 @@ class TextureHelper:
         texeff.coordinate_generation_type = NifFormat.CoordGenType.CG_SPHERE_MAP
         if b_mat_texslot:
             texeff.source_texture = self.texture_writer.export_source_texture(b_mat_texslot.texture)
-            if NifOp.props.game == 'MORROWIND':
+            if NifOp.output.game == 'MORROWIND':
                 texeff.num_affected_node_list_pointers += 1
                 texeff.affected_node_list_pointers.update_size()
         texeff.unknown_vector.x = 1.0
@@ -400,7 +400,7 @@ class TextureHelper:
 
     def add_shader_integer_extra_datas(self, trishape):
         """Add extra data blocks for shader indices."""
-        for shaderindex in self.USED_EXTRA_SHADER_TEXTURES[NifOp.props.game]:
+        for shaderindex in self.USED_EXTRA_SHADER_TEXTURES[NifOp.output.game]:
             shader_name = self.EXTRA_SHADER_TEXTURES[shaderindex]
             trishape.add_integer_extra_data(shader_name, shaderindex)
 
