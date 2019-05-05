@@ -69,7 +69,7 @@ class NifImport(NifCommon):
     IMPORT_EXPORTEMBEDDEDTEXTURES = False
 
     def __init__(self, operator, context):
-        NifCommon.__init__(self, operator)
+        NifCommon.__init__(self, operator, context)
 
         self.root_ninode = 'NiNode'
 
@@ -907,21 +907,21 @@ class NifImport(NifCommon):
 
             # create material and assign it to the mesh
             # XXX todo: delegate search for properties to import_material
-            material = self.materialhelper.import_material(n_mat_prop, n_texture_prop,
-                                                           n_alpha_prop, n_specular_prop,
-                                                           textureEffect, n_wire_prop,
-                                                           bsShaderProperty,
-                                                           bsEffectShaderProperty,
-                                                           extra_datas)
+            # material = self.materialhelper.import_material(n_mat_prop, n_texture_prop,
+            #                                                n_alpha_prop, n_specular_prop,
+            #                                                textureEffect, n_wire_prop,
+            #                                                bsShaderProperty,
+            #                                                bsEffectShaderProperty,
+            #                                                extra_datas)
 
             # XXX todo: merge this call into import_material
-            self.animationhelper.material_animation.import_material_controllers(material, niBlock)
-            b_mesh_materials = list(b_mesh.materials)
-            try:
-                materialIndex = b_mesh_materials.index(material)
-            except ValueError:
-                materialIndex = len(b_mesh_materials)
-                b_mesh.materials.append(material)
+            # self.animationhelper.material_animation.import_material_controllers(material, niBlock)
+            # b_mesh_materials = list(b_mesh.materials)
+            # try:
+            #     materialIndex = b_mesh_materials.index(material)
+            # except ValueError:
+            #     materialIndex = len(b_mesh_materials)
+            #     b_mesh.materials.append(material)
 
             '''
             # if mesh has one material with n_wire_prop, then make the mesh
@@ -929,6 +929,8 @@ class NifImport(NifCommon):
             if n_wire_prop:
                 b_obj.display_type = 'WIRE'
             '''
+            material = None
+            materialIndex = 0
         else:
             material = None
             materialIndex = 0
@@ -1056,20 +1058,18 @@ class NifImport(NifCommon):
             # create vertex_layers
             if not "VertexColor" in b_mesh.vertex_colors:
                 b_mesh.vertex_colors.new(name="VertexColor")  # color layer
-                b_mesh.vertex_colors.new(name="VertexAlpha")  # greyscale
 
             # Mesh Vertex Color / Mesh Face
             for b_polygon_loop in b_mesh.loops:
                 b_loop_index = b_polygon_loop.index
                 vcol = b_mesh.vertex_colors["VertexColor"].data[b_loop_index]
-                vcola = b_mesh.vertex_colors["VertexAlpha"].data[b_loop_index]
                 for n_col_index, n_map_index in n_vcol_map:
                     if n_map_index == b_polygon_loop.vertex_index:
                         col_list = n_col_index
-                        vcol.color.r = col_list.r
-                        vcol.color.g = col_list.g
-                        vcol.color.b = col_list.b
-                        vcola.color.v = col_list.a
+                        vcol.color[0] = col_list.r
+                        vcol.color[1] = col_list.g
+                        vcol.color[2] = col_list.b
+                        vcol.color[3] = col_list.a
             # vertex colors influence lighting...
             # we have to set the use_vertex_color_light flag on the material
             # see below
@@ -1093,13 +1093,13 @@ class NifImport(NifCommon):
                 # vertex UV's, but Blender only allows explicit editing of face
                 # UV's, so load vertex UV's as face UV's
                 uvlayer = self.texturehelper.get_uv_layer_name(i)
-                if not uvlayer in b_mesh.uv_textures:
-                    b_mesh.uv_textures.new(uvlayer)
-                    uv_faces = b_mesh.uv_textures.active.data[:]
-                elif uvlayer in b_mesh.uv_textures:
-                    uv_faces = b_mesh.uv_textures[uvlayer].data[:]
-                else:
-                    uv_faces = None
+                # if uvlayer not in b_mesh.uv_textures:
+                #     b_mesh.uv_textures.new(uvlayer)
+                #     uv_faces = b_mesh.uv_textures.active.data[:]
+                # elif uvlayer in b_mesh.uv_textures:
+                #     uv_faces = b_mesh.uv_textures[uvlayer].data[:]
+                # else:
+                uv_faces = None
                 if uv_faces:
                     uvl = b_mesh.uv_layers.active.data[:]
                     for b_f_index, f in enumerate(poly_gens):
@@ -1113,7 +1113,7 @@ class NifImport(NifCommon):
                         uvl[b_poly_index.loop_start].uv = n_uvco[v1]
                         uvl[b_poly_index.loop_start + 1].uv = n_uvco[v2]
                         uvl[b_poly_index.loop_start + 2].uv = n_uvco[v3]
-            b_mesh.uv_textures.active_index = 0
+            # b_mesh.uv_textures.active_index = 0
 
         if material:
             # fix up vertex colors depending on whether we had textures in the
@@ -1188,8 +1188,9 @@ class NifImport(NifCommon):
                 b_obj_partflag = b_obj.niftools_part_flags.add()
                 # b_obj.niftools_part_flags.pf_partint = (i)
                 b_obj_partflag.name = (pl_name)
-                b_obj_partflag.pf_editorflag = (bodypart_flag[i].pf_editor_visible)
-                b_obj_partflag.pf_startflag = (bodypart_flag[i].pf_start_net_boneset)
+                b_obj_partflag.pf_editorflag = bodypart_flag[i].pf_editor_visible
+                b_obj_partflag.pf_startflag = bodypart_flag[i].pf_start_net_boneset
+
         # import morph controller
         # XXX todo: move this to import_mesh_controllers
         if NifOp.props.animation:
