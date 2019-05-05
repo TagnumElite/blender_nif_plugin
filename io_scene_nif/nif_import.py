@@ -1092,21 +1092,21 @@ class NifImport(NifCommon):
                 # Set the face UV's for the mesh. The NIF format only supports
                 # vertex UV's, but Blender only allows explicit editing of face
                 # UV's, so load vertex UV's as face UV's
-                uvlayer = self.texturehelper.get_uv_layer_name(i)
-                # if uvlayer not in b_mesh.uv_textures:
-                #     b_mesh.uv_textures.new(uvlayer)
-                #     uv_faces = b_mesh.uv_textures.active.data[:]
-                # elif uvlayer in b_mesh.uv_textures:
-                #     uv_faces = b_mesh.uv_textures[uvlayer].data[:]
-                # else:
-                uv_faces = None
+                uv_layer = self.texturehelper.get_uv_layer_name(i)
+                if uv_layer not in b_mesh.uv_layers:
+                    b_mesh.uv_layers.new(name=uv_layer)
+                    uv_faces = b_mesh.uv_layers.active.data[:]
+                elif uv_layer in b_mesh.uv_layers:
+                    uv_faces = b_mesh.uv_layers[uv_layer].data[:]
+                else:
+                    uv_faces = None
                 if uv_faces:
                     uvl = b_mesh.uv_layers.active.data[:]
                     for b_f_index, f in enumerate(poly_gens):
                         if b_f_index is None:
                             continue
-                        uvlist = f
-                        v1, v2, v3 = uvlist
+                        uv_list = f
+                        v1, v2, v3 = uv_list
                         # if v3 == 0:
                         #   v1,v2,v3 = v3,v1,v2
                         b_poly_index = b_mesh.polygons[b_f_index + bf2_index]
