@@ -1113,7 +1113,7 @@ class NifImport(NifCommon):
                         uvl[b_poly_index.loop_start].uv = n_uvco[v1]
                         uvl[b_poly_index.loop_start + 1].uv = n_uvco[v2]
                         uvl[b_poly_index.loop_start + 2].uv = n_uvco[v3]
-            # b_mesh.uv_textures.active_index = 0
+            b_mesh.uv_layers.active_index = 0
 
         if material:
             # fix up vertex colors depending on whether we had textures in the
@@ -1137,7 +1137,7 @@ class NifImport(NifCommon):
                     for b_polyimage_index in f_map:
                         if b_polyimage_index is None:
                             continue
-                        tface = b_mesh.uv_textures.active.data[b_polyimage_index]
+                        tface = b_mesh.uv_layers.active.data[b_polyimage_index]
                         # gone in blender 2.5x+?
                         # f.mode = Blender.Mesh.FaceModes['TEX']
                         # f.transp = Blender.Mesh.FaceTranspModes['ALPHA']
