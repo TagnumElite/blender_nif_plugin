@@ -111,8 +111,10 @@ class NifCommon:
 
     HAVOK_SCALE = 6.996
 
-    def __init__(self, operator, context):
+    def __init__(self, operator, context=None):
         """Common initialization functions for executing the import/export operators: """
+        if context is None:
+            context = bpy.context
 
         NifOp.init(operator, context)
 

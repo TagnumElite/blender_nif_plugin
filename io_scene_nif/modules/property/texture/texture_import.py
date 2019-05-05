@@ -328,7 +328,7 @@ class Texture:
             b_mat_texslot.texture.use_alpha = False
 
         # Influence
-        if (self.nif_import.ni_alpha_prop):
+        if self.nif_import.ni_alpha_prop:
             b_mat_texslot.use_map_alpha = True
 
         if self.has_diffusetex or self.has_darktex or self.has_detailtex or self.has_reftex or self.has_envtex:

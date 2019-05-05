@@ -38,7 +38,6 @@
 # ***** END LICENSE BLOCK *****
 
 import bpy
-import io_scene_nif
 
 
 class NifOp:
@@ -49,8 +48,8 @@ class NifOp:
         pass
 
     op = None
-    props: io_scene_nif.operators.nif_export_op.NifExportOperator = None
-    output: io_scene_nif.properties.output.Output = None
+    props = None
+    output = None
 
     @staticmethod
     def init(operator, context=None):

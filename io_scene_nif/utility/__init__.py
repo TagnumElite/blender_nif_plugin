@@ -90,6 +90,6 @@ def get_preferences(context=None, addon="io_scene_nif"):
 def matmul(a, b):
     """Perform matrix multiplication in a blender 2.7 and 2.8 safe way"""
     if hasattr(bpy.app, "version") and bpy.app.version >= (2, 80):
-        return operator.matmul(a, b) # the same as writing a @ b
+        return operator.matmul(a, b)  # the same as writing a @ b
     else:
         return a * b
