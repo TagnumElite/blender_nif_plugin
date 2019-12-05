@@ -4,8 +4,8 @@
 
 set DIR=%~dps0
 :: remove trailing backslash
-if "%DIR:~-1%" == "\" set DIR="%DIR:~0,-1%"
-set ROOT="%DIR%\.."
+if %DIR:~-1% == \ set DIR=%DIR:~0,-1%
+set ROOT=%DIR%\..
 set /p VERSION=<%ROOT%\io_scene_nif\VERSION
 set NAME=blender_nif_plugin
 
