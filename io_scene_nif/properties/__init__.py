@@ -38,8 +38,15 @@
 # ***** END LICENSE BLOCK *****
 
 
-def register():
-    from . import armature, collision, constraint, geometry, material, object, scene, shader
+from . import armature, collision, constraint, geometry, material, object, scene, shader
+from bpy.utils import register_classes_factory
+
+classes = (
+    armature.ArmaturePanel,
+    collision.CollisionBoundsPanel,
+)
+
+register, unregister = register_classes_factory(classes)
 
 
 def underscore_to_camelcase(s):

@@ -37,7 +37,6 @@
 #
 # ***** END LICENSE BLOCK *****
 
-
 from pyffi.formats.nif import NifFormat
 from io_scene_nif.utility.util_logging import NifLog
 from io_scene_nif.utility.nif_utils import NifError

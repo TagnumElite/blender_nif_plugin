@@ -7,7 +7,7 @@ VERSION=$(cat "${ROOT}"/io_scene_nif/VERSION)
 NAME="blender_nif_plugin"
 
 find_blender() {
-    for BLENDER_VERSION in 2.79
+    for BLENDER_VERSION in 2.80
     do
         BLENDER_ADDONS_DIR=~/.blender/"${BLENDER_VERSION}"/scripts/addons
         if [[ -e ~/.blender/${BLENDER_VERSION}/ ]]; then

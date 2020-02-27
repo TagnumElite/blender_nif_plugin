@@ -43,6 +43,7 @@ import sys
 
 import bpy
 import bpy.props
+from bpy.types import AddonPreferences
 
 # Python dependencies are bundled inside the io_scene_nif/dependencies folder
 _dependencies_path = os.path.join(os.path.dirname(__file__), "dependencies")
@@ -58,15 +59,16 @@ bl_info = {
     "name": "NetImmerse/Gamebryo nif format",
     "description": "Import and export files in the NetImmerse/Gamebryo nif format (.nif)",
     "author": "NifTools Team",
-    "blender": (2, 79, 0),
-    "version": (2, 6, 0),  # can't read from VERSION, blender wants it hardcoded
+    "blender": (2, 80, 0),
+    "version": (3, 0, 0),  # can't read from VERSION, blender wants it hardcoded
     "api": 39257,
     "location": "File > Import-Export",
-    "warning": "partially functional, port from 2.49 series still in progress",
+    "warning": "partially functional, port to 2.80 still in progress",
     "wiki_url": "https://blender-nif-plugin.readthedocs.io/",
     "tracker_url": "https://github.com/niftools/blender_nif_plugin/issues",
     "support": "COMMUNITY",
-    "category": "Import-Export"}
+    "category": "Import-Export"
+}
 
 
 def _init_loggers():
@@ -83,36 +85,165 @@ def _init_loggers():
     pyffi_logger.addHandler(log_handler)
 
 
+use_icons = False
+try:
+    # noinspection PyUnresolvedReferences
+    import bpy.utils.previews
+
+    use_icons = True
+except ImportError:
+    pass
+
+
+global preview_collections
+preview_collections = {}
+
+logging_level_enum = (
+    ("NOTSET", "Not Set", "Log Everything", "CHECKBOX_DEHLT", 0),
+    ("DEBUG", "Debug", "Log debug, info, warnings and errors", "QUESTION", 10),
+    ("INFO", "Info", "Log info, warnings and errors", "HELP", 20),
+    ("WARNING", "Warning", "Log Warnings and errors", "", 30),
+    ("ERROR", "Error", "Log all errors", "ERROR", 40),
+    ("CRITICAL", "Critical", "Only log critical errors", "CANCEL", 50),
+)
+
+
+class NifSettings(AddonPreferences):
+    bl_idname = __package__
+
+    default_filepath: bpy.props.StringProperty(
+        name="Default File Path",
+        description="Default output file path",
+        subtype='DIR_PATH',
+    )
+
+    pyffi_logging_level: bpy.props.EnumProperty(
+        name="PyFFI Logging Level",
+        description="",
+        # update=update_pyffi_logger,
+        items=logging_level_enum,
+        default="WARNING",
+    )
+
+    niftools_logging_level: bpy.props.EnumProperty(
+        name="NifTools Logging Level",
+        description="",
+        # update=update_pyffi_logger,
+        items=logging_level_enum,
+        default="WARNING",
+    )
+
+    default_author: bpy.props.StringProperty(
+        name="Default Author",
+        description="Default Author for projects, currently not in use.",
+    )
+
+    boolean: bpy.props.BoolProperty(
+        name="Example Boolean",
+        default=False,
+    )
+
+    def draw(self, context):
+        layout = self.layout
+        layout.label(text="This is a preferences view for our add-on")
+        layout.prop(self, "default_filepath", icon="FILE_SCRIPT")
+        layout.prop(self, "pyffi_logging_level")
+        layout.prop(self, "niftools_logging_level")
+        layout.prop(self, "default_author", icon="USER")
+
+
 # noinspection PyUnusedLocal
 def menu_func_import(self, context):
-    self.layout.operator(operators.nif_import_op.NifImportOperator.bl_idname, text="NetImmerse/Gamebryo (.nif)")
-    self.layout.operator(operators.kf_import_op.KfImportOperator.bl_idname, text="NetImmerse/Gamebryo (.kf)")
-    # TODO [general] get default path from config registry
+    """
+
+    :param self:
+    :param context:
+    """
+    pmain = preview_collections["main"]
+    if not pmain or 'niftools_logo' not in pmain:
+        self.layout.operator(operators.nif_import_op.NifImportOperator.bl_idname, text="NetImmerse/Gamebryo (.nif)")
+    else:
+        self.layout.operator(operators.nif_import_op.NifImportOperator.bl_idname, text="NetImmerse/Gamebryo (.nif)",
+                             icon_value=pmain['niftools_logo'].icon_id)
+    # self.layout.operator(operators.nif_import_op.NifImportOperator.bl_idname, text="NetImmerse/Gamebryo (.nif)")
+    # TODO: get default path from config registry
     # default_path = bpy.data.filename.replace(".blend", ".nif")
     # ).filepath = default_path
 
 
 # noinspection PyUnusedLocal
 def menu_func_export(self, context):
-    self.layout.operator(operators.nif_export_op.NifExportOperator.bl_idname, text="NetImmerse/Gamebryo (.nif)")
-    # self.layout.operator(operators.kf_export_op.KfExportOperator.bl_idname, text="NetImmerse/Gamebryo (.kf)")
+    """
+
+    :param self:
+    :param context:
+    """
+    # self.layout.operator(operators.nif_export_op.NifExportOperator.bl_idname, text="NetImmerse/Gamebryo (.nif)")
+    pmain = preview_collections["main"]
+    if not pmain or 'niftools_logo' not in pmain:
+        self.layout.operator(operators.nif_export_op.NifExportOperator.bl_idname, text="NetImmerse/Gamebryo (.nif)")
+    else:
+        self.layout.operator(operators.nif_export_op.NifExportOperator.bl_idname, text="NetImmerse/Gamebryo (.nif)",
+                             icon_value=pmain['niftools_logo'].icon_id)
 
 
 def register():
+    """
+
+    """
+    bpy.utils.register_class(NifSettings)
     _init_loggers()
     operators.register()
+    # NifLog.register()
     properties.register()
     ui.register()
-    bpy.utils.register_module(__name__)
-    bpy.types.INFO_MT_file_import.append(menu_func_import)
-    bpy.types.INFO_MT_file_export.append(menu_func_export)
+
+    try:
+        custom_icons = bpy.utils.previews.new()
+        material_icons = bpy.utils.previews.new()
+        preview_collections["main"] = custom_icons
+        preview_collections["materials"] = material_icons
+    except Exception as e:
+        # NifLog.warn("Failed to load custom icons.", e)
+        preview_collections["main"] = ""
+        preview_collections["materials"] = ""
+
+    if use_icons:
+        script_path = bpy.path.abspath(os.path.dirname(__file__))
+        icons_dir = os.path.join(script_path, 'icons')
+        logo_path = os.path.join(icons_dir, "niftools-logo.png")
+        if os.path.isfile(logo_path):
+            custom_icons.load('niftools_logo', logo_path, 'IMAGE')
+
+    bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
+    bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
 
 
 def unregister():
+    """
+
+    """
     # no idea how to do this... oh well, let's not lose any sleep over it uninit_loggers()
-    bpy.types.INFO_MT_file_import.remove(menu_func_import)
-    bpy.types.INFO_MT_file_export.remove(menu_func_export)
-    bpy.utils.unregister_module(__name__)
+    # bpy.types.INFO_MT_file_import.remove(menu_func_import)
+    # bpy.types.INFO_MT_file_export.remove(menu_func_export)
+    # bpy.utils.unregister_module(__name__)
+    # properties.unregister()
+    # ui.unregister()
+    # operators.unregister()
+    # remove icons
+    if use_icons and preview_collections["main"] != "":
+        for pcoll in preview_collections.values():
+            bpy.utils.previews.remove(pcoll)
+        preview_collections.clear()
+
+    bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
+    bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
+
+    properties.unregister()
+    ui.unregister()
+    operators.unregister()
+    bpy.utils.unregister_class(NifSettings)
+    # NifLog.unregister()
 
 
 if __name__ == "__main__":
