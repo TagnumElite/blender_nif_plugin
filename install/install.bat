@@ -5,7 +5,7 @@
 set DIR=%~dps0
 :: remove trailing backslash
 if "%DIR:~-1%" == "\" set DIR="%DIR:~0,-1%"
-set ROOT="%DIR%\.."
+set ROOT=%DIR%\..
 set /p VERSION=<%ROOT%\io_scene_nif\VERSION
 set NAME=blender_nif_plugin
 
@@ -18,17 +18,17 @@ goto end
 )
 
 echo "Blender addons directory : %BLENDER_ADDONS_DIR%"
-echo. "Installing to: %BLENDER_ADDONS_DIR%\io_scene_nif"
+echo. "Installing to: %BLENDER_ADDONS_DIR%"
 
 :: create zip
 echo. "Building artifact"
-call "%DIR%\makezip.bat"
+call %DIR%\makezip.bat -q
 
 :: remove old files
-echo.Removing old installation
+echo. Removing old installation
 if exist "%BLENDER_ADDONS_DIR%\io_scene_nif" rmdir /s /q "%BLENDER_ADDONS_DIR%\io_scene_nif"
 
 :: copy files from repository to blender addons folder
-powershell -executionpolicy bypass -Command "%DIR%\unzip.ps1" -source '%DIR%\%NAME%-%VERSION%.zip' -destination '%BLENDER_ADDONS_DIR%\io_scene_nif'
+powershell -executionpolicy bypass -Command "%DIR%\unzip.ps1" -source '%DIR%\%NAME%-%VERSION%.zip' -destination '%BLENDER_ADDONS_DIR%'
 
 :end

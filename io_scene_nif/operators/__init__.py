@@ -37,6 +37,16 @@
 #
 # ***** END LICENSE BLOCK *****
 
+from . import object, geometry, nif_import_op, nif_export_op, nif_common_op, kf_import_op  # , kf_export_op
+from bpy.utils import register_classes_factory
 
-def register():
-    from . import object, geometry, nif_import_op, nif_export_op, nif_common_op, kf_import_op  # , kf_export_op
+classes = (
+    object.BSXExtraDataAdd, object.UPBExtraDataAdd, object.SampleExtraDataAdd, object.NiExtraDataRemove,
+    geometry.BsInvMarkerAdd, geometry.BsInvMarkerRemove, geometry.NfTlPartFlagRemove,
+    nif_import_op.NifImportOperator,
+    nif_export_op.NifExportOperator,
+    kf_import_op.KfImportOperator,
+    # kf_export_op.KfExportOperator
+)
+
+register, unregister = register_classes_factory(classes)

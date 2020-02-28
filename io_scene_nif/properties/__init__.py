@@ -42,8 +42,14 @@ from . import armature, collision, constraint, geometry, material, object, scene
 from bpy.utils import register_classes_factory
 
 classes = (
-    armature.ArmaturePanel,
-    collision.CollisionBoundsPanel,
+    armature.ArmatureProperty, armature.BoneProperty,
+    collision.CollisionProperty,
+    constraint.ConstraintProperty,
+    geometry.SkinPartFlags, geometry.SkinPartHeader,
+    material.Material, material.AlphaFlags,
+    object.ExtraData, object.ExtraDataStore, object.ObjectProperty, object.BsInventoryMarker,
+    scene.Scene,
+    shader.ShaderProps,
 )
 
 register, unregister = register_classes_factory(classes)

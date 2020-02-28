@@ -37,7 +37,19 @@
 #
 # ***** END LICENSE BLOCK *****
 
-
 # TODO [ui] Update the classname so that they follow convention
-def register():
-    from . import armature, collision, geometry, material, object, shader, scene
+from . import armature, collision, geometry, material, object, shader, scene
+from bpy.utils import register_classes_factory
+
+classes = (
+    armature.ArmaturePanel, armature.BonePanel,
+    collision.CollisionBoundsPanel,
+    geometry.PartFlag,
+    material.NifMatColorPanel, material.NifMatFlagPanel,
+    object.OBJECT_MT_ExtraDataType, object.OBJECT_PT_ExtraData, object.OBJECT_UL_ExtraData,
+    object.ObjectInvMarkerPanel, object.ObjectPanel,
+    scene.ScenePanel,
+    shader.ObjectShader
+)
+
+register, unregister = register_classes_factory(classes)

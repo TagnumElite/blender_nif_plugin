@@ -104,10 +104,10 @@ class NifMatColorPanel(Panel):
 
 
 def register():
-    bpy.utils.register_class(NifMatColorPanel)
+    # bpy.utils.register_class(NifMatColorPanel)
     bpy.types.MATERIAL_PT_shading.prepend(NifMatColorPanel)
 
 
 def unregister():
-    bpy.types.MATERIAL_PT_shading.remove(NifMatColorPanel)
+    # bpy.types.MATERIAL_PT_shading.remove(NifMatColorPanel)
     bpy.utils.unregister_class(NifMatColorPanel)
