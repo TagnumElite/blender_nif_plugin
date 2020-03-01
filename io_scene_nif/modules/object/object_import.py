@@ -93,10 +93,11 @@ class Object:
             n_name = name
         # let blender choose a name
         b_obj = bpy.data.objects.new(n_name, b_obj_data)
-        b_obj.select = True
         # make the object visible and active
-        bpy.context.scene.objects.link(b_obj)
-        bpy.context.scene.objects.active = b_obj
+        bpy.context.collection.objects.link(b_obj)
+        bpy.context.view_layer.objects.active = b_obj
+        b_obj.select_set(state=True)
+        bpy.context.view_layer.objects.active = b_obj
         block_store.store_longname(b_obj, n_name)
         return b_obj
 
@@ -197,9 +198,9 @@ class Object:
 
         # Mesh hidden flag
         if n_block.flags & 1 == 1:
-            b_obj.draw_type = 'WIRE'  # hidden: wire
+            b_obj.display_type = 'WIRE'  # hidden: wire
         else:
-            b_obj.draw_type = 'TEXTURED'  # not hidden: shaded
+            b_obj.display_type = 'TEXTURED'  # not hidden: shaded
 
         return b_obj
 
@@ -208,7 +209,7 @@ class Object:
         NifLog.info("Joining geometries {0} to single object '{1}'".format([child.name.decode() for child in n_geoms], n_block.name.decode()))
         b_obj = self.create_mesh_object(n_block)
         b_obj.matrix_local = nif_utils.import_matrix(n_block)
-        bpy.context.scene.objects.active = b_obj
+        bpy.context.view_layer.objects.active = b_obj
         for child in n_geoms:
             self.mesh.import_mesh(child, b_obj)
 
@@ -224,7 +225,7 @@ class Object:
         b_obj = self.create_mesh_object(n_block)
         transform = nif_utils.import_matrix(n_block)  # set transform matrix for the mesh
         self.mesh.import_mesh(n_block, b_obj, transform)
-        bpy.context.scene.objects.active = b_obj
+        bpy.context.view_layer.objects.active = b_obj
         # store flags etc
         self.import_object_flags(n_block, b_obj)
         # skinning? add armature modifier

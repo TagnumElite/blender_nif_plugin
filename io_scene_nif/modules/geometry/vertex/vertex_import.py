@@ -50,21 +50,19 @@ class Vertex:
 
             # create vertex_layers
             if "VertexColor" not in b_mesh.vertex_colors:
-                b_mesh.vertex_colors.new(name="VertexColor")  # color layer
-                b_mesh.vertex_colors.new(name="VertexAlpha")  # greyscale
+                b_mesh.vertex_colors.new(name="VertexColor")  # color layer and greyscale
 
             # Mesh Vertex Color / Mesh Face
             for b_polygon_loop in b_mesh.loops:
                 b_loop_index = b_polygon_loop.index
                 vcol = b_mesh.vertex_colors["VertexColor"].data[b_loop_index]
-                vcola = b_mesh.vertex_colors["VertexAlpha"].data[b_loop_index]
                 for n_col_index, n_map_index in n_vcol_map:
                     if n_map_index == b_polygon_loop.vertex_index:
                         col_list = n_col_index
-                        vcol.color.r = col_list.r
-                        vcol.color.g = col_list.g
-                        vcol.color.b = col_list.b
-                        vcola.color.v = col_list.a
+                        vcol.color[0] = col_list.r
+                        vcol.color[1] = col_list.g
+                        vcol.color[2] = col_list.b
+                        vcol.color[3] = col_list.a
             # vertex colors influence lighting...
             # we have to set the use_vertex_color_light flag on the material, see below
 
@@ -80,8 +78,8 @@ class Vertex:
                 # Set the face UV's for the mesh. The NIF format only supports vertex UV's.
                 # However Blender only allows explicit editing of face  UV's, so load vertex UV's as face UV's
                 uv_layer = Vertex.get_uv_layer_name(n_uv_set)
-                if uv_layer not in b_mesh.uv_textures:
-                    b_mesh.uv_textures.new(uv_layer)
+                if uv_layer not in b_mesh.uv_layers:
+                    b_mesh.uv_layers.new(name=uv_layer)
 
                 b_uv_layer = b_mesh.uv_layers[uv_layer].data[:]
                 for b_f_index, f in enumerate(n_triangles):
@@ -92,7 +90,7 @@ class Vertex:
                     b_uv_layer[b_poly_index.loop_start].uv = n_uvco[n_uv_set][v1]
                     b_uv_layer[b_poly_index.loop_start + 1].uv = n_uvco[n_uv_set][v2]
                     b_uv_layer[b_poly_index.loop_start + 2].uv = n_uvco[n_uv_set][v3]
-            b_mesh.uv_textures.active_index = 0
+            # b_mesh.uv_textures.active_index = 0
 
     @staticmethod
     def get_uv_layer_name(uvset):

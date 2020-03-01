@@ -801,7 +801,7 @@ class Mesh:
         # select mesh object
         for b_deselect_obj in bpy.context.scene.objects:
             b_deselect_obj.select = False
-        bpy.context.scene.objects.active = b_obj
+        bpy.context.view_layer.objects.active = b_obj
         b_obj.select = True
         for face in b_mesh.polygons:
             face.select = False

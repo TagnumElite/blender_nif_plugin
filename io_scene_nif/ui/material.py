@@ -42,8 +42,8 @@ from bpy.types import Panel
 
 
 class NifMatFlagPanel(Panel):
+    bl_idname = "MATERIAL_PT_nif_mat_flag_panel"
     bl_label = "Flag Panel"
-
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "material"
@@ -53,8 +53,9 @@ class NifMatFlagPanel(Panel):
         mat = context.material
         if mat is not None:
             if mat.use_nodes:
-                if mat.active_node_material is not None:
-                    return True
+                # TODO: Doesn't exist in Blender 2.8
+                # if mat.active_node_material is not None:
+                #     return True
                 return False
             return True
         return False
@@ -71,8 +72,8 @@ class NifMatFlagPanel(Panel):
 
 
 class NifMatColorPanel(Panel):
+    bl_idname = "MATERIAL_PT_nif_mat_color_panel"
     bl_label = "Material Color Panel"
-
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "material"

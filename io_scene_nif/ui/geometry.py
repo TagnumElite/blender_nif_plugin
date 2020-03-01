@@ -41,6 +41,7 @@ from bpy.types import Panel
 
 
 class PartFlag(Panel):
+    bl_idname = "GEOMETRY_PT_part_flag"
     bl_label = "Niftools Dismember Flags Panel"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
@@ -61,9 +62,9 @@ class PartFlag(Panel):
         row = layout.row()
 
         col = row.column(align=True)
-        row.operator("object.niftools_part_flags_add", icon='ZOOMIN', text="")
+        row.operator("object.niftools_part_flags_add", icon='ZOOM_IN', text="")
         if context.object.niftools_part_flags:
-            row.operator("object.niftools_part_flags_remove", icon='ZOOMOUT', text="")
+            row.operator("object.niftools_part_flags_remove", icon='ZOOM_OUT', text="")
         col.prop(nif_pf_panel_props, "pf_partcount")
 
         for i, x in enumerate(nif_pf_list_props):

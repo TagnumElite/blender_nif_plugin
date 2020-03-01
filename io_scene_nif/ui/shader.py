@@ -41,6 +41,7 @@ from bpy.types import Panel
 
 
 class ObjectShader(Panel):
+    bl_idname = "SHADER_PT_object_shader"
     bl_label = "Niftools Shader"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'

@@ -50,9 +50,9 @@ from pyffi.formats.nif import NifFormat
 
 
 class ExtraData(PropertyGroup):
-    name = StringProperty()
-    data = StringProperty()
-    sub_class = StringProperty()
+    name: StringProperty()
+    data: StringProperty()
+    sub_class: StringProperty()
 
 
 #     def __new__(self, name, data, sub_class):

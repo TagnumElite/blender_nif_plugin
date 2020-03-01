@@ -50,11 +50,11 @@ class NifOperatorCommon:
     filename_ext = ".nif"
 
     # File name filter for file select dialog.
-    filter_glob = bpy.props.StringProperty(
+    filter_glob: bpy.props.StringProperty(
         default="*.nif;*.item;*.nifcache;*.jmi", options={'HIDDEN'})
 
     # Level of verbosity on the console.
-    log_level = bpy.props.EnumProperty(
+    log_level: bpy.props.EnumProperty(
         items=(
             ("DEBUG", "Debug", "Show all messages (only useful for debugging).", 10),
             ("INFO", "Info", "Show some informative messages, warnings, and errors.", 20),
@@ -67,7 +67,7 @@ class NifOperatorCommon:
         default="DEBUG")  # TODO [general] Dev config, revert for release
 
     # Name of file where Python profiler dumps the profile.
-    profile_path = bpy.props.StringProperty(
+    profile_path: bpy.props.StringProperty(
         name="Profile Path",
         description="File where Python profiler dumps the profile. Set to empty string to turn off profiling.",
         maxlen=1024,
@@ -76,7 +76,7 @@ class NifOperatorCommon:
         options={'HIDDEN'})
 
     # Used for checking equality between floats.
-    epsilon = bpy.props.FloatProperty(
+    epsilon: bpy.props.FloatProperty(
         name="Epsilon",
         description="Used for checking equality between floats.",
         default=0.0005,

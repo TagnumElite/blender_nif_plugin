@@ -67,16 +67,16 @@ class SkinPartHeader(PropertyGroup):
 
 
 class SkinPartFlags(PropertyGroup):
-    name = bpy.props.StringProperty(
+    name: bpy.props.StringProperty(
         name='name',
         default=''
     )
 
-    pf_startflag = BoolProperty(
+    pf_startflag: BoolProperty(
         name='Start Net Boneset'
     )
 
-    pf_editorflag = BoolProperty(
+    pf_editorflag: BoolProperty(
         name="Editor Visible"
     )
 

@@ -41,8 +41,8 @@ from bpy.types import Panel
 
 
 class ScenePanel(Panel):
+    bl_idname = "SCENE_PT_scene_panel"
     bl_label = "Niftools Scene Panel"
-
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "scene"

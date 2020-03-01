@@ -41,6 +41,7 @@ from bpy.types import Panel
 
 
 class BonePanel(Panel):
+    bl_idname = "ARMATURE_PT_bone_panel"
     bl_label = "Niftools Bone Props"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
@@ -64,6 +65,7 @@ class BonePanel(Panel):
 
 
 class ArmaturePanel(Panel):
+    bl_idname = "ARMATURE_PT_armature_panel"
     bl_label = "Niftools Armature Props"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
