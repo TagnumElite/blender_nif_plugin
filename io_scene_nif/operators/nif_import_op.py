@@ -47,7 +47,7 @@ from .nif_common_op import NifOperatorCommon
 
 @orientation_helper(axis_forward='Z', axis_up='Y')
 class NifImportOperator(Operator, ImportHelper, NifOperatorCommon):
-    """Operator for loading a nif file."""
+    """Import Netimmerse/Gamebyro (nif) file"""
 
     # Name of function for calling the nif export operators.
     bl_idname = "import_scene.nif"

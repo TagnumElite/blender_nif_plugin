@@ -42,22 +42,20 @@ from bpy.types import Panel
 
 class ScenePanel(Panel):
     bl_idname = "SCENE_PT_scene_panel"
-    bl_label = "Niftools Scene Panel"
+    bl_label = "NifTools"
     bl_space_type = 'PROPERTIES'
     bl_region_type = 'WINDOW'
     bl_context = "scene"
 
     # noinspection PyUnusedLocal
-    @classmethod
-    def poll(cls, context):
-        return True
-
-    # noinspection PyUnusedLocal
     def draw(self, context):
-        nif_sceme_props = context.scene.niftools_scene
+        nif_scene_props = context.scene.niftools_scene
 
         layout = self.layout
         row = layout.column()
-        row.prop(nif_sceme_props, "nif_version")
-        row.prop(nif_sceme_props, "user_version")
-        row.prop(nif_sceme_props, "user_version_2")
+
+        # Todo: replace versions with name selection
+        row.prop(nif_scene_props, "nif_game")
+        row.prop(nif_scene_props, "nif_version")
+        row.prop(nif_scene_props, "user_version")
+        row.prop(nif_scene_props, "bethesda_version")

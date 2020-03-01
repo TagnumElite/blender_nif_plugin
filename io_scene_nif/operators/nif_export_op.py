@@ -54,7 +54,7 @@ def _game_to_enum(game):
 
 
 class NifExportOperator(Operator, ExportHelper, NifOperatorCommon):
-    """Operator for saving a nif file."""
+    """Export Netimmerse/Gamebyro (nif) file"""
 
     # Name of function for calling the nif export operators.
     bl_idname = "export_scene.nif"

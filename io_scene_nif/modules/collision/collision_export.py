@@ -186,7 +186,7 @@ class Collision:
         # Set Havok Scale ratio
         b_scene = bpy.context.scene.niftools_scene
         if b_scene.user_version == 12:
-            if b_scene.user_version_2 == 83:
+            if b_scene.bethesda_version == 83:
                 self.HAVOK_SCALE = self.HAVOK_SCALE * 10
             else:
                 self.HAVOK_SCALE = self.HAVOK_SCALE

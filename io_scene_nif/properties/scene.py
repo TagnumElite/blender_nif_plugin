@@ -39,8 +39,28 @@
 
 
 import bpy
-from bpy.props import PointerProperty, IntProperty
+from bpy.props import PointerProperty, IntProperty, EnumProperty
 from bpy.types import PropertyGroup
+from pyffi.formats.nif import NifFormat
+
+
+def _game_to_enum(name):
+    symbols = ":,'\" +-*!?;./="
+    table = str.maketrans(symbols, "_" * len(symbols))
+    enum = name.upper().translate(table).replace("__", "_")
+    return enum
+
+
+_game_dict = dict()
+
+for game in reversed(sorted(NifFormat.games.keys())):
+    if game == '?':
+        continue
+    _game_dict[_game_to_enum(game)] = game
+
+
+def _update_game(scene, context):
+    scene.nif_version = NifFormat.games[_game_dict[scene.nif_game]][0]
 
 
 class Scene(PropertyGroup):
@@ -53,19 +73,38 @@ class Scene(PropertyGroup):
             type=cls
         )
 
+        cls.nif_game = EnumProperty(
+            items=[  # TODO: Fetch games main version instead in new PyFFI version
+                (_id, game, "Export for " + game)
+                # implementation note: reversed makes it show alphabetically
+                # (at least with the current blender)
+                for _id, game in _game_dict.items()
+            ],
+            name="Game",
+            description="For which name to export.",
+            default='OBLIVION',
+            update=_update_game,
+        )
+
         cls.nif_version = IntProperty(
             name='Nif Version',
-            default=0
-        )
+            default=50528269,
+            min=-1,
+            description=""
+        )  # TODO: Change this to StringProperty
 
         cls.user_version = IntProperty(
             name='User Version',
-            default=0
+            default=0,
+            min=0,
+            description="",
         )
 
-        cls.user_version_2 = IntProperty(
-            name='User Version 2',
-            default=0
+        cls.bethesda_version = IntProperty(
+            name='Bethesda Version',
+            default=0,
+            min=0,
+            description="",
         )
 
     @classmethod

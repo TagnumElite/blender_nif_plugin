@@ -66,6 +66,6 @@ def get_version_data():
     # get user version and user version 2 for export
     b_scene = bpy.context.scene.niftools_scene
     user_version = b_scene.user_version if b_scene.user_version else USER_VERSION.get(game, 0)
-    user_version_2 = b_scene.user_version_2 if b_scene.user_version_2 else USER_VERSION_2.get(game, 0)
+    bethesda_version = b_scene.bethesda_version if b_scene.bethesda_version else USER_VERSION_2.get(game, 0)
 
-    return version, NifFormat.Data(version, user_version, user_version_2)
+    return version, NifFormat.Data(version, user_version, bethesda_version)
