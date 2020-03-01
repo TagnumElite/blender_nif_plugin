@@ -52,7 +52,7 @@ def _set_version_info(nif_ver=0, user_ver=0, user_ver_2=0):
     scene = bpy.context.scene.niftools_scene
     scene.nif_version = nif_ver
     scene.user_version = user_ver
-    scene.user_version_2 = user_ver_2
+    scene.bethesda_version = user_ver_2
 
 
 def b_create_morrowind_info():
@@ -83,12 +83,12 @@ def _b_check_version_info(nif_ver=0, user_ver=0, user_ver_2=0):
     print("user_version - {0}".format(uv))
     nose.tools.assert_equal(uv, user_ver) 
     
-    uv2 = scene.user_version_2
-    print("user_version_2 - {0}".format(uv2))
+    uv2 = scene.bethesda_version
+    print("bethesda_version - {0}".format(uv2))
     nose.tools.assert_equal(uv2, user_ver_2) 
     
     nose.tools.assert_equal(scene.user_version, user_ver)  
-    nose.tools.assert_equal(scene.user_version_2, user_ver_2)
+    nose.tools.assert_equal(scene.bethesda_version, user_ver_2)
 
 
 def b_check_morrowind_info():
