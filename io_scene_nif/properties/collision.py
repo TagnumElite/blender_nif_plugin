@@ -54,7 +54,7 @@ class CollisionProperty(PropertyGroup):
     @classmethod
     def register(cls):
         # physics
-        bpy.types.Object.nifcollision = PointerProperty(
+        bpy.types.Object.nif_collision = PointerProperty(
             name='Niftools Collision Property',
             description='Additional collision properties used by the Nif File Format',
             type=cls,
@@ -126,4 +126,4 @@ class CollisionProperty(PropertyGroup):
 
     @classmethod
     def unregister(cls):
-        del bpy.types.Object.nifcollision
+        del bpy.types.Object.nif_collision

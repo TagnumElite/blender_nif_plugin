@@ -43,7 +43,7 @@ from bpy.utils import register_classes_factory
 
 classes = (
     armature.ArmaturePanel, armature.BonePanel,
-    collision.CollisionBoundsPanel,
+    collision.NifToolsCollisionPanel,
     geometry.PartFlag,
     material.NifMatColorPanel, material.NifMatFlagPanel,
     object.OBJECT_MT_ExtraDataType, object.OBJECT_PT_ExtraData, object.OBJECT_UL_ExtraData,

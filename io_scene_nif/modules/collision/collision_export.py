@@ -197,11 +197,11 @@ class Collision:
             n_havok_mat = b_obj.data.materials[0].name
         else:
             n_havok_mat = "HAV_MAT_STONE"
-        layer = b_obj.nifcollision.oblivion_layer
-        motion_system = b_obj.nifcollision.motion_system
-        deactivator_type = b_obj.nifcollision.deactivator_type
-        solver_deactivation = b_obj.nifcollision.solver_deactivation
-        quality_type = b_obj.nifcollision.quality_type
+        layer = b_obj.nif_collision.oblivion_layer
+        motion_system = b_obj.nif_collision.motion_system
+        deactivator_type = b_obj.nif_collision.deactivator_type
+        solver_deactivation = b_obj.nif_collision.solver_deactivation
+        quality_type = b_obj.nif_collision.quality_type
         if not b_obj.rigid_body:
             NifLog.warn("'{0}' has no rigid body, skipping rigid body export".format(b_obj.name))
             return
@@ -213,9 +213,9 @@ class Collision:
         angular_damping = b_obj.rigid_body.angular_damping
         # linear_velocity = b_obj.rigid_body.deactivate_linear_velocity
         # angular_velocity = b_obj.rigid_body.deactivate_angular_velocity
-        max_linear_velocity = b_obj.nifcollision.max_linear_velocity
-        max_angular_velocity = b_obj.nifcollision.max_angular_velocity
-        col_filter = b_obj.nifcollision.col_filter
+        max_linear_velocity = b_obj.nif_collision.max_linear_velocity
+        max_angular_velocity = b_obj.nif_collision.max_angular_velocity
+        col_filter = b_obj.nif_collision.col_filter
 
         # TODO [object][collision][flags] export bsxFlags
         # self.export_bsx_upb_flags(b_obj, parent_block)
@@ -311,7 +311,7 @@ class Collision:
         if coll_ispacked:
             self.export_collision_packed(b_obj, n_col_body, layer, n_havok_mat)
         else:
-            if b_obj.nifcollision.export_bhklist:
+            if b_obj.nif_collision.export_bhklist:
                 self.export_collision_list(b_obj, n_col_body, layer, n_havok_mat)
             else:
                 self.export_collision_single(b_obj, n_col_body, layer, n_havok_mat)

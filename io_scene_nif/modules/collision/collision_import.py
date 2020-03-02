@@ -272,12 +272,12 @@ class Collision:
                 # (mass 0 results in issues with simulation)
                 b_col_obj.rigid_body.mass = bhkshape.mass / len(collision_objs)
 
-            b_col_obj.nifcollision.deactivator_type = NifFormat.DeactivatorType._enumkeys[bhkshape.deactivator_type]
-            b_col_obj.nifcollision.solver_deactivation = NifFormat.SolverDeactivation._enumkeys[
+            b_col_obj.nif_collision.deactivator_type = NifFormat.DeactivatorType._enumkeys[bhkshape.deactivator_type]
+            b_col_obj.nif_collision.solver_deactivation = NifFormat.SolverDeactivation._enumkeys[
                 bhkshape.solver_deactivation]
-            # b_col_obj.nifcollision.oblivion_layer = NifFormat.OblivionLayer._enumkeys[bhkshape.layer]
-            # b_col_obj.nifcollision.quality_type = NifFormat.MotionQuality._enumkeys[bhkshape.quality_type]
-            # b_col_obj.nifcollision.motion_system = NifFormat.MotionSystem._enumkeys[bhkshape.motion_system]
+            # b_col_obj.nif_collision.oblivion_layer = NifFormat.OblivionLayer._enumkeys[bhkshape.layer]
+            # b_col_obj.nif_collision.quality_type = NifFormat.MotionQuality._enumkeys[bhkshape.quality_type]
+            # b_col_obj.nif_collision.motion_system = NifFormat.MotionSystem._enumkeys[bhkshape.motion_system]
 
             b_col_obj.rigid_body.mass = bhkshape.mass / len(collision_objs)
 
@@ -299,10 +299,10 @@ class Collision:
 
             b_col_obj.collision.permeability = bhkshape.penetration_depth
 
-            b_col_obj.nifcollision.max_linear_velocity = bhkshape.max_linear_velocity
-            b_col_obj.nifcollision.max_angular_velocity = bhkshape.max_angular_velocity
+            b_col_obj.nif_collision.max_linear_velocity = bhkshape.max_linear_velocity
+            b_col_obj.nif_collision.max_angular_velocity = bhkshape.max_angular_velocity
 
-            # b_col_obj.nifcollision.col_filter = bhkshape.col_filter
+            # b_col_obj.nif_collision.col_filter = bhkshape.col_filter
 
         # import constraints
         # this is done once all objects are imported for now, store all imported havok shapes with object lists
