@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Install [BATCH]" type="BatchConfigurationType" factoryName="Batch">
+    <module name="blender_nif_plugin" />
+    <option name="INTERPRETER_OPTIONS" value="" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/install" />
+    <option name="PARENT_ENVS" value="true" />
+    <option name="SCRIPT_NAME" value="install.bat" />
+    <option name="PARAMETERS" value="" />
+    <method v="2" />
+  </configuration>
+</component>

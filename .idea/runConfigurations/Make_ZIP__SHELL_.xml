@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Make ZIP [SHELL]" type="ShConfigurationType">
+    <option name="SCRIPT_PATH" value="$PROJECT_DIR$/install/makezip.sh" />
+    <option name="SCRIPT_OPTIONS" value="" />
+    <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$/install" />
+    <option name="INTERPRETER_PATH" value="" />
+    <option name="INTERPRETER_OPTIONS" value="" />
+    <method v="2" />
+  </configuration>
+</component>
